@@ -8,8 +8,12 @@ namespace SMWControlLibFrontend.Wpf
     /// </summary>
     class MainClass
     {
+        /// <summary>
+        /// Mains the.
+        /// </summary>
+        /// <param name="args">The args.</param>
         [STAThread]
-        public static void Main(string[] args)
+        public static void Main()
         {
             new Application(Eto.Platforms.Wpf).Run(new MainForm());
         }

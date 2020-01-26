@@ -86,5 +86,14 @@ namespace SMWControlLibBackend.Graphics
             if (x.Z > y.Z) return 1;
             return 0;
         }
+
+        /// <summary>
+        /// Clones the.
+        /// </summary>
+        /// <returns>A SpriteTileMask.</returns>
+        public SpriteTileMask Clone()
+        {
+            return new SpriteTileMask(X, Y, Tile, Properties);
+        }
     }
 }

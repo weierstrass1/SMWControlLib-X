@@ -93,6 +93,8 @@ namespace SMWControlLibBackend.Graphics
         public void AddTiles(ITileCollection tiles)
         {
             GetCollection().AddCollection((SpriteTileMaskCollection)tiles);
+            X = Section.Left;
+            Y = Section.Top;
         }
 
         /// <summary>

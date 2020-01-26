@@ -165,8 +165,11 @@ namespace SMWControlLibBackend.Utils.Graphics
                 Parallel.For(0, srcW, i =>
                 {
                     byte c = graphicsMap[i, j];
-                    int ipwj = wj + i;
-                    res2[ipwj] = c2[c];
+                    if (c != 0)
+                    {
+                        int ipwj = wj + i;
+                        res2[ipwj] = c2[c];
+                    }
                 });
             });
 
@@ -196,14 +199,17 @@ namespace SMWControlLibBackend.Utils.Graphics
                   _ = Parallel.For(0, srcW, i =>
                     {
                         byte c = graphicsMap[i, j];
-                        int ipwj = wj + (i * zoom);
-                        int i4py = 0;
-                        for (int y = 0; y < zoom; y ++)
+                        if (c != 0)
                         {
-                            i4py = ipwj + (y * srcWz);
-                            for (int x = 0; x < zoom; x ++)
+                            int ipwj = wj + (i * zoom);
+                            int i4py = 0;
+                            for (int y = 0; y < zoom; y++)
                             {
-                                res2[i4py + x] = c2[c];
+                                i4py = ipwj + (y * srcWz);
+                                for (int x = 0; x < zoom; x++)
+                                {
+                                    res2[i4py + x] = c2[c];
+                                }
                             }
                         }
                     });
@@ -229,16 +235,17 @@ namespace SMWControlLibBackend.Utils.Graphics
             uint[] tbitmap = tile.GetGraphics(z);
             int x = (tile.X - left) * z;
             int y = (tile.Y - top) * z;
-            int offset = (y * width) + x;
             int w = tile.Width * z;
 
             _ = Parallel.For(0, tile.Height * z, j =>
               {
                   int jw = j * w;
-                  int dstOff = offset + (j * width);
+                  int dstOff = ((j + y) * width) + x;
                   _ = Parallel.For(0, w, i =>
                     {
-                        bitmap[dstOff + i] = tbitmap[jw + i];
+                        uint c = tbitmap[jw + i];
+                        if ((c & 0xFF000000) != 0) 
+                            bitmap[dstOff + i] = c;
                     });
               });
         }

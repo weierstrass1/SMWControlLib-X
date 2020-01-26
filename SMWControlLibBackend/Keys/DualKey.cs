@@ -27,7 +27,7 @@
         /// <returns>An int.</returns>
         protected virtual int CalculateHashCode()
         {
-            return element1.GetHashCode() | element2.GetHashCode();
+            return element1.GetHashCode() ^ element2.GetHashCode();
         }
         /// <summary>
         /// Equals the.
@@ -36,7 +36,15 @@
         /// <returns>A bool.</returns>
         public override bool Equals(object obj)
         {
-            return obj.GetHashCode() == GetHashCode();
+            try
+            {
+                DualKey<T, U> t = (DualKey<T, U>)obj;
+                return element1.Equals(t.element1) && element1.Equals(t.element2);
+            }
+            catch
+            {
+                return false;
+            }
         }
         /// <summary>
         /// Gets the hash code.

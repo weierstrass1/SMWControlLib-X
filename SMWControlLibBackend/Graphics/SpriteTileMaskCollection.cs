@@ -256,6 +256,7 @@ namespace SMWControlLibBackend.Graphics
             selection.Bottom = -1;
             OnSelectionClear?.Invoke(this);
         }
+
         /// <summary>
         /// Moves the to.
         /// </summary>
@@ -357,13 +358,11 @@ namespace SMWControlLibBackend.Graphics
         public void AddCollection(SpriteTileMaskCollection col)
         {
             ClearSelection();
-            SpriteTileMaskCollection ret = Fusion(this, col);
-            tiles = ret.tiles;
-            Left = ret.Left;
-            Right = ret.Right;
-            Top = ret.Top;
-            Bottom = ret.Bottom;
-            tiles = ret.tiles.ToList();
+            col.Sort();
+            foreach (SpriteTileMask t in col.tiles)
+            {
+                Add(t);
+            }
             RequireRefresh = true;
             OnCollectionAdded?.Invoke(this, col);
         }
@@ -515,6 +514,20 @@ namespace SMWControlLibBackend.Graphics
         public static explicit operator SpriteTileMask[](SpriteTileMaskCollection c)
         {
             return c.tiles.ToArray();
+        }
+
+        /// <summary>
+        /// Clones the.
+        /// </summary>
+        /// <returns>A SpriteTileMaskCollection.</returns>
+        public SpriteTileMaskCollection Clone()
+        {
+            SpriteTileMaskCollection col = new SpriteTileMaskCollection();
+            foreach(SpriteTileMask t in tiles)
+            {
+                col.Add(t.Clone());
+            }
+            return col;
         }
     }
 }

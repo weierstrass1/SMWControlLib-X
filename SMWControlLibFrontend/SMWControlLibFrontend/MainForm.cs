@@ -1,5 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
+using SMWControlLibBackend.Graphics;
 using SMWControlLibFrontend.Graphics;
 
 namespace SMWControlLibFrontend
@@ -25,9 +26,14 @@ namespace SMWControlLibFrontend
             layout.Add(gfx, 5, 5);
 
             grid = new OAMTileGrid();
-            layout.Add(grid, 266, 5);
+            layout.Add(grid, 138, 5);
 
             grid.AddingTiles = () => gfx.Selection;
+
+            SpriteTileSection s = new SpriteTileSection();
+            s.Add();
+            SpriteTileSectionMask m = new SpriteTileSectionMask(s);
+            grid.Target = m;
 
             Content = layout;
         }

@@ -1,8 +1,6 @@
 ﻿using SMWControlLibBackend.Enumerators.Graphics;
 using SMWControlLibBackend.Graphics.DirtyClasses;
 using SMWControlLibBackend.Interfaces.Graphics;
-using SMWControlLibBackend.Keys.Graphics;
-using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
@@ -14,6 +12,10 @@ namespace SMWControlLibBackend.Graphics
     public class SpriteTileGrid
     {
         /// <summary>
+        /// Gets the side.
+        /// </summary>
+        public int Side => Zoom * 256;
+        /// <summary>
         /// Gets or sets the target.
         /// </summary>
         public IGridDrawable Target { get; set; }
@@ -22,15 +24,15 @@ namespace SMWControlLibBackend.Graphics
         /// Gets or sets the background color.
         /// </summary>
         public uint BackgroundColor
-        { 
-            get
-            {
-                return backgroundColor;
-            }
+        {
+            get => backgroundColor;
             set
             {
-                backgroundColor = BackgroundColor;
-                _ = Parallel.ForEach(background, kvp => kvp.Value.SetDirty(false));
+                if (backgroundColor != value)
+                {
+                    backgroundColor = value;
+                    _ = Parallel.ForEach(background, kvp => kvp.Value.SetDirty(false));
+                }
             }
         }
         /// <summary>
@@ -41,10 +43,23 @@ namespace SMWControlLibBackend.Graphics
         /// Gets or sets a value indicating whether draw grid.
         /// </summary>
         public bool DrawGrid { get; set; }
+        private Zoom zoom;
         /// <summary>
         /// Gets or sets the zoom.
         /// </summary>
-        public Zoom Zoom { get; set; }
+        public Zoom Zoom 
+        { 
+            get => zoom;
+            set 
+            {
+                if (value != zoom)
+                {
+                    zoom = value;
+                    _ = Parallel.ForEach(background, kvp => kvp.Value.SetDirty(false));
+                    _ = Parallel.ForEach(selection, kvp => kvp.Value.SetDirty(false));
+                }
+            }
+        }
         /// <summary>
         /// Gets or sets the cell size.
         /// </summary>
@@ -99,7 +114,7 @@ namespace SMWControlLibBackend.Graphics
 
             int sideZoom = 256 * Zoom;
             int sideZoom2 = sideZoom * sideZoom;
-            if(image.Length != sideZoom)
+            if (image == null || image.Length != sideZoom)
             {
                 image = new uint[sideZoom2];
             }
@@ -108,16 +123,18 @@ namespace SMWControlLibBackend.Graphics
 
             if (Target != null)
             {
+                int wz = Target.Width * Zoom;
                 int x = Target.X * Zoom;
                 int y = Target.Y * Zoom;
-
-                _ = Parallel.For(0, Target.Height, j =>
+                _ = Parallel.For(0, Target.Height*Zoom, j =>
                 {
-                    int jwz = (y + j) * sideZoom;
-                    int tjw = j * Target.Width;
-                    _ = Parallel.For(0, Target.Width, i =>
+                    int jwz = ((y + j) * sideZoom) + x;
+                    int tjw = j * wz;
+                    _ = Parallel.For(0, wz, i =>
                     {
-                        image[jwz + x + i] = lastTargetImage[tjw + i];
+                        uint c = lastTargetImage[tjw + i];
+                        if ((c & 0xFF000000) != 0)
+                            image[jwz + i] = c;
                     });
                 });
             }
@@ -137,9 +154,13 @@ namespace SMWControlLibBackend.Graphics
                 return;
             }
 
-            int zcs = Zoom * CellSize;
-            selection.MoveTo(x / zcs, y / zcs);
-            Target.AddTiles(selection);
+            x /= Zoom;
+            x -= x % CellSize;
+            y /= Zoom;
+            y -= y % CellSize;
+            SpriteTileMaskCollection sel = selection.Clone();
+            sel.MoveTo(x, y);
+            Target.AddTiles(sel);
         }
         /// <summary>
         /// Removes the.
@@ -160,8 +181,7 @@ namespace SMWControlLibBackend.Graphics
         {
             if (Target != null)
             {
-                int zcs = Zoom * CellSize;
-                Target.Select(x / zcs, y / zcs, width, height);
+                Target.Select(x / Zoom, y / Zoom, width / Zoom, height / Zoom);
             }
         }
         /// <summary>
@@ -173,8 +193,11 @@ namespace SMWControlLibBackend.Graphics
         {
             if (Target != null)
             {
-                int zcs = Zoom * CellSize;
-                Target.MoveTiles(x / zcs, y / zcs);
+                x /= Zoom;
+                x -= x % CellSize;
+                y /= Zoom;
+                y -= y % CellSize;
+                Target.MoveTiles(x, y);
             }
         }
         /// <summary>

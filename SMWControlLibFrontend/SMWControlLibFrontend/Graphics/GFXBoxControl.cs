@@ -12,7 +12,7 @@ namespace SMWControlLibFrontend.Graphics
     /// </summary>
     public partial class GFXBoxControl : Drawable
     {
-		private ColorPalette palette;
+		private readonly ColorPalette palette;
         /// <summary>
         /// Gets or sets the g f x size.
         /// </summary>
@@ -32,7 +32,7 @@ namespace SMWControlLibFrontend.Graphics
             }
         }
 
-        private Zoom zoom = Zoom.X2;
+        private Zoom zoom = Zoom.X1;
         /// <summary>
         /// Gets or sets the zoom.
         /// </summary>
