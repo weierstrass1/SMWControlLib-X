@@ -26,7 +26,7 @@ WIP
 #### GFXBox Control
 * Link GFXBox operations to GUI.
 
-### Grid Control
+#### Grid Control
 * Link Grid operations to GUI.
 
 ## TO DO
