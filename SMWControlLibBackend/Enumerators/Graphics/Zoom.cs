@@ -19,7 +19,7 @@
         /// Prevents a default instance of the <see cref="Zoom"/> class from being created.
         /// </summary>
         /// <param name="value">The value.</param>
-        private Zoom(int value): base(value)
+        private Zoom(int value) : base(value)
         {
 
         }

@@ -6,12 +6,12 @@ namespace SMWControlLibFrontend.Graphics
     /// The g f x box control.
     /// </summary>
     partial class GFXBoxControl : Drawable
-	{
+    {
         /// <summary>
         /// Initializes the component.
         /// </summary>
         void InitializeComponent()
-		{
-		}
-	}
+        {
+        }
+    }
 }

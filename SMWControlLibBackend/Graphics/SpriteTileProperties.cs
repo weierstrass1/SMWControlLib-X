@@ -38,10 +38,10 @@ namespace SMWControlLibBackend.Graphics
 
         public static implicit operator string(SpriteTileProperties ob)
         {
-            int val = (ob.Flip.FlipY << 7) | 
-                (ob.Flip.FlipX << 6) | 
-                (ob.Priority << 4) | 
-                (ob.Palette.Index<<1)|
+            int val = (ob.Flip.FlipY << 7) |
+                (ob.Flip.FlipX << 6) |
+                (ob.Priority << 4) |
+                (ob.Palette.Index << 1) |
                 ob.SP;
 
             return val.ToString("X2");

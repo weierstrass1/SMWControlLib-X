@@ -24,7 +24,7 @@
         /// </summary>
         /// <param name="fx">The fx.</param>
         /// <param name="fy">The fy.</param>
-        private Flip(int fx,int fy) : base(fx)
+        private Flip(int fx, int fy) : base(fx)
         {
             FlipY = fy;
         }

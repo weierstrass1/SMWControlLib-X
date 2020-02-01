@@ -5,7 +5,7 @@ namespace SMWControlLibBackend.Keys.Graphics
     /// <summary>
     /// The grid type zoom cell size key.
     /// </summary>
-    public class GridTypeZoomCellSizeKey : DualKey<GridType,ZoomCellSizeKey>
+    public class GridTypeZoomCellSizeKey : DualKey<GridType, ZoomCellSizeKey>
     {
         /// <summary>
         /// Gets the grid type.

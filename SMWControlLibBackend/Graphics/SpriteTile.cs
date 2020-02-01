@@ -1,11 +1,12 @@
 ﻿using SMWControlLibBackend.Enumerators.Graphics;
+using SMWControlLibRendering;
 
 namespace SMWControlLibBackend.Graphics
 {
     /// <summary>
     /// Represent an OAM tile of the SNES.
     /// </summary>
-    public class SpriteTile : GraphicBox
+    public class SpriteTile<T> : GraphicBox<T> where T: BitmapBuffer, new()
     {
         /// <summary>
         /// Size of the tile. Normally 8x8 or 16x16.

@@ -1,18 +1,19 @@
-using System;
-using Eto.Forms;
 using Eto.Drawing;
-using SMWControlLibBackend.Graphics;
+using Eto.Forms;
 using SMWControlLibBackend.Enumerators.Graphics;
+using SMWControlLibBackend.Graphics;
 using SMWControlLibFrontend.Enumerators;
+using SMWControlLibRendering;
+using System;
 
 namespace SMWControlLibFrontend.Graphics
 {
     /// <summary>
     /// The g f x box control.
     /// </summary>
-    public partial class GFXBoxControl : Drawable
+    public partial class GFXBoxControl<T> : Drawable where T: BitmapBuffer, new()
     {
-		private readonly ColorPalette palette;
+        private readonly ColorPalette palette;
         /// <summary>
         /// Gets or sets the g f x size.
         /// </summary>
@@ -25,14 +26,14 @@ namespace SMWControlLibFrontend.Graphics
             set
             {
                 size = value;
-                gfxBox = new SpriteTileGFXBox(size);
+                gfxBox = new SpriteTileGFXBox<T>(size);
                 Width = size.Width * Zoom;
                 Height = size.Height * Zoom;
                 image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
             }
         }
 
-        private Zoom zoom = Zoom.X1;
+        private Zoom zoom = Zoom.X2;
         /// <summary>
         /// Gets or sets the zoom.
         /// </summary>
@@ -51,13 +52,13 @@ namespace SMWControlLibFrontend.Graphics
         /// <summary>
         /// Gets the selection.
         /// </summary>
-        public SpriteTileMaskCollection Selection { get; private set; }
-        private SpriteTileGFXBox gfxBox;
-		private Rectangle selectionRectangle, lastRenderedSelection;
-		private MouseState state = MouseState.Idle;
-		private GFXBoxSize size = GFXBoxSize.Size128x128;
-		private uint[] previewsBitmap;
-		private PointF pointer;
+        public SpriteTileMaskCollection<T> Selection { get; private set; }
+        private SpriteTileGFXBox<T> gfxBox;
+        private Rectangle selectionRectangle, lastRenderedSelection;
+        private MouseState state = MouseState.Idle;
+        private GFXBoxSize size = GFXBoxSize.Size128x128;
+        private T previewsBitmap;
+        private PointF pointer;
         private Bitmap image;
 
         /// <summary>
@@ -65,8 +66,7 @@ namespace SMWControlLibFrontend.Graphics
         /// </summary>
         public GFXBoxControl()
         {
-            InitializeComponent();
-            gfxBox = new SpriteTileGFXBox(size);
+            gfxBox = new SpriteTileGFXBox<T>(size);
             Width = size.Width * Zoom;
             Height = size.Height * Zoom;
             image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
@@ -195,7 +195,7 @@ namespace SMWControlLibFrontend.Graphics
                 mustUpdate = true;
             }
 
-            if (r <= Width && selectionRectangle.Right != r - 1) 
+            if (r <= Width && selectionRectangle.Right != r - 1)
             {
                 selectionRectangle.Right = r - 1;
                 mustUpdate = true;
@@ -216,7 +216,7 @@ namespace SMWControlLibFrontend.Graphics
         /// </summary>
         private void updateGraphics()
         {
-            uint[] b = gfxBox.GetGraphics(palette, Zoom);
+            T b = (T)gfxBox.GetGraphics(palette, Zoom);
 
             if (b == previewsBitmap && lastRenderedSelection == selectionRectangle && previewsBitmap != null)
                 return;
@@ -232,7 +232,7 @@ namespace SMWControlLibFrontend.Graphics
                     byte* bs = (byte*)bd.Data;
                     int l = b.Length << 2;
 
-                    fixed (uint* bp = b)
+                    fixed (uint* bp = b.Pixels)
                     {
                         Buffer.MemoryCopy(bp, bs, l, l);
                     }
@@ -242,6 +242,6 @@ namespace SMWControlLibFrontend.Graphics
             Invalidate();
         }
 
-        
+
     }
 }

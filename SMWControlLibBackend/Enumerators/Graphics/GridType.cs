@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SMWControlLibBackend.Enumerators.Graphics
+﻿namespace SMWControlLibBackend.Enumerators.Graphics
 {
     /// <summary>
     /// The grid type.

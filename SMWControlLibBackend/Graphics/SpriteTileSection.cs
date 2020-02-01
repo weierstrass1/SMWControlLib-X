@@ -1,6 +1,6 @@
 ﻿using SMWControlLibBackend.DataStructs;
 using SMWControlLibBackend.Enumerators.Graphics;
-using System;
+using SMWControlLibRendering;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,15 +9,15 @@ namespace SMWControlLibBackend.Graphics
     /// <summary>
     /// The sprite tile section.
     /// </summary>
-    public class SpriteTileSection : ExchangeableDynamicList<SpriteTileMaskCollection>
+    public class SpriteTileSection<T> : ExchangeableDynamicList<SpriteTileMaskCollection<T>> where T: BitmapBuffer, new()
     {
         private int left;
         private bool requireUpdateLeft = true;
         /// <summary>
         /// Gets the left.
         /// </summary>
-        public int Left 
-        { 
+        public int Left
+        {
             get
             {
                 if (requireUpdateLeft)
@@ -26,7 +26,7 @@ namespace SMWControlLibBackend.Graphics
                 requireUpdateLeft = false;
                 return left;
             }
-            private set 
+            private set
             {
                 int x = Left;
                 _ = Parallel.ForEach(elements, e =>
@@ -116,7 +116,7 @@ namespace SMWControlLibBackend.Graphics
         /// </summary>
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
-        private void onFrameRemoved(ExchangeableDynamicList<SpriteTileMaskCollection> arg1, int arg2)
+        private void onFrameRemoved(ExchangeableDynamicList<SpriteTileMaskCollection<T>> arg1, int arg2)
         {
             elements[arg2].OnCollectionAdded -= onCollectionAdded;
             elements[arg2].OnMoveTo -= onMoveTo;
@@ -132,7 +132,7 @@ namespace SMWControlLibBackend.Graphics
         /// </summary>
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
-        private void onFrameAdded(ExchangeableDynamicList<SpriteTileMaskCollection> arg1, int arg2)
+        private void onFrameAdded(ExchangeableDynamicList<SpriteTileMaskCollection<T>> arg1, int arg2)
         {
             elements[arg2].OnCollectionAdded += onCollectionAdded;
             elements[arg2].OnMoveTo += onMoveTo;
@@ -144,7 +144,7 @@ namespace SMWControlLibBackend.Graphics
         /// </summary>
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
-        private void onTileAdded(SpriteTileMaskCollection arg1, SpriteTileMask arg2)
+        private void onTileAdded(SpriteTileMaskCollection<T> arg1, SpriteTileMask<T> arg2)
         {
             requireUpdateLeft = true;
             requireUpdateTop = true;
@@ -157,7 +157,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
         /// <param name="arg3">The arg3.</param>
-        private void onMoveTo(SpriteTileMaskCollection arg1, int arg2, int arg3)
+        private void onMoveTo(SpriteTileMaskCollection<T> arg1, int arg2, int arg3)
         {
             requireUpdateLeft = true;
             requireUpdateTop = true;
@@ -169,7 +169,7 @@ namespace SMWControlLibBackend.Graphics
         /// </summary>
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
-        private void onCollectionAdded(SpriteTileMaskCollection arg1, SpriteTileMaskCollection arg2)
+        private void onCollectionAdded(SpriteTileMaskCollection<T> arg1, SpriteTileMaskCollection<T> arg2)
         {
             requireUpdateLeft = true;
             requireUpdateTop = true;
@@ -200,7 +200,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="index">The index.</param>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public uint[] GetGraphics(int index, Zoom z)
+        public BitmapBuffer GetGraphics(int index, Zoom z)
         {
             if (Lenght == 0) return null;
             return elements[index].GetGraphics(z);

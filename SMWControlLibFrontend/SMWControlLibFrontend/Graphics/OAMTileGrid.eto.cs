@@ -1,6 +1,4 @@
-using System;
 using Eto.Forms;
-using Eto.Drawing;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -8,13 +6,13 @@ namespace SMWControlLibFrontend.Graphics
     /// The o a m tile grid.
     /// </summary>
     partial class OAMTileGrid : Drawable
-	{
+    {
         /// <summary>
         /// Initializes the component.
         /// </summary>
         void InitializeComponent()
-		{
+        {
 
-		}
-	}
+        }
+    }
 }

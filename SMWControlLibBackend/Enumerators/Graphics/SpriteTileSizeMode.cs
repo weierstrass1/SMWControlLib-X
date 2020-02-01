@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SMWControlLibBackend.Enumerators.Graphics
+﻿namespace SMWControlLibBackend.Enumerators.Graphics
 {
     /// <summary>
     /// The sprite tile size mode.
@@ -13,7 +9,7 @@ namespace SMWControlLibBackend.Enumerators.Graphics
         /// Gets the mode default.
         /// </summary>
         public static SpriteTileSizeMode ModeDefault => Mode0;
-        public static SpriteTileSizeMode Mode0 = 
+        public static SpriteTileSizeMode Mode0 =
             new SpriteTileSizeMode(SpriteTileSize.Size8x8, SpriteTileSize.Size16x16, 0);
         public static SpriteTileSizeMode Mode1 =
             new SpriteTileSizeMode(SpriteTileSize.Size8x8, SpriteTileSize.Size32x32, 1);

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibFrontend.Wpf",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibBackend", "SMWControlLibBackend\SMWControlLibBackend.csproj", "{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWControlLibRendering", "SMWControlLibRendering\SMWControlLibRendering.csproj", "{32599284-B077-4783-A342-409E5E7E9C56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,22 @@ Global
 		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|x64.Build.0 = Release|Any CPU
 		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|x86.ActiveCfg = Release|Any CPU
 		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|x86.Build.0 = Release|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|ARM.Build.0 = Debug|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|x64.Build.0 = Debug|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|x86.Build.0 = Debug|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Release|ARM.ActiveCfg = Release|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Release|ARM.Build.0 = Release|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Release|x64.ActiveCfg = Release|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Release|x64.Build.0 = Release|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Release|x86.ActiveCfg = Release|Any CPU
+		{32599284-B077-4783-A342-409E5E7E9C56}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

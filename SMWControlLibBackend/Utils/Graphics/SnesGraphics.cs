@@ -1,7 +1,7 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using SMWControlLibBackend.Enumerators.Graphics;
+﻿using SMWControlLibBackend.Enumerators.Graphics;
 using SMWControlLibBackend.Graphics;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace SMWControlLibBackend.Utils.Graphics
 {
@@ -159,7 +159,7 @@ namespace SMWControlLibBackend.Utils.Graphics
             int srcH = graphicsMap.GetLength(1);
             uint[] res2 = new uint[srcW * srcH];
 
-            Parallel.For(0, srcH, j => 
+            Parallel.For(0, srcH, j =>
             {
                 int wj = j * srcW;
                 Parallel.For(0, srcW, i =>
@@ -215,39 +215,6 @@ namespace SMWControlLibBackend.Utils.Graphics
                     });
               });
             return res2;
-        }
-        /// <summary>
-        /// Draws the o a m tile mask on bitmap.
-        /// </summary>
-        /// <param name="tile">The tile.</param>
-        /// <param name="left">The left.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="bitmap">The bitmap.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="z">The z.</param>
-        public static void DrawOAMTileMaskOnBitmap(SpriteTileMask tile,
-                                                    int left,
-                                                    int top,
-                                                    uint[] bitmap, 
-                                                    int width, 
-                                                    Zoom z)
-        {
-            uint[] tbitmap = tile.GetGraphics(z);
-            int x = (tile.X - left) * z;
-            int y = (tile.Y - top) * z;
-            int w = tile.Width * z;
-
-            _ = Parallel.For(0, tile.Height * z, j =>
-              {
-                  int jw = j * w;
-                  int dstOff = ((j + y) * width) + x;
-                  _ = Parallel.For(0, w, i =>
-                    {
-                        uint c = tbitmap[jw + i];
-                        if ((c & 0xFF000000) != 0) 
-                            bitmap[dstOff + i] = c;
-                    });
-              });
         }
     }
 }

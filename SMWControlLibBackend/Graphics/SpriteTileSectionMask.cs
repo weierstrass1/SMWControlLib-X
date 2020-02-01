@@ -1,11 +1,15 @@
-﻿using SMWControlLibBackend.Enumerators.Graphics;
+﻿using SMWControlLibBackend.DataStructs;
+using SMWControlLibBackend.Enumerators.Graphics;
 using SMWControlLibBackend.Interfaces.Graphics;
+using SMWControlLibRendering;
+using System.Collections.Generic;
+
 namespace SMWControlLibBackend.Graphics
 {
     /// <summary>
     /// The sprite tile section mask.
     /// </summary>
-    public class SpriteTileSectionMask : IGridDrawable
+    public class SpriteTileSectionMask<T> : IGridDrawable where T : BitmapBuffer, new()
     {
         private int index;
         /// <summary>
@@ -32,6 +36,22 @@ namespace SMWControlLibBackend.Graphics
         /// </summary>
         public int Y { get; set; }
         /// <summary>
+        /// Gets the left.
+        /// </summary>
+        public int Left => GetCollection().Left;
+        /// <summary>
+        /// Gets the top.
+        /// </summary>
+        public int Top => GetCollection().Top;
+        /// <summary>
+        /// Gets the right.
+        /// </summary>
+        public int Right => Left + Width;
+        /// <summary>
+        /// Gets the bottom.
+        /// </summary>
+        public int Bottom => Top + Height;
+        /// <summary>
         /// Gets the width.
         /// </summary>
         public int Width => Section.Width;
@@ -46,12 +66,12 @@ namespace SMWControlLibBackend.Graphics
         /// <summary>
         /// Gets the section.
         /// </summary>
-        public SpriteTileSection Section { get; private set; }
+        public SpriteTileSection<T> Section { get; private set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteTileSectionMask"/> class.
         /// </summary>
         /// <param name="s">The s.</param>
-        public SpriteTileSectionMask(SpriteTileSection s)
+        public SpriteTileSectionMask(SpriteTileSection<T> s)
         {
             Section = s;
             X = -1;
@@ -61,7 +81,7 @@ namespace SMWControlLibBackend.Graphics
         /// Gets the collection.
         /// </summary>
         /// <returns>A SpriteTileMaskCollection.</returns>
-        public SpriteTileMaskCollection GetCollection()
+        public SpriteTileMaskCollection<T> GetCollection()
         {
             return Section[Index];
         }
@@ -70,7 +90,7 @@ namespace SMWControlLibBackend.Graphics
         /// </summary>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public uint[] GetGraphics(Zoom z)
+        public BitmapBuffer GetGraphics(Zoom z)
         {
             return Section.GetGraphics(Index, z);
         }
@@ -81,22 +101,26 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public void Select(int x, int y, int width, int height)
+        public ITileCollection Select(int x, int y, int width, int height)
         {
-            GetCollection().FindByArea(x, y, width, height);
-        }
+            SpriteTileMaskCollection<T> sel = GetCollection();
 
+            if (width < 2 || height < 2)
+                return sel.FindByPosition(x, y);
+            else
+                return sel.FindByArea(x, y, width, height);
+        }
         /// <summary>
         /// Adds the tiles.
         /// </summary>
         /// <param name="tiles">The tiles.</param>
         public void AddTiles(ITileCollection tiles)
         {
-            GetCollection().AddCollection((SpriteTileMaskCollection)tiles);
+            
+            GetCollection().AddCollection((SpriteTileMaskCollection<T>)tiles);
             X = Section.Left;
             Y = Section.Top;
         }
-
         /// <summary>
         /// Removes the tiles.
         /// </summary>
@@ -110,25 +134,40 @@ namespace SMWControlLibBackend.Graphics
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        public void MoveTiles(int x, int y)
+        public bool MoveTiles(int x, int y)
         {
-            GetCollection().MoveSelection(x, y);
+            return GetCollection().MoveSelection(x, y);
         }
-
         /// <summary>
         /// Increases the z index.
         /// </summary>
-        public void IncreaseZIndex()
+        public bool IncreaseZIndex()
         {
-            GetCollection().IncreaseSelectionZIndex();
+            return GetCollection().IncreaseSelectionZIndex();
         }
-
         /// <summary>
         /// Decreases the z index.
         /// </summary>
-        public void DecreaseZIndex()
+        public bool DecreaseZIndex()
         {
-            GetCollection().DecreaseSelectionZIndex();
+            return GetCollection().DecreaseSelectionZIndex();
+        }
+
+        /// <summary>
+        /// Gets the tile borders.
+        /// </summary>
+        /// <returns>A list of TileBorders.</returns>
+        public List<TileBorder> GetTileBorders()
+        {
+            return GetCollection().GetTileBorders();
+        }
+        /// <summary>
+        /// Are the empty.
+        /// </summary>
+        /// <returns>A bool.</returns>
+        public bool IsEmpty()
+        {
+            return Section.Lenght > 0;
         }
     }
 }

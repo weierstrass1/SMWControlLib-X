@@ -1,5 +1,5 @@
 ﻿using SMWControlLibBackend.Enumerators.Graphics;
-using SMWControlLibBackend.Graphics;
+using SMWControlLibRendering;
 
 namespace SMWControlLibBackend.Interfaces.Graphics
 {
@@ -26,7 +26,7 @@ namespace SMWControlLibBackend.Interfaces.Graphics
         /// </summary>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        uint[] GetGraphics(Zoom z);
+        BitmapBuffer GetGraphics(Zoom z);
         /// <summary>
         /// Selects the.
         /// </summary>
@@ -34,20 +34,20 @@ namespace SMWControlLibBackend.Interfaces.Graphics
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        void Select(int x, int y, int width, int height);
+        ITileCollection Select(int x, int y, int width, int height);
         /// <summary>
         /// Moves the tiles.
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        void MoveTiles(int x, int y);
+        bool MoveTiles(int x, int y);
         /// <summary>
         /// Increases the z index.
         /// </summary>
-        void IncreaseZIndex();
+        bool IncreaseZIndex();
         /// <summary>
         /// Decreases the z index.
         /// </summary>
-        void DecreaseZIndex();
+        bool DecreaseZIndex();
     }
 }

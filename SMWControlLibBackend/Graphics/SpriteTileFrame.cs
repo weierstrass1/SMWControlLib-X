@@ -1,5 +1,8 @@
-﻿using SMWControlLibBackend.Enumerators.Graphics;
+﻿using SMWControlLibBackend.DataStructs;
+using SMWControlLibBackend.Enumerators.Graphics;
 using SMWControlLibBackend.Interfaces.Graphics;
+using SMWControlLibRendering;
+using System.Collections.Generic;
 
 namespace SMWControlLibBackend.Graphics
 {
@@ -24,6 +27,27 @@ namespace SMWControlLibBackend.Graphics
         /// Gets or sets the height.
         /// </summary>
         public int Height { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+        /// <summary>
+        /// Gets the left.
+        /// </summary>
+        public int Left => throw new System.NotImplementedException();
+
+        /// <summary>
+        /// Gets the top.
+        /// </summary>
+        public int Top => throw new System.NotImplementedException();
+
+        /// <summary>
+        /// Gets the right.
+        /// </summary>
+        public int Right => throw new System.NotImplementedException();
+
+        /// <summary>
+        /// Gets the bottom.
+        /// </summary>
+        public int Bottom => throw new System.NotImplementedException();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteTileFrame"/> class.
         /// </summary>
@@ -36,7 +60,7 @@ namespace SMWControlLibBackend.Graphics
         /// </summary>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public uint[] GetGraphics(Zoom z)
+        public BitmapBuffer GetGraphics(Zoom z)
         {
             throw new System.NotImplementedException();
         }
@@ -48,7 +72,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public void Select(int x, int y, int width, int height)
+        public ITileCollection Select(int x, int y, int width, int height)
         {
             throw new System.NotImplementedException();
         }
@@ -71,20 +95,11 @@ namespace SMWControlLibBackend.Graphics
         }
 
         /// <summary>
-        /// Adds the tiles.
-        /// </summary>
-        /// <param name="selection">The selection.</param>
-        public void AddTiles(SpriteTileMaskCollection selection)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        /// <summary>
         /// Moves the tiles.
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        public void MoveTiles(int x, int y)
+        public bool MoveTiles(int x, int y)
         {
             throw new System.NotImplementedException();
         }
@@ -92,7 +107,7 @@ namespace SMWControlLibBackend.Graphics
         /// <summary>
         /// Increases the z index.
         /// </summary>
-        public void IncreaseZIndex()
+        public bool IncreaseZIndex()
         {
             throw new System.NotImplementedException();
         }
@@ -100,7 +115,24 @@ namespace SMWControlLibBackend.Graphics
         /// <summary>
         /// Decreases the z index.
         /// </summary>
-        public void DecreaseZIndex()
+        public bool DecreaseZIndex()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Gets the tile borders.
+        /// </summary>
+        /// <returns>A list of TileBorders.</returns>
+        public List<TileBorder> GetTileBorders()
+        {
+            throw new System.NotImplementedException();
+        }
+        /// <summary>
+        /// Are the empty.
+        /// </summary>
+        /// <returns>A bool.</returns>
+        public bool IsEmpty()
         {
             throw new System.NotImplementedException();
         }

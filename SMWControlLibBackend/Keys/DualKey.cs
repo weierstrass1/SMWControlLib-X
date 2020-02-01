@@ -3,7 +3,7 @@
     /// <summary>
     /// The dual key.
     /// </summary>
-    public abstract class DualKey<T,U>
+    public abstract class DualKey<T, U>
     {
         protected int hashCode;
         protected bool notCalculated;
@@ -14,7 +14,7 @@
         /// </summary>
         /// <param name="e1">The e1.</param>
         /// <param name="e2">The e2.</param>
-        protected DualKey(T e1,U e2)
+        protected DualKey(T e1, U e2)
         {
             element1 = e1;
             element2 = e2;

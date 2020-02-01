@@ -1,19 +1,29 @@
-﻿using SMWControlLibBackend.Graphics.DirtyClasses;
-using SMWControlLibBackend.Enumerators.Graphics;
+﻿using SMWControlLibBackend.Enumerators.Graphics;
+using SMWControlLibBackend.Graphics.DirtyClasses;
 using SMWControlLibBackend.Keys.Graphics;
+using SMWControlLibBackend.Utils.Graphics;
+using SMWControlLibRendering;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using SMWControlLibBackend.Utils.Graphics;
 
 namespace SMWControlLibBackend.Graphics
 {
     /// <summary>
     /// The graphic box.
     /// </summary>
-    public class GraphicBox
+    public class GraphicBox<T> where T: BitmapBuffer, new()
     {
-        protected ConcurrentDictionary<ZoomPaletteKey, DirtyBitmap> graphicsCollection;
+        protected ConcurrentDictionary<ZoomPaletteKey, DirtyBitmap<T>> graphicsCollection;
+
+        /// <summary>
+        /// Gets the width.
+        /// </summary>
+        public int Width => graphicsMap.GetLength(0);
+        /// <summary>
+        /// Gets the height.
+        /// </summary>
+        public int Height => graphicsMap.GetLength(1);
 
         /// <summary>
         /// Graphics but using color palette.
@@ -27,7 +37,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="height">The height.</param>
         public GraphicBox(int width, int height)
         {
-            graphicsCollection = new ConcurrentDictionary<ZoomPaletteKey, DirtyBitmap>();
+            graphicsCollection = new ConcurrentDictionary<ZoomPaletteKey, DirtyBitmap<T>>();
             graphicsMap = new byte[width, height];
         }
         /// <summary>
@@ -36,20 +46,20 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="cp">The cp.</param>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public virtual uint[] GetGraphics(ColorPalette cp, Zoom z)
+        public virtual BitmapBuffer GetGraphics(ColorPalette cp, Zoom z)
         {
             ZoomPaletteKey nd = new ZoomPaletteKey(z, cp);
 
             if (graphicsCollection.ContainsKey(nd))
             {
-                DirtyBitmap d = graphicsCollection[nd];
+                DirtyBitmap<T> d = graphicsCollection[nd];
 
                 if (d.IsDirty)
                 {
                     if (nd.Zoom > 1)
-                        d.Bitmap = SnesGraphics.GetCreateBitmapIntPointer(cp, graphicsMap, z);
+                        d = new DirtyBitmap<T>((T)BitmapBuffer.CreateInstance<T>(SnesGraphics.GetCreateBitmapIntPointer(cp, graphicsMap, z), Width * z));
                     else
-                        d.Bitmap = SnesGraphics.GetCreateBitmapIntPointer(cp, graphicsMap);
+                        d = new DirtyBitmap<T>((T)BitmapBuffer.CreateInstance<T>(SnesGraphics.GetCreateBitmapIntPointer(cp, graphicsMap), Width));
                 }
 
                 d.SetDirty(false);
@@ -57,12 +67,12 @@ namespace SMWControlLibBackend.Graphics
             }
             else
             {
-                DirtyBitmap d = new DirtyBitmap();
+                DirtyBitmap<T> d;
 
                 if (nd.Zoom > 1)
-                    d.Bitmap = SnesGraphics.GetCreateBitmapIntPointer(cp, graphicsMap, z);
+                    d = new DirtyBitmap<T>((T)BitmapBuffer.CreateInstance<T>(SnesGraphics.GetCreateBitmapIntPointer(cp, graphicsMap, z), Width * z));
                 else
-                    d.Bitmap = SnesGraphics.GetCreateBitmapIntPointer(cp, graphicsMap);
+                    d = new DirtyBitmap<T>((T)BitmapBuffer.CreateInstance<T>(SnesGraphics.GetCreateBitmapIntPointer(cp, graphicsMap), Width));
 
                 d.SetDirty(false);
 
@@ -127,7 +137,7 @@ namespace SMWControlLibBackend.Graphics
         /// Copies the from.
         /// </summary>
         /// <param name="src">The src.</param>
-        public virtual void CopyFrom(GraphicBox src)
+        public virtual void CopyFrom(GraphicBox<T> src)
         {
             CopyFrom(src.graphicsMap, 0, 0, 0, 0);
         }
@@ -137,7 +147,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="src">The src.</param>
         /// <param name="srcHOffset">The src h offset.</param>
         /// <param name="srcVOffset">The src v offset.</param>
-        public virtual void CopyFrom(GraphicBox src, int srcHOffset, int srcVOffset)
+        public virtual void CopyFrom(GraphicBox<T> src, int srcHOffset, int srcVOffset)
         {
             CopyFrom(src.graphicsMap, srcHOffset, srcVOffset, 0, 0);
         }
@@ -149,7 +159,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="srcVOffset">The src v offset.</param>
         /// <param name="dstHOffset">The dst h offset.</param>
         /// <param name="dstVOffset">The dst v offset.</param>
-        public virtual void CopyFrom(GraphicBox src, int srcHOffset, int srcVOffset, int dstHOffset, int dstVOffset)
+        public virtual void CopyFrom(GraphicBox<T> src, int srcHOffset, int srcVOffset, int dstHOffset, int dstVOffset)
         {
             CopyFrom(src.graphicsMap, srcHOffset, srcVOffset, dstHOffset, dstVOffset);
         }
@@ -197,7 +207,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="srcVOffset">The src v offset.</param>
         /// <param name="dstHOffset">The dst h offset.</param>
         /// <param name="dstVOffset">The dst v offset.</param>
-        public virtual void CopyNotZeroFrom(SpriteTile tile, int srcHOffset, int srcVOffset, int dstHOffset, int dstVOffset)
+        public virtual void CopyNotZeroFrom(SpriteTile<T> tile, int srcHOffset, int srcVOffset, int dstHOffset, int dstVOffset)
         {
             CopyNotZeroFrom(tile.graphicsMap, srcHOffset, srcVOffset, dstHOffset, dstVOffset);
         }

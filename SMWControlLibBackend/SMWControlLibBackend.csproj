@@ -8,4 +8,8 @@
     <Folder Include="Enumerators\Miscellaneous\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SMWControlLibRendering\SMWControlLibRendering.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1070,7 +1070,7 @@
             {
                 indexes = new SpriteTileIndex[16, 16];
             }
-            if (indexes[x, y] == null) 
+            if (indexes[x, y] == null)
             {
                 indexes[x, y] = new SpriteTileIndex(x, y);
             }

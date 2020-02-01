@@ -1,22 +1,22 @@
-﻿using SMWControlLibBackend.Graphics.DirtyClasses;
-using SMWControlLibBackend.Enumerators.Graphics;
+﻿using SMWControlLibBackend.Enumerators.Graphics;
+using SMWControlLibBackend.Graphics.DirtyClasses;
+using SMWControlLibRendering;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace SMWControlLibBackend.Graphics
 {
     /// <summary>
     /// The sprite tile g f x box.
     /// </summary>
-    public class SpriteTileGFXBox : GraphicBox
+    public class SpriteTileGFXBox<T> : GraphicBox<T> where T: BitmapBuffer, new()
     {
         /// <summary>
         /// Gets the size.
         /// </summary>
         public GFXBoxSize Size { get; private set; }
-        private readonly ConcurrentDictionary<SpriteTileSize, DirtySpriteTile[,]> tiles;
+        private readonly ConcurrentDictionary<SpriteTileSize, DirtySpriteTile<T>[,]> tiles;
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteTileGFXBox"/> class.
         /// </summary>
@@ -24,7 +24,7 @@ namespace SMWControlLibBackend.Graphics
         public SpriteTileGFXBox(GFXBoxSize size) : base(size.Width, size.Height)
         {
             Size = size;
-            tiles = new ConcurrentDictionary<SpriteTileSize, DirtySpriteTile[,]>();
+            tiles = new ConcurrentDictionary<SpriteTileSize, DirtySpriteTile<T>[,]>();
         }
 
         /// <summary>
@@ -37,16 +37,16 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="mode">The mode.</param>
         /// <param name="props">The props.</param>
         /// <returns>A SpriteTileMaskCollection.</returns>
-        public SpriteTileMaskCollection SelectTiles(int x, 
-                                                    int y, 
-                                                    int width, 
-                                                    int height, 
+        public SpriteTileMaskCollection<T> SelectTiles(int x,
+                                                    int y,
+                                                    int width,
+                                                    int height,
                                                     SpriteTileSizeMode mode,
                                                     SpriteTileProperties props)
         {
-            SpriteTileMaskCollection Selection = new SpriteTileMaskCollection();
+            SpriteTileMaskCollection<T> Selection = new SpriteTileMaskCollection<T>();
 
-            bool onlySmall = width <= (mode.SmallSize.Width >> 3) && 
+            bool onlySmall = width <= (mode.SmallSize.Width >> 3) &&
                                 height <= (mode.SmallSize.Height >> 3);
 
             SpriteTileSize selected = mode.BigSize;
@@ -68,11 +68,11 @@ namespace SMWControlLibBackend.Graphics
                 j3 = j << 3;
                 for (int i = 0; i < ilim; i += upi)
                 {
-                    Selection.Add(new SpriteTileMask(i << 3, j3,
+                    Selection.Add(new SpriteTileMask<T>(i << 3, j3,
                             GetTile(selected, x + i, y + j), props));
                 }
-                if(extraColumn)
-                    Selection.Add(new SpriteTileMask(extraColumnI3, j3,
+                if (extraColumn)
+                    Selection.Add(new SpriteTileMask<T>(extraColumnI3, j3,
                         GetTile(selected, x + extraColumnI, y + j), props));
             }
 
@@ -83,12 +83,12 @@ namespace SMWControlLibBackend.Graphics
             {
                 for (int i = 0; i < ilim; i += upi)
                 {
-                    Selection.Add(new SpriteTileMask(i << 3, extraRowJ3,
+                    Selection.Add(new SpriteTileMask<T>(i << 3, extraRowJ3,
                             GetTile(selected, x + i, y + extraRowJ), props));
                 }
             }
 
-            if (extraRow && extraColumn) 
+            if (extraRow && extraColumn)
             {
                 if (!onlySmall && width - ilim <= mode.SmallSize.Width && height - jlim <= mode.SmallSize.Height)
                 {
@@ -101,7 +101,7 @@ namespace SMWControlLibBackend.Graphics
                     extraRowJ3 = extraRowJ << 3;
                 }
 
-                Selection.Add(new SpriteTileMask(extraColumnI3, extraRowJ3,
+                Selection.Add(new SpriteTileMask<T>(extraColumnI3, extraRowJ3,
                             GetTile(selected, x + extraColumnI, y + extraRowJ), props));
             }
 
@@ -114,22 +114,22 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="hIndex">The h index.</param>
         /// <param name="vIndex">The v index.</param>
         /// <returns>A SpriteTile.</returns>
-        public SpriteTile GetTile(SpriteTileSize size, int hIndex, int vIndex)
+        public SpriteTile<T> GetTile(SpriteTileSize size, int hIndex, int vIndex)
         {
             if (!tiles.ContainsKey(size))
             {
-                tiles.AddOrUpdate(size, new DirtySpriteTile[(Size.Width >> 3) + 1 - (size.Width >> 3),
+                tiles.AddOrUpdate(size, new DirtySpriteTile<T>[(Size.Width >> 3) + 1 - (size.Width >> 3),
                                             (Size.Height >> 3) + 1 - (size.Height >> 3)],
                                             (a, b) => { return null; });
 
-                tiles[size][hIndex, vIndex] = new DirtySpriteTile(size, SpriteTileIndex.GetIndex(hIndex, vIndex));
+                tiles[size][hIndex, vIndex] = new DirtySpriteTile<T>(size, SpriteTileIndex.GetIndex(hIndex, vIndex));
                 tiles[size][hIndex, vIndex].Tile.CopyFrom(graphicsMap, hIndex << 3, vIndex << 3);
                 tiles[size][hIndex, vIndex].SetDirty(false);
             }
-            else 
+            else
             {
                 if (tiles[size][hIndex, vIndex] == null)
-                    tiles[size][hIndex, vIndex] = new DirtySpriteTile(size, SpriteTileIndex.GetIndex(hIndex, vIndex));
+                    tiles[size][hIndex, vIndex] = new DirtySpriteTile<T>(size, SpriteTileIndex.GetIndex(hIndex, vIndex));
                 if (tiles[size][hIndex, vIndex].IsDirty)
                 {
                     tiles[size][hIndex, vIndex].Tile.CopyFrom(graphicsMap, hIndex << 3, vIndex << 3);
@@ -158,16 +158,16 @@ namespace SMWControlLibBackend.Graphics
 
             Parallel.ForEach(tiles, kvp =>
             {
-                Parallel.For(0, Math.Min(maxw,kvp.Value.GetLength(0)), i =>
-                {
-                    Parallel.For(0, Math.Min(maxh, kvp.Value.GetLength(1)), j =>
-                    {
-                        int x = dstHOff + i;
-                        int y = dstVOff + j;
-                        if (kvp.Value[x, y] != null)
-                            kvp.Value[x, y].SetDirty(true);
-                    });
-                });
+                Parallel.For(0, Math.Min(maxw, kvp.Value.GetLength(0)), i =>
+                 {
+                     Parallel.For(0, Math.Min(maxh, kvp.Value.GetLength(1)), j =>
+                     {
+                         int x = dstHOff + i;
+                         int y = dstVOff + j;
+                         if (kvp.Value[x, y] != null)
+                             kvp.Value[x, y].SetDirty(true);
+                     });
+                 });
             });
 
         }

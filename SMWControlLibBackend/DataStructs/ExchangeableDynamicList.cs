@@ -5,7 +5,7 @@ namespace SMWControlLibBackend.DataStructs
     /// <summary>
     /// The exchangeable dynamic list.
     /// </summary>
-    public abstract class ExchangeableDynamicList<T> where T: class, new()
+    public abstract class ExchangeableDynamicList<T> where T : class, new()
     {
         protected T[] elements;
         /// <summary>

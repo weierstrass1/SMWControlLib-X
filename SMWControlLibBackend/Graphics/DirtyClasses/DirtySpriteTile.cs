@@ -1,16 +1,17 @@
 ﻿using SMWControlLibBackend.Enumerators.Graphics;
+using SMWControlLibRendering;
 
 namespace SMWControlLibBackend.Graphics.DirtyClasses
 {
     /// <summary>
     /// The dirty sprite tile.
     /// </summary>
-    public class DirtySpriteTile : DirtyClass<SpriteTile>
+    public class DirtySpriteTile<T> : DirtyClass<SpriteTile<T>> where T: BitmapBuffer, new()
     {
         /// <summary>
         /// Gets the tile.
         /// </summary>
-        public SpriteTile Tile
+        public SpriteTile<T> Tile
         {
             get
             {
@@ -22,7 +23,7 @@ namespace SMWControlLibBackend.Graphics.DirtyClasses
         /// </summary>
         /// <param name="size">The size.</param>
         /// <param name="index">The index.</param>
-        public DirtySpriteTile(SpriteTileSize size, SpriteTileIndex index) : base(new SpriteTile(size, index))
+        public DirtySpriteTile(SpriteTileSize size, SpriteTileIndex index) : base(new SpriteTile<T>(size, index))
         {
         }
 
