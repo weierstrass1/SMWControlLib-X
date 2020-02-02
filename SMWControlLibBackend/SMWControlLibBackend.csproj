@@ -5,11 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Enumerators\Miscellaneous\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SMWControlLibRendering\SMWControlLibRendering.csproj" />
+    <ProjectReference Include="..\SMWControlLibUtils\SMWControlLibUtils.csproj" />
   </ItemGroup>
 
 </Project>

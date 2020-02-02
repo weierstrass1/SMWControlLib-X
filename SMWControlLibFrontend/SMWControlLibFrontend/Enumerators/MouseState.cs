@@ -1,4 +1,4 @@
-﻿using SMWControlLibBackend.Enumerators;
+﻿using SMWControlLibUtils;
 
 namespace SMWControlLibFrontend.Enumerators
 {

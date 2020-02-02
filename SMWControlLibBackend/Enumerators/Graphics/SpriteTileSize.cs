@@ -1,4 +1,6 @@
-﻿namespace SMWControlLibBackend.Enumerators.Graphics
+﻿using SMWControlLibUtils;
+
+namespace SMWControlLibBackend.Enumerators.Graphics
 {
     /// <summary>
     /// Enumerator for possible OAM tile sizes.

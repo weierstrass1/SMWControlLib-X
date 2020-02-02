@@ -8,7 +8,7 @@ namespace SMWControlLibBackend.Graphics
     /// <summary>
     /// The color palette.
     /// </summary>
-    public class ColorPalette
+    public class SNESColorPalette
     {
         /// <summary>
         /// Bitplanes format of the palette.
@@ -40,7 +40,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="bitsplanes">BPP2 = 4 colors per palette.
         /// BPP4 = 16 colors per palette.
         /// BPP8 = 256 colors per palette.</param>
-        public ColorPalette(BPP bitsplanes, ColorPaletteIndex index)
+        public SNESColorPalette(BPP bitsplanes, ColorPaletteIndex index)
         {
             Bitsplanes = bitsplanes;
             Index = index;

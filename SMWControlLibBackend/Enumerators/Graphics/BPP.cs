@@ -1,4 +1,6 @@
-﻿namespace SMWControlLibBackend.Enumerators.Graphics
+﻿using SMWControlLibUtils;
+
+namespace SMWControlLibBackend.Enumerators.Graphics
 {
     /// <summary>
     /// Enumerator used for Bitplanes (number of bits per color on the palette).

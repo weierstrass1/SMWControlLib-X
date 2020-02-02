@@ -5,14 +5,14 @@ namespace SMWControlLibBackend.Graphics
     /// <summary>
     /// The sprite color palette.
     /// </summary>
-    public class SpriteColorPalette : ColorPalette
+    public class SNESSpriteColorPalette : SNESColorPalette
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpriteColorPalette"/> class.
+        /// Initializes a new instance of the <see cref="SNESSpriteColorPalette"/> class.
         /// </summary>
         /// <param name="bitsplanes">The bitsplanes.</param>
         /// <param name="index">The index.</param>
-        public SpriteColorPalette(BPP bitsplanes, SpriteColorPaletteIndex index) : base(bitsplanes, index)
+        public SNESSpriteColorPalette(BPP bitsplanes, SpriteColorPaletteIndex index) : base(bitsplanes, index)
         {
 
         }

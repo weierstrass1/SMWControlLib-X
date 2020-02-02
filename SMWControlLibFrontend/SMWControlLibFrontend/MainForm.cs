@@ -1,8 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
 using SMWControlLibBackend.Graphics;
-using SMWControlLibBackend.Interfaces;
-using SMWControlLibBackend.Miscellaneous;
 using SMWControlLibFrontend.Graphics;
 using SMWControlLibRendering;
 using System.ComponentModel;

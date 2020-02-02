@@ -151,7 +151,7 @@ namespace SMWControlLibBackend.Utils.Graphics
         /// <param name="cp">The cp.</param>
         /// <param name="graphicsMap">The graphics map.</param>
         /// <returns>An array of uint.</returns>
-        public static uint[] GetCreateBitmapIntPointer(ColorPalette cp, byte[,] graphicsMap)
+        public static uint[] GetCreateBitmapIntPointer(SNESColorPalette cp, byte[,] graphicsMap)
         {
             uint[] c2 = cp.Colors;
 
@@ -183,7 +183,7 @@ namespace SMWControlLibBackend.Utils.Graphics
         /// <param name="graphicsMap">The graphics map.</param>
         /// <param name="zoom">The zoom.</param>
         /// <returns>An array of uint.</returns>
-        public static uint[] GetCreateBitmapIntPointer(ColorPalette cp, byte[,] graphicsMap, Zoom zoom)
+        public static uint[] GetCreateBitmapIntPointer(SNESColorPalette cp, byte[,] graphicsMap, Zoom zoom)
         {
             uint[] c2 = cp.Colors;
 

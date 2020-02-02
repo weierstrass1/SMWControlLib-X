@@ -3,6 +3,7 @@ using SMWControlLibBackend.Graphics.DirtyClasses;
 using SMWControlLibBackend.Keys.Graphics;
 using SMWControlLibBackend.Utils.Graphics;
 using SMWControlLibRendering;
+using SMWControlLibRendering.DirtyClasses;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
@@ -46,7 +47,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="cp">The cp.</param>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public virtual BitmapBuffer GetGraphics(ColorPalette cp, Zoom z)
+        public virtual BitmapBuffer GetGraphics(SNESColorPalette cp, Zoom z)
         {
             ZoomPaletteKey nd = new ZoomPaletteKey(z, cp);
 

@@ -1,4 +1,4 @@
-﻿namespace SMWControlLibBackend.Graphics.DirtyClasses
+﻿namespace SMWControlLibUtils
 {
     /// <summary>
     /// The dirty class.

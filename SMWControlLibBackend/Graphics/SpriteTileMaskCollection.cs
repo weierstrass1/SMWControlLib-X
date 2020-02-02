@@ -3,6 +3,7 @@ using SMWControlLibBackend.Enumerators.Graphics;
 using SMWControlLibBackend.Graphics.DirtyClasses;
 using SMWControlLibBackend.Interfaces.Graphics;
 using SMWControlLibRendering;
+using SMWControlLibRendering.DirtyClasses;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

@@ -2,9 +2,7 @@
 using ILGPU.Runtime;
 using ILGPU.Runtime.Cuda;
 using ILGPU.Runtime.OpenCL;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibRendering
 {
@@ -74,6 +72,22 @@ namespace SMWControlLibRendering
             if (GPUAccelerator != null)
             {
                 MemoryBuffer<T> buffer = GPUAccelerator.Allocate<T>(size);
+                buffers.Add(buffer);
+                return buffer;
+            }
+            return null;
+        }
+        /// <summary>
+        /// Creates the g p u buffer.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <returns>A MemoryBuffer2D.</returns>
+        public static MemoryBuffer2D<T> CreateGPUBuffer<T>(int width, int height) where T : struct
+        {
+            if (GPUAccelerator != null)
+            {
+                MemoryBuffer2D<T> buffer = GPUAccelerator.Allocate<T>(width, height);
                 buffers.Add(buffer);
                 return buffer;
             }

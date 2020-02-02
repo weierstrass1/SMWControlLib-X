@@ -1,4 +1,5 @@
 ﻿using SMWControlLibBackend.Enumerators.Graphics;
+using SMWControlLibRendering.Enumerators;
 
 namespace SMWControlLibBackend.Graphics
 {
@@ -11,7 +12,7 @@ namespace SMWControlLibBackend.Graphics
         /// <summary>
         /// Gets the palette.
         /// </summary>
-        public ColorPalette Palette { get; internal set; }
+        public SNESColorPalette Palette { get; internal set; }
         /// <summary>
         /// Gets the s p.
         /// </summary>
@@ -28,7 +29,7 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="pal">The pal.</param>
         /// <param name="sp">The sp.</param>
         /// <param name="prior">The prior.</param>
-        public SpriteTileProperties(Flip flip, ColorPalette pal, SpritePage sp, SpritePriority prior)
+        public SpriteTileProperties(Flip flip, SNESColorPalette pal, SpritePage sp, SpritePriority prior)
         {
             Flip = flip;
             Palette = pal;
@@ -38,8 +39,7 @@ namespace SMWControlLibBackend.Graphics
 
         public static implicit operator string(SpriteTileProperties ob)
         {
-            int val = (ob.Flip.FlipY << 7) |
-                (ob.Flip.FlipX << 6) |
+            int val = (ob.Flip.Value << 6) |
                 (ob.Priority << 4) |
                 (ob.Palette.Index << 1) |
                 ob.SP;

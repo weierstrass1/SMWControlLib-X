@@ -1,4 +1,4 @@
-﻿namespace SMWControlLibBackend.Keys
+﻿namespace SMWControlLibUtils
 {
     /// <summary>
     /// The dual key.

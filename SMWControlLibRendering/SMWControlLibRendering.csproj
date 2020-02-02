@@ -8,4 +8,8 @@
     <PackageReference Include="ILGPU" Version="0.7.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SMWControlLibUtils\SMWControlLibUtils.csproj" />
+  </ItemGroup>
+
 </Project>

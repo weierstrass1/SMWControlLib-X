@@ -1,9 +1,6 @@
 ﻿using System;
 using ILGPU;
 using ILGPU.Runtime;
-using ILGPU.Runtime.Cuda;
-using ILGPU.Runtime.OpenCL;
-using SMWControlLibRendering.Interfaces;
 
 namespace SMWControlLibRendering
 {
@@ -24,14 +21,17 @@ namespace SMWControlLibRendering
             {
                 if (requireCopyTo)
                 {
-                    buffer.CopyTo(pixels, Index.Zero, 0, buffer.Extent);
+                    Buffer.CopyTo(pixels, Index.Zero, 0, Buffer.Extent);
                     requireCopyTo = false;
                 }
                 return pixels;
             }
             protected set => pixels = value;
         }
-        protected MemoryBuffer<uint> buffer;
+        /// <summary>
+        /// Gets or sets the buffer.
+        /// </summary>
+        public MemoryBuffer<uint> Buffer { get; protected set; }
         protected static readonly Action<Index2, ArrayView<uint>, ArrayView<uint>, int, int, int> 
             _DrawKernel =
             HardwareAcceleratorManager.GPUAccelerator
@@ -228,14 +228,14 @@ namespace SMWControlLibRendering
         /// <param name="width">The width.</param>
         public override void SetPixels(uint[] pixls, int width)
         {
-            if (buffer != null)
+            if (Buffer != null)
             {
-                buffer.Dispose();
+                Buffer.Dispose();
             }
 
-            buffer = HardwareAcceleratorManager.CreateGPUBuffer<uint>(pixls.Length);
+            Buffer = HardwareAcceleratorManager.CreateGPUBuffer<uint>(pixls.Length);
             base.SetPixels(pixls, width);
-            buffer.CopyFrom(pixls, 0, Index.Zero, buffer.Extent);
+            Buffer.CopyFrom(pixls, 0, Index.Zero, Buffer.Extent);
         }
         /// <summary>
         /// Clones the.
@@ -258,7 +258,7 @@ namespace SMWControlLibRendering
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
             _DrawKernel(new Index2(src.Width,src.Height), 
-                buffer, source.buffer, x + (y * Width), Width, src.Width);
+                Buffer, source.Buffer, x + (y * Width), Width, src.Width);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
         }
@@ -274,7 +274,7 @@ namespace SMWControlLibRendering
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
             _DrawKernelZoom(new Index2(src.Width, src.Height),
-                buffer, source.buffer, x + (y * Width), Width, src.Width, zoom);
+                Buffer, source.Buffer, x + (y * Width), Width, src.Width, zoom);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
         }
@@ -290,7 +290,7 @@ namespace SMWControlLibRendering
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
             _DrawKernelWithBGColor(new Index2(src.Width, src.Height),
-                buffer, source.buffer, x + (y * Width), Width, src.Width, 
+                Buffer, source.Buffer, x + (y * Width), Width, src.Width, 
                 backgroundColor);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
@@ -308,7 +308,7 @@ namespace SMWControlLibRendering
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
             _DrawKernelZoomWithBGColor(new Index2(src.Width, src.Height),
-                buffer, source.buffer, x + (y * Width), Width, src.Width, zoom, 
+                Buffer, source.Buffer, x + (y * Width), Width, src.Width, zoom, 
                 backgroundColor);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
@@ -347,7 +347,7 @@ namespace SMWControlLibRendering
         public override void DrawRectangle(int x, int y, int width, int height, uint rectangleColor)
         {
             int offset = (y * Width) + x;
-            _DrawRect(new Index(Math.Max(width, height)), buffer, offset, Width,
+            _DrawRect(new Index(Math.Max(width, height)), Buffer, offset, Width,
                 offset + (width - 1) * Width, offset + height - 1, width, height, rectangleColor);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
@@ -358,7 +358,7 @@ namespace SMWControlLibRendering
         /// <param name="backgroundColor">The background color.</param>
         public override void FillColor(uint backgroundColor)
         {
-            _FillColor(buffer.Extent, buffer, backgroundColor);
+            _FillColor(Buffer.Extent, Buffer, backgroundColor);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
         }
@@ -372,7 +372,7 @@ namespace SMWControlLibRendering
         /// <param name="backgroundColor">The background color.</param>
         public override void FillColor(int x, int y, int width, int height, uint backgroundColor)
         {
-            _FillColorOffset(new Index2(width, height), buffer, (y * Width) + x, Width, backgroundColor);
+            _FillColorOffset(new Index2(width, height), Buffer, (y * Width) + x, Width, backgroundColor);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
         }

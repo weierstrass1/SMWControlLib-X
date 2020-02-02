@@ -1,4 +1,5 @@
 ﻿using SMWControlLibBackend.Enumerators.Graphics;
+using SMWControlLibUtils;
 
 namespace SMWControlLibBackend.Keys.Graphics
 {

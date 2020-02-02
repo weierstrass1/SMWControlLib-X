@@ -1,6 +1,7 @@
-﻿using SMWControlLibRendering;
+﻿
+using SMWControlLibUtils;
 
-namespace SMWControlLibBackend.Graphics.DirtyClasses
+namespace SMWControlLibRendering.DirtyClasses
 {
     /// <summary>
     /// The dirty bitmap.

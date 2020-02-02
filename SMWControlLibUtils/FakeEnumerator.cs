@@ -1,12 +1,14 @@
-﻿namespace SMWControlLibBackend.Enumerators
+﻿namespace SMWControlLibUtils
 {
     /// <summary>
     /// The fake enumerator.
     /// </summary>
     public abstract class FakeEnumerator
     {
-        protected int Value;
-
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        public int Value { get; protected set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="FakeEnumerator"/> class.
         /// </summary>

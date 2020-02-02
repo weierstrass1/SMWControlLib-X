@@ -4,6 +4,7 @@ using SMWControlLibBackend.Enumerators.Graphics;
 using SMWControlLibBackend.Graphics;
 using SMWControlLibFrontend.Enumerators;
 using SMWControlLibRendering;
+using SMWControlLibRendering.Enumerators;
 using System;
 
 namespace SMWControlLibFrontend.Graphics
@@ -13,7 +14,7 @@ namespace SMWControlLibFrontend.Graphics
     /// </summary>
     public partial class GFXBoxControl<T> : Drawable where T: BitmapBuffer, new()
     {
-        private readonly ColorPalette palette;
+        private readonly SNESColorPalette palette;
         /// <summary>
         /// Gets or sets the g f x size.
         /// </summary>
@@ -72,7 +73,7 @@ namespace SMWControlLibFrontend.Graphics
             image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
             ClientSize = new Size(Width, Height);
             selectionRectangle = new Rectangle();
-            palette = new ColorPalette(BPP.BPP4, SpriteColorPaletteIndex.SpritePalette0);
+            palette = new SNESColorPalette(BPP.BPP4, SpriteColorPaletteIndex.SpritePalette0);
             gfxBox.LoadGFX("gfx.bin");
             palette.LoadPal("pal.pal", SpriteColorPaletteIndex.SpritePalette0.Offset, 0, 16);
             MouseDown += mouseDown;
@@ -129,7 +130,7 @@ namespace SMWControlLibFrontend.Graphics
                                                 ((selectionRectangle.Width + 1) >> 3) / zoom,
                                                 ((selectionRectangle.Height + 1) >> 3) / zoom,
                                                 SpriteTileSizeMode.ModeDefault,
-                                                new SpriteTileProperties(Flip.NoFlip,
+                                                new SpriteTileProperties(Flip.NotFlipped,
                                                                         palette,
                                                                         SpritePage.SP12,
                                                                         SpritePriority.OverBG34WithPriority0));
