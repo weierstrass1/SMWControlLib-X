@@ -3,6 +3,8 @@
 Repository for Cross Platform SNES Tools, It is used by tools like Dyzen.
 
 [![sneslab](https://img.shields.io/static/v1?label=sneslab&message=discord&color=blue)](https://discordapp.com/invite/bGEV6PB)
+[![patreon](https://img.shields.io/static/v1?label=my&message=patreon&color=orange)](https://www.patreon.com/user?u=27937024)
+[![twitter](https://img.shields.io/static/v1?label=my&message=twitter&color=9cf)](https://twitter.com/anonimzwx)
 
 ## Current Features
 
