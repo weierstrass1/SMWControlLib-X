@@ -162,7 +162,7 @@ namespace SMWControlLibFrontend.Graphics
         /// </summary>
         private void updateGraphics()
         {
-            BitmapBuffer<ColorA1R5G5B5> b = gfxBox.RealObject.CreateBitmapBuffer(Flip.NotFlipped, palette.RealObject, Zoom);
+            BitmapBuffer<ColorR5G5B5> b = gfxBox.RealObject.CreateBitmapBuffer(Flip.NotFlipped, palette.RealObject, Zoom);
 
             if (b == previewsBitmap && lastRenderedSelection == selectionRectangle && previewsBitmap != null)
                 return;
@@ -178,7 +178,7 @@ namespace SMWControlLibFrontend.Graphics
                     byte* bs = (byte*)bd.Data;
                     int l = (b.Length << 1) + b.Length;
 
-                    fixed (ColorA1R5G5B5* bp = b.Pixels)
+                    fixed (ColorR5G5B5* bp = b.Pixels)
                     {
                         Buffer.MemoryCopy(bp, bs, l, l);
                     }

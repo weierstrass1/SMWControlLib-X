@@ -7,7 +7,7 @@ namespace SMWControlLibSNES.Graphics
     /// <summary>
     /// Represent an OAM tile of the SNES.
     /// </summary>
-    public class SNESSpriteTile : Tile<byte, ColorA1R5G5B5>
+    public class SNESSpriteTile : Tile<byte, ColorR5G5B5>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SNESSpriteTile"/> class.

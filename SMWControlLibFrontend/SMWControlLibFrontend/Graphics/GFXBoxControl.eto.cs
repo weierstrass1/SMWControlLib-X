@@ -59,7 +59,7 @@ namespace SMWControlLibFrontend.Graphics
         private Rectangle selectionRectangle, lastRenderedSelection;
         private MouseState state = MouseState.Idle;
         private GFXBoxSize size = GFXBoxSize.Size128x128;
-        private BitmapBuffer<ColorA1R5G5B5> previewsBitmap;
+        private BitmapBuffer<ColorR5G5B5> previewsBitmap;
         private PointF pointer;
         private Bitmap image;
         /// <summary>

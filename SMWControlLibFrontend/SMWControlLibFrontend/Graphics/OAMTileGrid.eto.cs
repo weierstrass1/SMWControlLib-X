@@ -21,8 +21,8 @@ namespace SMWControlLibFrontend.Graphics
 			{
 				Zoom = Zoom.X8,
 				CellSize = GridCellSize.Size16x16,
-				BackgroundColor = new ColorA1R5G5B5((byte)0xB0, (byte)0xC0, (byte)0xD0),
-				SelectionColor = new ColorA1R5G5B5((byte)0xE0, (byte)0x80, (byte)0x40),
+				BackgroundColor = new ColorR5G5B5((byte)0xB0, (byte)0xC0, (byte)0xD0),
+				SelectionColor = new ColorR5G5B5((byte)0xE0, (byte)0x80, (byte)0x40),
 				GridType = GridType.DottedLine,
 				DrawGrid = false,
 				DrawGuidelines = false

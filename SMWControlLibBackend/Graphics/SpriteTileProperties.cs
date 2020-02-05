@@ -8,7 +8,7 @@ namespace SMWControlLibSNES.Graphics
     /// <summary>
     /// The sprite tile properties.
     /// </summary>
-    public class SpriteTileProperties : TileProperties<ColorA1R5G5B5>
+    public class SpriteTileProperties : TileProperties<ColorR5G5B5>
     {
         /// <summary>
         /// Gets the s p.

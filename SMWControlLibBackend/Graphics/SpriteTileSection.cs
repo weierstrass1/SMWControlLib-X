@@ -6,7 +6,7 @@ namespace SMWControlLibSNES.Graphics
     /// <summary>
     /// The sprite tile section.
     /// </summary>
-    public class SpriteTileSection : TileSection<byte, ColorA1R5G5B5>
+    public class SpriteTileSection : TileSection<byte, ColorR5G5B5>
     {
     }
 }

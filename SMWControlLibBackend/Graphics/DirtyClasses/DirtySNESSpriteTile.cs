@@ -7,7 +7,7 @@ namespace SMWControlLibSNES.Graphics.DirtyClasses
     /// <summary>
     /// The dirty sprite tile.
     /// </summary>
-    public class DirtySNESSpriteTile : DirtyTile<byte, ColorA1R5G5B5>
+    public class DirtySNESSpriteTile : DirtyTile<byte, ColorR5G5B5>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DirtySNESSpriteTile"/> class.

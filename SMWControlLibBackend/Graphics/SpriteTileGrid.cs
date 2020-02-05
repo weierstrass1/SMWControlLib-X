@@ -6,7 +6,7 @@ namespace SMWControlLibSNES.Graphics
     /// <summary>
     /// The sprite tile grid.
     /// </summary>
-    public class SpriteTileGrid : TileGrid<byte, ColorA1R5G5B5>
+    public class SpriteTileGrid : TileGrid<byte, ColorR5G5B5>
     {
     }
 }

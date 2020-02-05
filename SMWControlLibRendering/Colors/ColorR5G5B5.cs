@@ -2,7 +2,7 @@
 
 namespace SMWControlLibRendering.Colors
 {
-    public struct ColorA1R5G5B5 : ICanBeMultibytes
+    public struct ColorR5G5B5 : ICanBeMultibytes
     {
         /// <summary>
         /// Gets or sets the r.
@@ -17,22 +17,22 @@ namespace SMWControlLibRendering.Colors
         /// </summary>
         public byte B { get; set; }
         /// <summary>
-        /// Initializes a new instance of the <see cref="ColorA1R5G5B5"/> class.
+        /// Initializes a new instance of the <see cref="ColorR5G5B5"/> class.
         /// </summary>
         /// <param name="r">The r.</param>
         /// <param name="g">The g.</param>
         /// <param name="b">The b.</param>
-        public ColorA1R5G5B5(byte r, byte g, byte b)
+        public ColorR5G5B5(byte r, byte g, byte b)
         {
             R = r;
             G = g;
             B = b;
         }
-        public static implicit operator int(ColorA1R5G5B5 col)
+        public static implicit operator int(ColorR5G5B5 col)
         {
             return (col.R << 16) | (col.G << 8) | col.B;
         }
-        public static implicit operator bool(ColorA1R5G5B5 col)
+        public static implicit operator bool(ColorR5G5B5 col)
         {
             return ((col.R & 0x07) | (col.G & 0x07) | (col.B & 0x07)) != 0;
         }

@@ -13,7 +13,7 @@ namespace SMWControlLibSNES.Graphics
     /// <summary>
     /// The sprite tile g f x box.
     /// </summary>
-    public class SpriteTileGFXBox : GraphicBox<byte, ColorA1R5G5B5, DirtySNESSpriteTile, SNESSpriteTile, DirtySNESSpriteTileFactory>
+    public class SpriteTileGFXBox : GraphicBox<byte, ColorR5G5B5, DirtySNESSpriteTile, SNESSpriteTile, DirtySNESSpriteTileFactory>
     {
         /// <summary>
         /// Gets the size.
@@ -114,7 +114,7 @@ namespace SMWControlLibSNES.Graphics
         /// <param name="offset">The offset.</param>
         public override void Load(byte[] bin, int offset)
         {
-            if (RealObject is IndexedGPUBitmapBuffer<byte, ColorA1R5G5B5> b)
+            if (RealObject is IndexedGPUBitmapBuffer<byte, ColorR5G5B5> b)
             {
                 MemoryBuffer<byte> srcBuffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(bin.Length);
                 srcBuffer.CopyFrom(bin, 0, Index.Zero, bin.Length);

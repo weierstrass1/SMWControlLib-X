@@ -8,7 +8,7 @@ namespace SMWControlLibSNES.Graphics
     /// <summary>
     /// The color palette.
     /// </summary>
-    public class SNESColorPalette : ColorPaletteDisguise<ColorA1R5G5B5>
+    public class SNESColorPalette : ColorPaletteDisguise<ColorR5G5B5>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SNESColorPalette"/> class.
