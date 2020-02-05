@@ -1,20 +1,16 @@
 ﻿using SMWControlLibRendering.DirtyClasses;
 using SMWControlLibRendering.Enumerators;
 using SMWControlLibRendering.Keys;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SMWControlLibRendering
 {
     /// <summary>
     /// The indexed bitmap buffer.
     /// </summary>
-    public abstract class IndexedBitmapBuffer<T, U> where T : struct, IComparable, IConvertible, IFormattable
-                                                    where U : BitmapBuffer, new()
+    public abstract class IndexedBitmapBuffer<T, U> :   DirtyCollection<ZoomFlipColorPaletteKey<U>, uint, FlipColorPaletteKey<U>, 
+                                                        DirtyBitmap<U>, BitmapBuffer<U>>    where T : struct
+                                                                                            where U : struct
     {
-        protected readonly ConcurrentDictionary<ZoomFlipColorPaletteKey, DirtyBitmap<U>> bitmapsbuffers;
         /// <summary>
         /// Gets or sets the indexes.
         /// </summary>
@@ -49,19 +45,18 @@ namespace SMWControlLibRendering
         public IndexedBitmapBuffer(int width, int height)
         {
             Indexes = new T[width, height];
-            bitmapsbuffers = new ConcurrentDictionary<ZoomFlipColorPaletteKey, DirtyBitmap<U>>();
         }
         /// <summary>
         /// Creates the bitmap buffer.
         /// </summary>
         /// <returns>A BitmapBuffer.</returns>
-        public abstract BitmapBuffer CreateBitmapBuffer(Flip flip, ColorPalette palette);
+        public abstract BitmapBuffer<U> CreateBitmapBuffer(Flip flip, ColorPalette<U> palette);
         /// <summary>
         /// Creates the bitmap buffer.
         /// </summary>
         /// <param name="zoom">The zoom.</param>
         /// <returns>A BitmapBuffer.</returns>
-        public abstract BitmapBuffer CreateBitmapBuffer(Flip flip, ColorPalette palette, int zoom);
+        public abstract BitmapBuffer<U> CreateBitmapBuffer(Flip flip, ColorPalette<U> palette, int zoom);
         /// <summary>
         /// Draws the indexed bitmap.
         /// </summary>
@@ -70,14 +65,13 @@ namespace SMWControlLibRendering
         /// <param name="y">The y.</param>
         public abstract void DrawIndexedBitmap(IndexedBitmapBuffer<T, U> src, int x, int y);
         /// <summary>
-        /// Dirties the.
+        /// Draws the indexed bitmap.
         /// </summary>
-        public virtual void Dirty()
-        {
-            _ = Parallel.ForEach(bitmapsbuffers, kvp =>
-            {
-                kvp.Value.SetDirty(true);
-            });
-        }
+        /// <param name="src">The src.</param>
+        /// <param name="dstX">The dst x.</param>
+        /// <param name="dstY">The dst y.</param>
+        /// <param name="srcX">The src x.</param>
+        /// <param name="srcY">The src y.</param>
+        public abstract void DrawIndexedBitmap(IndexedBitmapBuffer<T, U> src, int dstX, int dstY, int srcX, int srcY);
     }
 }

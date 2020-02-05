@@ -1,6 +1,6 @@
-﻿using SMWControlLibBackend.Enumerators.Graphics;
+﻿using SMWControlLibRendering.Enumerators.Graphics;
 
-namespace SMWControlLibBackend.Graphics
+namespace SMWControlLibSNES.Graphics
 {
     /// <summary>
     /// The b g color palette.
@@ -10,11 +10,10 @@ namespace SMWControlLibBackend.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="SNESBGColorPalette"/> class.
         /// </summary>
-        /// <param name="bitsplanes">The bitsplanes.</param>
         /// <param name="index">The index.</param>
-        public SNESBGColorPalette(BPP bitsplanes, BGColorPaletteIndex index) : base(bitsplanes, index)
+        /// <param name="size">The size.</param>
+        public SNESBGColorPalette(ColorPaletteIndex index, int size) : base(index, size)
         {
-
         }
     }
 }

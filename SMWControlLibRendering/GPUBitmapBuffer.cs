@@ -1,21 +1,22 @@
 ﻿using System;
 using ILGPU;
 using ILGPU.Runtime;
+using SMWControlLibRendering.KernelStrategies.BitmapBuffer;
 
 namespace SMWControlLibRendering
 {
     /// <summary>
     /// The g p u bitmap buffer.
     /// </summary>
-    public class GPUBitmapBuffer : BitmapBuffer
+    public class GPUBitmapBuffer<T> : BitmapBuffer<T> where T : struct
     {
         protected bool disposed = false;
         protected bool requireCopyTo = true;
-        protected uint[] pixels;
+        protected T[] pixels;
         /// <summary>
         /// Gets or sets the pixels.
         /// </summary>
-        public override uint[] Pixels
+        public override T[] Pixels
         {
             get
             {
@@ -31,194 +32,13 @@ namespace SMWControlLibRendering
         /// <summary>
         /// Gets or sets the buffer.
         /// </summary>
-        public MemoryBuffer<uint> Buffer { get; protected set; }
-        protected static readonly Action<Index2, ArrayView<uint>, ArrayView<uint>, int, int, int> 
-            _DrawKernel =
-            HardwareAcceleratorManager.GPUAccelerator
-            .LoadAutoGroupedStreamKernel<Index2, ArrayView<uint>, ArrayView<uint>, int, int, int>
-                (drawKernel);
-        protected static readonly Action<Index2, ArrayView<uint>, ArrayView<uint>, int, int, int, uint> 
-            _DrawKernelWithBGColor =
-            HardwareAcceleratorManager.GPUAccelerator
-            .LoadAutoGroupedStreamKernel<Index2, ArrayView<uint>, ArrayView<uint>, int, int, int, uint>
-                (drawKernel);
-        protected static readonly Action<Index2, ArrayView<uint>, ArrayView<uint>, int, int, int, int> 
-            _DrawKernelZoom =
-            HardwareAcceleratorManager.GPUAccelerator
-            .LoadAutoGroupedStreamKernel<Index2, ArrayView<uint>, ArrayView<uint>, int, int, int, int>
-                (drawKernelZoom);
-        protected static readonly Action<Index2, ArrayView<uint>, ArrayView<uint>, int, int, int, int, uint> 
-            _DrawKernelZoomWithBGColor =
-            HardwareAcceleratorManager.GPUAccelerator
-            .LoadAutoGroupedStreamKernel<Index2, ArrayView<uint>, ArrayView<uint>, int, int, int, int, uint>
-                (drawKernelZoom);
-        protected static readonly Action<Index, ArrayView<uint>, uint> 
-            _FillColor =
-            HardwareAcceleratorManager.GPUAccelerator
-            .LoadAutoGroupedStreamKernel<Index, ArrayView<uint>, uint>
-                (fillColor);
-        protected static readonly Action<Index2, ArrayView<uint>, int, int, uint> 
-            _FillColorOffset =
-            HardwareAcceleratorManager.GPUAccelerator
-            .LoadAutoGroupedStreamKernel<Index2, ArrayView<uint>, int, int, uint>
-                (fillColor);
-        protected static readonly Action<Index, ArrayView<uint>, int, int, int, int, int, int, uint>
-            _DrawRect =
-            HardwareAcceleratorManager.GPUAccelerator
-            .LoadAutoGroupedStreamKernel<Index, ArrayView<uint>, int, int, int, int, int, int, uint>
-                (drawRectangle);
-        /// <summary>
-        /// draws the kernel.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="destBuffer">The dest buffer.</param>
-        /// <param name="srcBuffer">The src buffer.</param>
-        /// <param name="offset">The offset.</param>
-        protected static void drawKernel
-            (Index2 index, ArrayView<uint> destBuffer, ArrayView<uint> srcBuffer, int offset,
-            int dstWidth, int srcWidth)
-        {
-            uint color = srcBuffer[(index.Y * srcWidth) + index.X];
-
-            if ((color & 0XFF000000) == 0) return;
-
-            destBuffer[(index.Y * dstWidth) + index.X + offset] = color;
-        }
-        /// <summary>
-        /// draws the kernel.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="destBuffer">The dest buffer.</param>
-        /// <param name="srcBuffer">The src buffer.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        protected static void drawKernel
-            (Index2 index, ArrayView<uint> destBuffer, ArrayView<uint> srcBuffer, int offset, 
-            int dstWidth, int srcWidth, uint backgroundColor)
-        {
-            uint color = srcBuffer[(index.Y * srcWidth) + index.X];
-
-            if ((color & 0XFF000000) == 0) 
-                color = backgroundColor;
-
-            destBuffer[(index.Y * dstWidth) + index.X + offset] = color;
-        }
-        /// <summary>
-        /// draws the kernel zoom.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="destBuffer">The dest buffer.</param>
-        /// <param name="srcBuffer">The src buffer.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="zoom">The zoom.</param>
-        protected static void drawKernelZoom
-            (Index2 index, ArrayView<uint> destBuffer, ArrayView<uint> srcBuffer, int offset,
-            int dstWidth, int srcWidth, int zoom)
-        {
-            uint color = srcBuffer[(index.Y * srcWidth) + index.X];
-
-            if ((color & 0XFF000000) == 0) 
-                return;
-
-            int jw = offset;
-            for (int j = 0; j < zoom; j++)
-            {
-                jw += dstWidth;
-                for (int i = 0; i < zoom; i++)
-                {
-                    destBuffer[jw + i] = color;
-                }
-            }
-        }
-        /// <summary>
-        /// draws the kernel zoom.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="destBuffer">The dest buffer.</param>
-        /// <param name="srcBuffer">The src buffer.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="zoom">The zoom.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        protected static void drawKernelZoom
-            (Index2 index, ArrayView<uint> destBuffer, ArrayView<uint> srcBuffer, int offset,
-            int dstWidth, int srcWidth, int zoom, uint backgroundColor)
-        {
-            uint color = srcBuffer[(index.Y * srcWidth) + index.X];
-
-            if ((color & 0XFF000000) == 0) 
-                color = backgroundColor;
-
-            int jw = offset;
-            for (int j = 0; j < zoom; j++)
-            {
-                jw += dstWidth;
-                for (int i = 0; i < zoom; i++)
-                {
-                    destBuffer[jw + i] = color;
-                }
-            }
-        }
-        /// <summary>
-        /// fills the color.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="destBuffer">The dest buffer.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        protected static void fillColor(Index index, ArrayView<uint> destBuffer, uint backgroundColor)
-        {
-            destBuffer[index] = backgroundColor;
-        }
-        /// <summary>
-        /// fills the color.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="destBuffer">The dest buffer.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        protected static void fillColor(Index2 index, ArrayView<uint> destBuffer, int offset, int width, uint backgroundColor)
-        {
-            destBuffer[offset + (index.Y * width) + index.X] = backgroundColor;
-        }
-        /// <summary>
-        /// draws the rectangle.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="destBuffer">The dest buffer.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="dstWidth">The dst width.</param>
-        /// <param name="xoffset">The xoffset.</param>
-        /// <param name="yoffset">The yoffset.</param>
-        /// <param name="rWidth">The r width.</param>
-        /// <param name="rHeight">The r height.</param>
-        /// <param name="rectangleColor">The rectangle color.</param>
-        protected static void drawRectangle(Index index, ArrayView<uint> destBuffer, int offset, int dstWidth, int xoffset, int yoffset, int rWidth, int rHeight, uint rectangleColor)
-        {
-            if (index <= rWidth) 
-            {
-                destBuffer[offset + index] = rectangleColor;
-                destBuffer[xoffset + index] = rectangleColor;
-            }
-            if (index <= rHeight)
-            {
-                int indw = index * dstWidth;
-                destBuffer[offset + indw] = rectangleColor;
-                destBuffer[yoffset + indw] = rectangleColor;
-            }
-        }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GPUBitmapBuffer"/> class.
-        /// </summary>
-        public GPUBitmapBuffer() : base()
-        {
-        }
+        public MemoryBuffer<T> Buffer { get; protected set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBitmapBuffer"/> class.
         /// </summary>
         /// <param name="pixels">The pixels.</param>
         /// <param name="width">The width.</param>
-        public GPUBitmapBuffer(uint[] pixels, int width) : base(pixels, width)
+        public GPUBitmapBuffer(T[] pixels, int width) : base(pixels, width)
         {
         }
         /// <summary>
@@ -226,25 +46,25 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="pixels">The pixels.</param>
         /// <param name="width">The width.</param>
-        public override void SetPixels(uint[] pixls, int width)
+        public override void Initialize(T[] pixls, int width)
         {
             if (Buffer != null)
             {
                 Buffer.Dispose();
             }
 
-            Buffer = HardwareAcceleratorManager.CreateGPUBuffer<uint>(pixls.Length);
-            base.SetPixels(pixls, width);
+            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<T>(pixls.Length);
+            base.Initialize(pixls, width);
             Buffer.CopyFrom(pixls, 0, Index.Zero, Buffer.Extent);
         }
         /// <summary>
         /// Clones the.
         /// </summary>
         /// <returns>A BitmapBuffer.</returns>
-        public override BitmapBuffer Clone()
+        public override BitmapBuffer<T> Clone()
         {
-            GPUBitmapBuffer clone = new GPUBitmapBuffer(new uint[Length], Width);
-            clone.DrawBitmap(this, 0, 0);
+            GPUBitmapBuffer<T> clone = new GPUBitmapBuffer<T>(new T[Length], Width);
+            clone.DrawBitmapBuffer(this, 0, 0);
             return clone;
         }
         /// <summary>
@@ -253,13 +73,12 @@ namespace SMWControlLibRendering
         /// <param name="src">The src.</param>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        public override void DrawBitmap(BitmapBuffer src, int x, int y)
+        public override void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y)
         {
-            GPUBitmapBuffer source = (GPUBitmapBuffer)src;
+            GPUBitmapBuffer<T> source = (GPUBitmapBuffer<T>)src;
 
-            _DrawKernel(new Index2(src.Width,src.Height), 
+            DrawBitmapBuffer<T>.Execute(new Index2(src.Width,src.Height), 
                 Buffer, source.Buffer, x + (y * Width), Width, src.Width);
-            HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
         }
         /// <summary>
@@ -269,13 +88,12 @@ namespace SMWControlLibRendering
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="zoom">The zoom.</param>
-        public override void DrawBitmap(BitmapBuffer src, int x, int y, int zoom)
+        public override void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y, int zoom)
         {
-            GPUBitmapBuffer source = (GPUBitmapBuffer)src;
+            GPUBitmapBuffer<T> source = (GPUBitmapBuffer<T>)src;
 
-            _DrawKernelZoom(new Index2(src.Width, src.Height),
+            DrawBitmapBufferWithZoom<T>.Execute(new Index2(src.Width, src.Height),
                 Buffer, source.Buffer, x + (y * Width), Width, src.Width, zoom);
-            HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
         }
         /// <summary>
@@ -285,14 +103,13 @@ namespace SMWControlLibRendering
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public override void DrawBitmap(BitmapBuffer src, int x, int y, uint backgroundColor)
+        public override void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y, T backgroundColor)
         {
-            GPUBitmapBuffer source = (GPUBitmapBuffer)src;
+            GPUBitmapBuffer<T> source = (GPUBitmapBuffer<T>)src;
 
-            _DrawKernelWithBGColor(new Index2(src.Width, src.Height),
+            DrawBitmapBufferWithBG<T>.Execute(new Index2(src.Width, src.Height),
                 Buffer, source.Buffer, x + (y * Width), Width, src.Width, 
                 backgroundColor);
-            HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
         }
         /// <summary>
@@ -303,14 +120,13 @@ namespace SMWControlLibRendering
         /// <param name="y">The y.</param>
         /// <param name="zoom">The zoom.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public override void DrawBitmap(BitmapBuffer src, int x, int y, int zoom, uint backgroundColor)
+        public override void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y, int zoom, T backgroundColor)
         {
-            GPUBitmapBuffer source = (GPUBitmapBuffer)src;
+            GPUBitmapBuffer<T> source = (GPUBitmapBuffer<T>)src;
 
-            _DrawKernelZoomWithBGColor(new Index2(src.Width, src.Height),
+            DrawBitmapBufferWithZoomAndBG<T>.Execute(new Index2(src.Width, src.Height),
                 Buffer, source.Buffer, x + (y * Width), Width, src.Width, zoom, 
                 backgroundColor);
-            HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
         }
         /// <summary>
@@ -320,7 +136,7 @@ namespace SMWControlLibRendering
         /// <param name="cellsize">The cellsize.</param>
         /// <param name="type">The type.</param>
         /// <param name="gridColor">The grid color.</param>
-        public override void DrawGrid(int zoom, int cellsize, int type, uint gridColor)
+        public override void DrawGrid(int zoom, int cellsize, int type, T gridColor)
         {
             throw new NotImplementedException();
         }
@@ -332,7 +148,7 @@ namespace SMWControlLibRendering
         /// <param name="x2">The x2.</param>
         /// <param name="y2">The y2.</param>
         /// <param name="lineColor">The line color.</param>
-        public override void DrawLine(int x1, int y1, int x2, int y2, uint lineColor)
+        public override void DrawLine(int x1, int y1, int x2, int y2, T lineColor)
         {
             throw new NotImplementedException();
         }
@@ -344,22 +160,20 @@ namespace SMWControlLibRendering
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <param name="rectangleColor">The rectangle color.</param>
-        public override void DrawRectangle(int x, int y, int width, int height, uint rectangleColor)
+        public override void DrawRectangleBorder(int x, int y, int width, int height, T rectangleColor)
         {
             int offset = (y * Width) + x;
-            _DrawRect(new Index(Math.Max(width, height)), Buffer, offset, Width,
+            DrawRectangleBorder<T>.Execute(new Index(Math.Max(width, height)), Buffer, offset, Width,
                 offset + (width - 1) * Width, offset + height - 1, width, height, rectangleColor);
-            HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             requireCopyTo = true;
         }
         /// <summary>
         /// Fills the color.
         /// </summary>
         /// <param name="backgroundColor">The background color.</param>
-        public override void FillColor(uint backgroundColor)
+        public override void FillWithColor(T backgroundColor)
         {
-            _FillColor(Buffer.Extent, Buffer, backgroundColor);
-            HardwareAcceleratorManager.GPUAccelerator.Synchronize();
+            FillWithColor<T>.Execute(Buffer.Extent, Buffer, backgroundColor);
             requireCopyTo = true;
         }
         /// <summary>
@@ -370,10 +184,9 @@ namespace SMWControlLibRendering
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public override void FillColor(int x, int y, int width, int height, uint backgroundColor)
+        public override void DrawRectangle(int x, int y, int width, int height, T backgroundColor)
         {
-            _FillColorOffset(new Index2(width, height), Buffer, (y * Width) + x, Width, backgroundColor);
-            HardwareAcceleratorManager.GPUAccelerator.Synchronize();
+            DrawRectangle<T>.Execute(new Index2(width, height), Buffer, (y * Width) + x, Width, backgroundColor);
             requireCopyTo = true;
         }
         /// <summary>
@@ -382,12 +195,12 @@ namespace SMWControlLibRendering
         /// <param name="zoom">The zoom.</param>
         public override void ZoomIn(int zoom)
         {
-            GPUBitmapBuffer b = new GPUBitmapBuffer(Pixels, Width);
+            GPUBitmapBuffer<T> b = new GPUBitmapBuffer<T>(Pixels, Width);
 
             int wz = Width * zoom;
-            SetPixels(new uint[wz * Height * zoom], wz);
+            Initialize(new T[wz * Height * zoom], wz);
 
-            DrawBitmap(b, 0, 0, zoom);
+            DrawBitmapBuffer(b, 0, 0, zoom);
         }
 
         /// <summary>
@@ -395,24 +208,14 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="zoom">The zoom.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public override void ZoomIn(int zoom, uint backgroundColor)
+        public override void ZoomIn(int zoom, T backgroundColor)
         {
-            GPUBitmapBuffer b = new GPUBitmapBuffer(Pixels, Width);
+            GPUBitmapBuffer<T> b = new GPUBitmapBuffer<T>(Pixels, Width);
 
             int wz = Width * zoom;
-            SetPixels(new uint[wz * Height * zoom], wz);
+            Initialize(new T[wz * Height * zoom], wz);
 
-            DrawBitmap(b, 0, 0, zoom, backgroundColor);
-        }
-        /// <summary>
-        /// Initializes the.
-        /// </summary>
-        /// <param name="pixels">The pixels.</param>
-        /// <param name="width">The width.</param>
-        /// <returns>A BitmapBuffer.</returns>
-        protected override BitmapBuffer Initialize(uint[] pixels, int width)
-        {
-            return new GPUBitmapBuffer(pixels, width);
+            DrawBitmapBuffer(b, 0, 0, zoom, backgroundColor);
         }
     }
 }

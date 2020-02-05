@@ -1,5 +1,4 @@
 ﻿using Eto.Forms;
-using SMWControlLibRendering;
 using System;
 
 namespace SMWControlLibFrontend.Wpf
@@ -16,7 +15,7 @@ namespace SMWControlLibFrontend.Wpf
         [STAThread]
         public static void Main()
         {
-            new Application(Eto.Platforms.Wpf).Run(MainForm<CPUBitmapBuffer>.CreateInstance());
+            new Application(Eto.Platforms.Wpf).Run(new MainForm());
         }
     }
 }

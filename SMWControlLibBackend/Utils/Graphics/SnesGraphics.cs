@@ -1,9 +1,7 @@
-﻿using SMWControlLibBackend.Enumerators.Graphics;
-using SMWControlLibBackend.Graphics;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace SMWControlLibBackend.Utils.Graphics
+namespace SMWControlLibSNES.Utils.Graphics
 {
     /// <summary>
     /// The snes graphics.
@@ -143,78 +141,6 @@ namespace SMWControlLibBackend.Utils.Graphics
             });
 
             return bits;
-        }
-
-        /// <summary>
-        /// Gets the create bitmap int pointer.
-        /// </summary>
-        /// <param name="cp">The cp.</param>
-        /// <param name="graphicsMap">The graphics map.</param>
-        /// <returns>An array of uint.</returns>
-        public static uint[] GetCreateBitmapIntPointer(SNESColorPalette cp, byte[,] graphicsMap)
-        {
-            uint[] c2 = cp.Colors;
-
-            int srcW = graphicsMap.GetLength(0);
-            int srcH = graphicsMap.GetLength(1);
-            uint[] res2 = new uint[srcW * srcH];
-
-            Parallel.For(0, srcH, j =>
-            {
-                int wj = j * srcW;
-                Parallel.For(0, srcW, i =>
-                {
-                    byte c = graphicsMap[i, j];
-                    if (c != 0)
-                    {
-                        int ipwj = wj + i;
-                        res2[ipwj] = c2[c];
-                    }
-                });
-            });
-
-            return res2;
-        }
-
-        /// <summary>
-        /// Gets the create bitmap int pointer.
-        /// </summary>
-        /// <param name="cp">The cp.</param>
-        /// <param name="graphicsMap">The graphics map.</param>
-        /// <param name="zoom">The zoom.</param>
-        /// <returns>An array of uint.</returns>
-        public static uint[] GetCreateBitmapIntPointer(SNESColorPalette cp, byte[,] graphicsMap, Zoom zoom)
-        {
-            uint[] c2 = cp.Colors;
-
-            int srcW = graphicsMap.GetLength(0);
-            int srcH = graphicsMap.GetLength(1);
-            int zoom2 = zoom * zoom;
-            int srcWz = srcW * zoom;
-            uint[] res2 = new uint[srcH * srcW * zoom2];
-
-            _ = Parallel.For(0, srcH, j =>
-              {
-                  int wj = j * srcW * zoom2;
-                  _ = Parallel.For(0, srcW, i =>
-                    {
-                        byte c = graphicsMap[i, j];
-                        if (c != 0)
-                        {
-                            int ipwj = wj + (i * zoom);
-                            int i4py = 0;
-                            for (int y = 0; y < zoom; y++)
-                            {
-                                i4py = ipwj + (y * srcWz);
-                                for (int x = 0; x < zoom; x++)
-                                {
-                                    res2[i4py + x] = c2[c];
-                                }
-                            }
-                        }
-                    });
-              });
-            return res2;
         }
     }
 }

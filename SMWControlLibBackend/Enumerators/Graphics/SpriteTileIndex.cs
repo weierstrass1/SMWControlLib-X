@@ -1,25 +1,12 @@
-﻿using SMWControlLibUtils;
+﻿using SMWControlLibCommons.Enumerators.Graphics;
 
-namespace SMWControlLibBackend.Enumerators.Graphics
+namespace SMWControlLibSNES.Enumerators.Graphics
 {
     /// <summary>
     /// The sprite tile index.
     /// </summary>
-    public class SpriteTileIndex : FakeEnumerator
+    public class SpriteTileIndex : TileIndex
     {
-        /// <summary>
-        /// Gets the x.
-        /// </summary>
-        public int X { get; private set; }
-        /// <summary>
-        /// Gets the y.
-        /// </summary>
-        public int Y { get; private set; }
-        /// <summary>
-        /// Gets the s n e s value.
-        /// </summary>
-        public string SNESValue { get; private set; }
-
         #region Values
         /// <summary>
         /// Gets the index00.
@@ -1049,17 +1036,14 @@ namespace SMWControlLibBackend.Enumerators.Graphics
         #endregion
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="SpriteTileIndex"/> class from being created.
+        /// Initializes a new instance of the <see cref="SpriteTileIndex"/> class.
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        private SpriteTileIndex(int x, int y) : base(x + y * 16)
+        /// <param name="width">The width.</param>
+        protected SpriteTileIndex(int x, int y) : base(x, y, 16)
         {
-            X = x;
-            Y = y;
-            SNESValue = Value.ToString("X2");
         }
-
         /// <summary>
         /// Gets the index.
         /// </summary>

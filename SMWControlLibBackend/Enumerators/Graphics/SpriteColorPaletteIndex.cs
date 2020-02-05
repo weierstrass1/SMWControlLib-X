@@ -1,4 +1,6 @@
-﻿namespace SMWControlLibBackend.Enumerators.Graphics
+﻿using SMWControlLibRendering.Enumerators.Graphics;
+
+namespace SMWControlLibSNES.Enumerators.Graphics
 {
     /// <summary>
     /// The sprite color palette index.

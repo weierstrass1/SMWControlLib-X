@@ -1,12 +1,25 @@
-﻿using System;
+﻿using SMWControlLibRendering.Factory;
+using SMWControlLibUtils;
+using System;
 
 namespace SMWControlLibRendering
 {
     /// <summary>
     /// The bitmap buffer.
     /// </summary>
-    public abstract class BitmapBuffer
+    public abstract class BitmapBuffer<T> : CanFactory<T[], int> where T : struct
     {
+        private static readonly BitmapBufferFactory<T> factory = new BitmapBufferFactory<T>();
+        /// <summary>
+        /// Creates the instance.
+        /// </summary>
+        /// <param name="pixels">The pixels.</param>
+        /// <param name="width">The width.</param>
+        /// <returns>A BitmapBuffer.</returns>
+        public static BitmapBuffer<T> CreateInstance(T[] pixels, int width)
+        {
+            return factory.GenerateObject(pixels, width);
+        }
         /// <summary>
         /// Gets or sets the width.
         /// </summary>
@@ -18,7 +31,7 @@ namespace SMWControlLibRendering
         /// <summary>
         /// Gets or sets the pixels.
         /// </summary>
-        public abstract uint[] Pixels { get; protected set; }
+        public abstract T[] Pixels { get; protected set; }
         /// <summary>
         /// Gets the length.
         /// </summary>
@@ -26,24 +39,17 @@ namespace SMWControlLibRendering
         /// <summary>
         /// Initializes a new instance of the <see cref="BitmapBuffer"/> class.
         /// </summary>
-        public BitmapBuffer()
-        {
-        }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BitmapBuffer"/> class.
-        /// </summary>
         /// <param name="pixels">The pixels.</param>
         /// <param name="width">The width.</param>
-        public BitmapBuffer(uint[] pixels, int width)
+        public BitmapBuffer(T[] pixels, int width) : base(pixels, width)
         {
-            SetPixels(pixels, width);
         }
         /// <summary>
         /// Sets the pixels.
         /// </summary>
         /// <param name="pixls">The pixels.</param>
         /// <param name="width">The width.</param>
-        public virtual void SetPixels(uint[] pixls, int width)
+        public override void Initialize(T[] pixls, int width)
         {
             if (pixls != null && pixls.Length > 0 && pixls.Length % width == 0)  
             {
@@ -75,7 +81,7 @@ namespace SMWControlLibRendering
         /// <param name="src">The src.</param>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        public abstract void DrawBitmap(BitmapBuffer src, int x, int y);
+        public abstract void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y);
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -83,7 +89,7 @@ namespace SMWControlLibRendering
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="zoom">The zoom.</param>
-        public abstract void DrawBitmap(BitmapBuffer src, int x, int y, int zoom);
+        public abstract void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y, int zoom);
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -91,7 +97,7 @@ namespace SMWControlLibRendering
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public abstract void DrawBitmap(BitmapBuffer src, int x, int y, uint backgroundColor);
+        public abstract void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y, T backgroundColor);
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -100,7 +106,7 @@ namespace SMWControlLibRendering
         /// <param name="y">The y.</param>
         /// <param name="zoom">The zoom.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public abstract void DrawBitmap(BitmapBuffer src, int x, int y, int zoom, uint backgroundColor);
+        public abstract void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y, int zoom, T backgroundColor);
         /// <summary>
         /// Draws the rectangle.
         /// </summary>
@@ -108,7 +114,7 @@ namespace SMWControlLibRendering
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public abstract void DrawRectangle(int x, int y, int width, int height, uint rectangleColor);
+        public abstract void DrawRectangleBorder(int x, int y, int width, int height, T rectangleColor);
         /// <summary>
         /// Draws the line.
         /// </summary>
@@ -116,7 +122,7 @@ namespace SMWControlLibRendering
         /// <param name="y1">The y1.</param>
         /// <param name="x2">The x2.</param>
         /// <param name="y2">The y2.</param>
-        public abstract void DrawLine(int x1, int y1, int x2, int y2, uint lineColor);
+        public abstract void DrawLine(int x1, int y1, int x2, int y2, T lineColor);
         /// <summary>
         /// Draws the grid.
         /// </summary>
@@ -124,17 +130,17 @@ namespace SMWControlLibRendering
         /// <param name="cellsize">The cellsize.</param>
         /// <param name="type">The type.</param>
         /// <param name="gridColor">The grid color.</param>
-        public abstract void DrawGrid(int zoom, int cellsize, int type, uint gridColor);
+        public abstract void DrawGrid(int zoom, int cellsize, int type, T gridColor);
         /// <summary>
         /// Fills the color.
         /// </summary>
         /// <param name="backgroundColor">The background color.</param>
-        public abstract void FillColor(uint backgroundColor);
+        public abstract void FillWithColor(T backgroundColor);
         /// <summary>
         /// Fills the color.
         /// </summary>
         /// <param name="backgroundColor">The background color.</param>
-        public abstract void FillColor(int x, int y, int width, int height, uint backgroundColor);
+        public abstract void DrawRectangle(int x, int y, int width, int height, T backgroundColor);
         /// <summary>
         /// Zooms the in.
         /// </summary>
@@ -145,29 +151,11 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="zoom">The zoom.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public abstract void ZoomIn(int zoom, uint backgroundColor);
+        public abstract void ZoomIn(int zoom, T backgroundColor);
         /// <summary>
         /// Clones the.
         /// </summary>
         /// <returns>A BitmapBuffer.</returns>
-        public abstract BitmapBuffer Clone();
-        /// <summary>
-        /// Creates the instance.
-        /// </summary>
-        /// <param name="pixels">The pixels.</param>
-        /// <param name="width">The width.</param>
-        /// <returns>A BitmapBuffer.</returns>
-        public static T CreateInstance<T>(uint[] pixels, int width) where T : BitmapBuffer, new()
-        {
-            T t = new T();
-            return (T)t.Initialize(pixels, width);
-        }
-        /// <summary>
-        /// Initializes the.
-        /// </summary>
-        /// <param name="pixels">The pixels.</param>
-        /// <param name="width">The width.</param>
-        /// <returns>A BitmapBuffer.</returns>
-        protected abstract BitmapBuffer Initialize(uint[] pixels, int width);
+        public abstract BitmapBuffer<T> Clone();
     }
 }

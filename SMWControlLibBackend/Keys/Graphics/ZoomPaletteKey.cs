@@ -1,8 +1,8 @@
-﻿using SMWControlLibBackend.Enumerators.Graphics;
-using SMWControlLibBackend.Graphics;
+﻿using SMWControlLibCommons.Enumerators.Graphics;
+using SMWControlLibSNES.Graphics;
 using SMWControlLibUtils;
 
-namespace SMWControlLibBackend.Keys.Graphics
+namespace SMWControlLibSNES.Keys.Graphics
 {
     /// <summary>
     /// The zoom palette key.

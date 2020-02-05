@@ -1,6 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
-using SMWControlLibBackend.Graphics;
+using SMWControlLibSNES.Graphics;
 using SMWControlLibFrontend.Graphics;
 using SMWControlLibRendering;
 using System.ComponentModel;
@@ -10,42 +10,31 @@ namespace SMWControlLibFrontend
     /// <summary>
     /// The main form.
     /// </summary>
-    public partial class MainForm<T> : Form where T : BitmapBuffer, new()
+    public partial class MainForm : Form
     {
-        /// <summary>
-        /// Creates the instance.
-        /// </summary>
-        /// <returns>A Form.</returns>
-        public static Form CreateInstance()
-        {
-            if (HardwareAcceleratorManager.IsGPUAvailable())
-                return new MainForm<GPUBitmapBuffer>();
-            return new MainForm<CPUBitmapBuffer>();
-        }
-
-        public GFXBoxControl<T> gfx;
-        public OAMTileGrid<T> grid;
+        public GFXBoxControl gfx;
+        public OAMTileGrid grid;
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
         /// </summary>
-        private MainForm()
+        public MainForm()
         {
             Title = "My Eto Form";
             ClientSize = new Size(800, 600);
 
-            gfx = new GFXBoxControl<T>();
+            gfx = new GFXBoxControl();
 
             PixelLayout layout = new PixelLayout();
             layout.Add(gfx, 5, 5);
 
-            grid = new OAMTileGrid<T>();
+            grid = new OAMTileGrid();
             layout.Add(grid, 266, 5);
 
             grid.AddingTiles = () => gfx.Selection;
 
-            SpriteTileSection<T> s = new SpriteTileSection<T>();
+            SpriteTileSection s = new SpriteTileSection();
             s.Add();
-            SpriteTileSectionMask<T> m = new SpriteTileSectionMask<T>(s);
+            SpriteTileSectionMask m = new SpriteTileSectionMask(s);
             grid.Target = m;
 
             Content = layout;

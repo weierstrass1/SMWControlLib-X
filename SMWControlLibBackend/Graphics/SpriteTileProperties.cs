@@ -1,18 +1,15 @@
-﻿using SMWControlLibBackend.Enumerators.Graphics;
+﻿using SMWControlLibSNES.Enumerators.Graphics;
 using SMWControlLibRendering.Enumerators;
+using SMWControlLibCommons.Graphics;
+using SMWControlLibRendering.Colors;
 
-namespace SMWControlLibBackend.Graphics
+namespace SMWControlLibSNES.Graphics
 {
-    public struct SpriteTileProperties
+    /// <summary>
+    /// The sprite tile properties.
+    /// </summary>
+    public class SpriteTileProperties : TileProperties<ColorA1R5G5B5>
     {
-        /// <summary>
-        /// Gets the flip.
-        /// </summary>
-        public Flip Flip { get; internal set; }
-        /// <summary>
-        /// Gets the palette.
-        /// </summary>
-        public SNESColorPalette Palette { get; internal set; }
         /// <summary>
         /// Gets the s p.
         /// </summary>
@@ -29,10 +26,8 @@ namespace SMWControlLibBackend.Graphics
         /// <param name="pal">The pal.</param>
         /// <param name="sp">The sp.</param>
         /// <param name="prior">The prior.</param>
-        public SpriteTileProperties(Flip flip, SNESColorPalette pal, SpritePage sp, SpritePriority prior)
+        public SpriteTileProperties(Flip flip, SNESColorPalette pal, SpritePage sp, SpritePriority prior) : base(flip, pal.RealObject)
         {
-            Flip = flip;
-            Palette = pal;
             SP = sp;
             Priority = prior;
         }

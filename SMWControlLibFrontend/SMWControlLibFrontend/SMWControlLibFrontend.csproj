@@ -15,7 +15,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\..\SMWControlLibBackend\SMWControlLibBackend.csproj" />
+    <ProjectReference Include="..\..\SMWControlLibBackend\SMWControlLibSNES.csproj" />
   </ItemGroup>
   
 </Project>

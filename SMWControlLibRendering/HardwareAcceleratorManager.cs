@@ -16,7 +16,6 @@ namespace SMWControlLibRendering
         /// </summary>
         private static Context context { get; set; }
         private static Accelerator gpuAccelerator;
-        private static readonly List<MemoryBuffer> buffers = new List<MemoryBuffer>();
         /// <summary>
         /// Gets the g p u accelerator.
         /// </summary>
@@ -60,49 +59,15 @@ namespace SMWControlLibRendering
         /// <returns>A bool.</returns>
         public static bool IsGPUAvailable()
         {
+            if (gpuAccelerator == null)
+                getGPUAccelerator();
             return gpuAccelerator != null;
-        }
-        /// <summary>
-        /// Creates the g p u buffer.
-        /// </summary>
-        /// <param name="size">The size.</param>
-        /// <returns>A MemoryBuffer.</returns>
-        public static MemoryBuffer<T> CreateGPUBuffer<T>(int size) where T : struct
-        {
-            if (GPUAccelerator != null)
-            {
-                MemoryBuffer<T> buffer = GPUAccelerator.Allocate<T>(size);
-                buffers.Add(buffer);
-                return buffer;
-            }
-            return null;
-        }
-        /// <summary>
-        /// Creates the g p u buffer.
-        /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <returns>A MemoryBuffer2D.</returns>
-        public static MemoryBuffer2D<T> CreateGPUBuffer<T>(int width, int height) where T : struct
-        {
-            if (GPUAccelerator != null)
-            {
-                MemoryBuffer2D<T> buffer = GPUAccelerator.Allocate<T>(width, height);
-                buffers.Add(buffer);
-                return buffer;
-            }
-            return null;
         }
         /// <summary>
         /// Disposes the.
         /// </summary>
         public static void Dispose()
         {
-            foreach(MemoryBuffer buffer in buffers)
-            {
-                buffer.Dispose();
-            }
-            if(gpuAccelerator != null) gpuAccelerator.Dispose();
             if (context != null) context.Dispose();
         }
     }

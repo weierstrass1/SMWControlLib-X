@@ -1,4 +1,4 @@
-﻿namespace SMWControlLibBackend.Enumerators.Graphics
+﻿namespace SMWControlLibSNES.Enumerators.Graphics
 {
     /// <summary>
     /// The b g page.

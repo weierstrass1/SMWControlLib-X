@@ -1,5 +1,4 @@
 ﻿using Eto.Forms;
-using SMWControlLibRendering;
 using System;
 
 namespace SMWControlLibFrontend.Gtk
@@ -16,7 +15,7 @@ namespace SMWControlLibFrontend.Gtk
         [STAThread]
         public static void Main()
         {
-            new Application(Eto.Platforms.Gtk).Run(MainForm<CPUBitmapBuffer>.CreateInstance());
+            new Application(Eto.Platforms.Gtk).Run(new MainForm());
         }
     }
 }

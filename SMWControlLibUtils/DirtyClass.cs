@@ -3,7 +3,7 @@
     /// <summary>
     /// The dirty class.
     /// </summary>
-    public class DirtyClass<T>
+    public class DirtyClass<T> : CanFactoryWithObjsParams
     {
         /// <summary>
         /// Gets or sets the object.
@@ -22,10 +22,8 @@
         /// Initializes a new instance of the <see cref="DirtyClass"/> class.
         /// </summary>
         /// <param name="Ob">The ob.</param>
-        public DirtyClass(T Ob)
+        public DirtyClass(T Ob) : base (Ob)
         {
-            Object = Ob;
-            IsDirty = true;
         }
 
         /// <summary>
@@ -35,6 +33,15 @@
         public virtual void SetDirty(bool d)
         {
             IsDirty = d;
+        }
+        /// <summary>
+        /// Initializes the.
+        /// </summary>
+        /// <param name="param1">The param1.</param>
+        public override void Initialize(params object[] args)
+        {
+            Object = (T)args[0];
+            IsDirty = true;
         }
     }
 }

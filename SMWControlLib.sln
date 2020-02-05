@@ -11,11 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibFrontend.Mac",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibFrontend.Wpf", "SMWControlLibFrontend\SMWControlLibFrontend.Wpf\SMWControlLibFrontend.Wpf.csproj", "{BDF1D628-255F-4335-89FF-8103945A14A5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibBackend", "SMWControlLibBackend\SMWControlLibBackend.csproj", "{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibSNES", "SMWControlLibBackend\SMWControlLibSNES.csproj", "{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWControlLibRendering", "SMWControlLibRendering\SMWControlLibRendering.csproj", "{32599284-B077-4783-A342-409E5E7E9C56}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWControlLibUtils", "SMWControlLibUtils\SMWControlLibUtils.csproj", "{6239F537-78E0-4F54-8EAC-8DCEA93EDD63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWControlLibCommons", "SMWControlLibCommons\SMWControlLibCommons.csproj", "{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -141,6 +143,22 @@ Global
 		{6239F537-78E0-4F54-8EAC-8DCEA93EDD63}.Release|x64.Build.0 = Release|Any CPU
 		{6239F537-78E0-4F54-8EAC-8DCEA93EDD63}.Release|x86.ActiveCfg = Release|Any CPU
 		{6239F537-78E0-4F54-8EAC-8DCEA93EDD63}.Release|x86.Build.0 = Release|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Debug|ARM.Build.0 = Debug|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Debug|x64.Build.0 = Debug|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Debug|x86.Build.0 = Debug|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|ARM.ActiveCfg = Release|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|ARM.Build.0 = Release|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|x64.ActiveCfg = Release|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|x64.Build.0 = Release|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|x86.ActiveCfg = Release|Any CPU
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

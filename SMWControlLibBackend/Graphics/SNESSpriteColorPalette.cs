@@ -1,6 +1,6 @@
-﻿using SMWControlLibBackend.Enumerators.Graphics;
+﻿using SMWControlLibRendering.Enumerators.Graphics;
 
-namespace SMWControlLibBackend.Graphics
+namespace SMWControlLibSNES.Graphics
 {
     /// <summary>
     /// The sprite color palette.
@@ -10,11 +10,10 @@ namespace SMWControlLibBackend.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="SNESSpriteColorPalette"/> class.
         /// </summary>
-        /// <param name="bitsplanes">The bitsplanes.</param>
         /// <param name="index">The index.</param>
-        public SNESSpriteColorPalette(BPP bitsplanes, SpriteColorPaletteIndex index) : base(bitsplanes, index)
+        /// <param name="bitplanes">The bitplanes.</param>
+        public SNESSpriteColorPalette(ColorPaletteIndex index, int size) : base(index, size)
         {
-
         }
     }
 }

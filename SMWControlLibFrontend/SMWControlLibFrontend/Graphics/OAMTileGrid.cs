@@ -1,28 +1,28 @@
 using Eto.Drawing;
 using Eto.Forms;
-using SMWControlLibBackend.Delegates;
-using SMWControlLibBackend.Enumerators.Graphics;
-using SMWControlLibBackend.Graphics;
-using SMWControlLibBackend.Interfaces.Graphics;
+using SMWControlLibSNES.Graphics;
 using SMWControlLibFrontend.Enumerators;
-using SMWControlLibRendering;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using SMWControlLibCommons.Enumerators.Graphics;
+using SMWControlLibCommons.Delegates;
+using SMWControlLibRendering.Colors;
+using SMWControlLibCommons.Interfaces.Graphics;
+using SMWControlLibRendering;
 
 namespace SMWControlLibFrontend.Graphics
 {
 	/// <summary>
 	/// The o a m tile grid.
 	/// </summary>
-	public partial class OAMTileGrid<T> : Drawable where T: BitmapBuffer, new()
+	public partial class OAMTileGrid : Drawable
 	{
-		private readonly SpriteTileGrid<T> grid;
+		private SpriteTileGrid grid;
 		private Bitmap image;
 		/// <summary>
 		/// Gets or sets the target.
 		/// </summary>
-		public IGridDrawable Target
+		public IGridDrawable<ColorA1R5G5B5> Target
 		{
 			get => grid.Target;
 			set
@@ -34,7 +34,7 @@ namespace SMWControlLibFrontend.Graphics
 				}
 			}
 		}
-		public SelectionHandler<T> AddingTiles;
+		public SelectionHandler<byte, ColorA1R5G5B5> AddingTiles;
 		/// <summary>
 		/// Gets the zoom.
 		/// </summary>
@@ -67,20 +67,6 @@ namespace SMWControlLibFrontend.Graphics
 		/// </summary>
 		public OAMTileGrid()
 		{
-			grid = new SpriteTileGrid<T>
-			{
-				Zoom = Zoom.X8,
-				CellSize = GridCellSize.Size16x16,
-				BackgroundColor = 0xFFB0C0D0,
-				SelectionColor = 0xFFE08040,
-				GridType = GridType.DottedLine,
-				DrawGrid = false,
-				DrawGuidelines = false
-			};
-			state = MouseState.Idle;
-			image = new Bitmap(grid.Side, grid.Side, PixelFormat.Format32bppRgba);
-			Width = grid.Side;
-			Height = Width;
 			Paint += paint;
 			MouseDown += mouseDown;
 			MouseMove += mouseMove;
@@ -171,7 +157,7 @@ namespace SMWControlLibFrontend.Graphics
 			{
 				if (AddingTiles != null)
 				{
-					SpriteTileMaskCollection<T> s = AddingTiles?.Invoke();
+					SpriteTileMaskCollection s = (SpriteTileMaskCollection)AddingTiles?.Invoke();
 
 					grid.AddingAtPosition((int)e.Location.X, (int)e.Location.Y, s);
 
@@ -214,15 +200,9 @@ namespace SMWControlLibFrontend.Graphics
 		/// <param name="e">The e.</param>
 		private void paint(object sender, PaintEventArgs e)
 		{
-			Stopwatch watch = new Stopwatch();
-
-			watch.Start();
-			uint[] b = grid.GetGraphics();
-			watch.Stop();
-
 			if (grid.Changed)
 			{
-				times.Add(watch.ElapsedMilliseconds);
+				ColorA1R5G5B5[] b = grid.GetGraphics();
 				if (image.Width * image.Height != b.Length)
 					image = new Bitmap((int)Math.Sqrt(b.Length), (int)Math.Sqrt(b.Length), PixelFormat.Format32bppRgba);
 
@@ -230,9 +210,9 @@ namespace SMWControlLibFrontend.Graphics
 				unsafe
 				{
 					byte* bs = (byte*)bd.Data;
-					int l = b.Length << 2;
+					int l = (b.Length << 1) + b.Length;
 
-					fixed (uint* bp = b)
+					fixed (ColorA1R5G5B5* bp = b)
 					{
 						Buffer.MemoryCopy(bp, bs, l, l);
 					}

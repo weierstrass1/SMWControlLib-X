@@ -1,6 +1,6 @@
 ﻿using SMWControlLibUtils;
 
-namespace SMWControlLibBackend.Enumerators.Graphics
+namespace SMWControlLibSNES.Enumerators.Graphics
 {
     /// <summary>
     /// The g f x box size.

@@ -1,17 +1,16 @@
-﻿
-using SMWControlLibUtils;
+﻿using SMWControlLibUtils;
 
 namespace SMWControlLibRendering.DirtyClasses
 {
     /// <summary>
     /// The dirty bitmap.
     /// </summary>
-    public class DirtyBitmap<T>: DirtyClass<T> where T: BitmapBuffer, new()
+    public class DirtyBitmap<T> : DirtyClass<BitmapBuffer<T>> where T : struct
     {
         /// <summary>
         /// Gets or sets the bitmap.
         /// </summary>
-        public T Bitmap { get => Object; set => Object = value; }
+        public BitmapBuffer<T> Bitmap { get => Object; set => Object = value; }
         /// <summary>
         /// Initializes a new instance of the <see cref="DirtyBitmap"/> class.
         /// </summary>
@@ -24,7 +23,7 @@ namespace SMWControlLibRendering.DirtyClasses
         /// </summary>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public DirtyBitmap(int width, int height) : base((T)BitmapBuffer.CreateInstance<T>(new uint[width * height], width))
+        public DirtyBitmap(int width, int height) : base(BitmapBuffer<T>.CreateInstance(new T[width * height], width))
         {
 
         }
@@ -33,7 +32,7 @@ namespace SMWControlLibRendering.DirtyClasses
         /// Initializes a new instance of the <see cref="DirtyBitmap"/> class.
         /// </summary>
         /// <param name="bitmap">The bitmap.</param>
-        public DirtyBitmap(T bitmap) : base(bitmap)
+        public DirtyBitmap(BitmapBuffer<T> bitmap) : base(bitmap)
         {
 
         }

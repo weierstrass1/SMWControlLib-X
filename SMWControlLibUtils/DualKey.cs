@@ -39,7 +39,7 @@
             try
             {
                 DualKey<T, U> t = (DualKey<T, U>)obj;
-                return element1.Equals(t.element1) && element1.Equals(t.element2);
+                return element1.Equals(t.element1) && element2.Equals(t.element2);
             }
             catch
             {

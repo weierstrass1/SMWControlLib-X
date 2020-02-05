@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SMWControlLibRendering\SMWControlLibRendering.csproj" />
+    <ProjectReference Include="..\SMWControlLibUtils\SMWControlLibUtils.csproj" />
+  </ItemGroup>
+
+</Project>

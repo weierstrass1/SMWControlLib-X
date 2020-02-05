@@ -1,7 +1,7 @@
-﻿using SMWControlLibBackend.Enumerators.Graphics;
+﻿using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibUtils;
 
-namespace SMWControlLibBackend.Keys.Graphics
+namespace SMWControlLibSNES.Keys.Graphics
 {
     /// <summary>
     /// The zoom cell size key.

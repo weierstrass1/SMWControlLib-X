@@ -1,15 +1,12 @@
 ﻿using SMWControlLibRendering.Enumerators;
 using SMWControlLibUtils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibRendering.Keys
 {
     /// <summary>
     /// The zoom flip color palette key.
     /// </summary>
-    public class ZoomFlipColorPaletteKey : DualKey<uint, FlipColorPaletteKey>
+    public class ZoomFlipColorPaletteKey<T> : DualKey<uint, FlipColorPaletteKey<T>> where T : struct
     {
         /// <summary>
         /// Gets the zoom.
@@ -22,14 +19,14 @@ namespace SMWControlLibRendering.Keys
         /// <summary>
         /// Gets the palette.
         /// </summary>
-        public ColorPalette Palette => element2.element2;
+        public ColorPalette<T> Palette => element2.element2;
         /// <summary>
         /// Initializes a new instance of the <see cref="ZoomFlipColorPaletteKey"/> class.
         /// </summary>
         /// <param name="zoom">The zoom.</param>
         /// <param name="flip">The flip.</param>
         /// <param name="cp">The cp.</param>
-        public ZoomFlipColorPaletteKey(uint zoom, Flip flip, ColorPalette cp) : base(zoom, new FlipColorPaletteKey(flip, cp))
+        public ZoomFlipColorPaletteKey(uint zoom, Flip flip, ColorPalette<T> cp) : base(zoom, new FlipColorPaletteKey<T>(flip, cp))
         {
         }
     }

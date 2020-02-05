@@ -1,81 +1,26 @@
 using Eto.Drawing;
 using Eto.Forms;
-using SMWControlLibBackend.Enumerators.Graphics;
-using SMWControlLibBackend.Graphics;
+using SMWControlLibSNES.Enumerators.Graphics;
+using SMWControlLibSNES.Graphics;
 using SMWControlLibFrontend.Enumerators;
-using SMWControlLibRendering;
 using SMWControlLibRendering.Enumerators;
 using System;
+using SMWControlLibRendering;
+using SMWControlLibRendering.Colors;
 
 namespace SMWControlLibFrontend.Graphics
 {
     /// <summary>
     /// The g f x box control.
     /// </summary>
-    public partial class GFXBoxControl<T> : Drawable where T: BitmapBuffer, new()
+    public partial class GFXBoxControl : Drawable
     {
-        private readonly SNESColorPalette palette;
-        /// <summary>
-        /// Gets or sets the g f x size.
-        /// </summary>
-        public GFXBoxSize GFXSize
-        {
-            get
-            {
-                return size;
-            }
-            set
-            {
-                size = value;
-                gfxBox = new SpriteTileGFXBox<T>(size);
-                Width = size.Width * Zoom;
-                Height = size.Height * Zoom;
-                image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
-            }
-        }
-
-        private Zoom zoom = Zoom.X2;
-        /// <summary>
-        /// Gets or sets the zoom.
-        /// </summary>
-        public Zoom Zoom
-        {
-            get { return zoom; }
-            set
-            {
-                zoom = value;
-                Width = size.Width * value;
-                Height = size.Height * value;
-                image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
-            }
-        }
-
-        /// <summary>
-        /// Gets the selection.
-        /// </summary>
-        public SpriteTileMaskCollection<T> Selection { get; private set; }
-        private SpriteTileGFXBox<T> gfxBox;
-        private Rectangle selectionRectangle, lastRenderedSelection;
-        private MouseState state = MouseState.Idle;
-        private GFXBoxSize size = GFXBoxSize.Size128x128;
-        private T previewsBitmap;
-        private PointF pointer;
-        private Bitmap image;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GFXBoxControl"/> class.
         /// </summary>
         public GFXBoxControl()
         {
-            gfxBox = new SpriteTileGFXBox<T>(size);
-            Width = size.Width * Zoom;
-            Height = size.Height * Zoom;
-            image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
-            ClientSize = new Size(Width, Height);
-            selectionRectangle = new Rectangle();
-            palette = new SNESColorPalette(BPP.BPP4, SpriteColorPaletteIndex.SpritePalette0);
-            gfxBox.LoadGFX("gfx.bin");
-            palette.LoadPal("pal.pal", SpriteColorPaletteIndex.SpritePalette0.Offset, 0, 16);
+            InitializeComponent();
             MouseDown += mouseDown;
             MouseUp += mouseUp;
             MouseMove += mouseMove;
@@ -217,7 +162,7 @@ namespace SMWControlLibFrontend.Graphics
         /// </summary>
         private void updateGraphics()
         {
-            T b = (T)gfxBox.GetGraphics(palette, Zoom);
+            BitmapBuffer<ColorA1R5G5B5> b = gfxBox.RealObject.CreateBitmapBuffer(Flip.NotFlipped, palette.RealObject, Zoom);
 
             if (b == previewsBitmap && lastRenderedSelection == selectionRectangle && previewsBitmap != null)
                 return;
@@ -231,9 +176,9 @@ namespace SMWControlLibFrontend.Graphics
                 unsafe
                 {
                     byte* bs = (byte*)bd.Data;
-                    int l = b.Length << 2;
+                    int l = (b.Length << 1) + b.Length;
 
-                    fixed (uint* bp = b.Pixels)
+                    fixed (ColorA1R5G5B5* bp = b.Pixels)
                     {
                         Buffer.MemoryCopy(bp, bs, l, l);
                     }

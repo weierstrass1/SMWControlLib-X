@@ -1,5 +1,4 @@
 ﻿using Eto.Forms;
-using SMWControlLibRendering;
 using System;
 
 namespace SMWControlLibFrontend.Mac
@@ -16,7 +15,7 @@ namespace SMWControlLibFrontend.Mac
         [STAThread]
         public static void Main()
         {
-            new Application(Eto.Platforms.Mac64).Run(MainForm<CPUBitmapBuffer>.CreateInstance());
+            new Application(Eto.Platforms.Mac64).Run(new MainForm());
         }
     }
 }

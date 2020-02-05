@@ -6,34 +6,28 @@ namespace SMWControlLibRendering
     /// <summary>
     /// The c p u bitmap buffer.
     /// </summary>
-    public class CPUBitmapBuffer : BitmapBuffer
+    public class CPUBitmapBuffer<T> : BitmapBuffer<T> where T : struct
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CPUBitmapBuffer"/> class.
-        /// </summary>
-        public CPUBitmapBuffer() : base()
-        {
-        }
         /// <summary>
         /// Initializes a new instance of the <see cref="CPUBitmapBuffer"/> class.
         /// </summary>
         /// <param name="pixels">The pixels.</param>
         /// <param name="width">The width.</param>
-        public CPUBitmapBuffer(uint[] pixels, int width) : base(pixels, width)
+        public CPUBitmapBuffer(T[] pixels, int width) : base(pixels, width)
         {
         }
         /// <summary>
         /// Gets or sets the pixels.
         /// </summary>
-        public override uint[] Pixels { get; protected set; }
+        public override T[] Pixels { get; protected set; }
         /// <summary>
         /// Clones the.
         /// </summary>
         /// <returns>A BitmapBuffer.</returns>
-        public override BitmapBuffer Clone()
+        public override BitmapBuffer<T> Clone()
         {
-            CPUBitmapBuffer clone = new CPUBitmapBuffer(new uint[Length], Width);
-            clone.DrawBitmap(this, 0, 0);
+            CPUBitmapBuffer<T> clone = new CPUBitmapBuffer<T>(new T[Length], Width);
+            clone.DrawBitmapBuffer(this, 0, 0);
             return clone;
         }
 
@@ -43,7 +37,7 @@ namespace SMWControlLibRendering
         /// <param name="src">The src.</param>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        public override void DrawBitmap(BitmapBuffer src, int x, int y)
+        public override void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y)
         {
             int w = Math.Min(x + src.Width, Width) - x;
             if (w <= 0) return;
@@ -56,8 +50,8 @@ namespace SMWControlLibRendering
                 int dstjw = ((j + y) * Width) + x;
                 _ = Parallel.For(0, w, i =>
                 {
-                    uint c = src.Pixels[srcjw + i];
-                    if ((c & 0xFF000000) != 0)
+                    T c = src.Pixels[srcjw + i];
+                    if ((bool)(object)c)
                     {
                         Pixels[dstjw + i] = c;
                     }
@@ -71,11 +65,11 @@ namespace SMWControlLibRendering
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="zoom">The zoom.</param>
-        public override void DrawBitmap(BitmapBuffer src, int x, int y, int zoom)
+        public override void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y, int zoom)
         {
             if(zoom == 1)
             {
-                DrawBitmap(src, x, y);
+                DrawBitmapBuffer(src, x, y);
             }
             else
             {
@@ -91,9 +85,9 @@ namespace SMWControlLibRendering
                     int dstjw = (((j * zoom) + y) * Width) + x;
                     _ = Parallel.For(0, src.Width, i =>
                     {
-                        uint c = src.Pixels[srcjw + i];
+                        T c = src.Pixels[srcjw + i];
                         int dstjwi = dstjw + (i * zoom);
-                        if ((c & 0xFF000000) != 0)
+                        if ((bool)(object)c)
                         {
                             int dstjwiq;
                             for (int q = 0; q < zoom; q++)
@@ -116,7 +110,7 @@ namespace SMWControlLibRendering
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public override void DrawBitmap(BitmapBuffer src, int x, int y, uint backgroundColor)
+        public override void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y, T backgroundColor)
         {
             if (x < 0) x = 0;
             if (y < 0) y = 0;
@@ -132,8 +126,8 @@ namespace SMWControlLibRendering
                 int dstjw = ((j + y) * Width) + x;
                 _ = Parallel.For(0, w, i =>
                 {
-                    uint c = src.Pixels[srcjw + i];
-                    if ((c & 0xFF000000) != 0)
+                    T c = src.Pixels[srcjw + i];
+                    if ((bool)(object)c)
                     {
                         Pixels[dstjw + i] = c;
                     }
@@ -152,11 +146,11 @@ namespace SMWControlLibRendering
         /// <param name="y">The y.</param>
         /// <param name="zoom">The zoom.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public override void DrawBitmap(BitmapBuffer src, int x, int y, int zoom, uint backgroundColor)
+        public override void DrawBitmapBuffer(BitmapBuffer<T> src, int x, int y, int zoom, T backgroundColor)
         {
             if (zoom == 1)
             {
-                DrawBitmap(src, x, y, backgroundColor);
+                DrawBitmapBuffer(src, x, y, backgroundColor);
             }
             else
             {
@@ -174,9 +168,9 @@ namespace SMWControlLibRendering
                     int dstjw = (((j * zoom) + y) * Width) + x;
                     _ = Parallel.For(0, w, i =>
                     {
-                        uint c = src.Pixels[srcjw + i];
+                        T c = src.Pixels[srcjw + i];
                         int dstjwi = dstjw + (i * zoom);
-                        if ((c & 0xFF000000) == 0)
+                        if ((bool)(object)c)
                         {
                             c = backgroundColor;
                         }
@@ -201,7 +195,7 @@ namespace SMWControlLibRendering
         /// <param name="cellsize">The cellsize.</param>
         /// <param name="type">The type.</param>
         /// <param name="gridColor">The grid color.</param>
-        public override void DrawGrid(int zoom, int cellsize, int type, uint gridColor)
+        public override void DrawGrid(int zoom, int cellsize, int type, T gridColor)
         {
             int zs = zoom * cellsize;
             int lateralCount = Width / zs;
@@ -289,7 +283,7 @@ namespace SMWControlLibRendering
         /// <param name="x2">The x2.</param>
         /// <param name="y2">The y2.</param>
         /// <param name="lineColor">The line color.</param>
-        public override void DrawLine(int x1, int y1, int x2, int y2, uint lineColor)
+        public override void DrawLine(int x1, int y1, int x2, int y2, T lineColor)
         {
             int dX = x2 - x1;
 
@@ -346,7 +340,7 @@ namespace SMWControlLibRendering
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <param name="rectangleColor">The rectangle color.</param>
-        public override void DrawRectangle(int x, int y, int width, int height, uint rectangleColor)
+        public override void DrawRectangleBorder(int x, int y, int width, int height, T rectangleColor)
         {
             if (y < 0) y = 0;
             if (x < 0) x = 0;
@@ -376,7 +370,7 @@ namespace SMWControlLibRendering
         /// Fills the color.
         /// </summary>
         /// <param name="backgroundColor">The background color.</param>
-        public override void FillColor(uint backgroundColor)
+        public override void FillWithColor(T backgroundColor)
         {
             _ = Parallel.For(0, Pixels.Length, i =>
             {
@@ -392,7 +386,7 @@ namespace SMWControlLibRendering
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public override void FillColor(int x, int y, int width, int height, uint backgroundColor)
+        public override void DrawRectangle(int x, int y, int width, int height, T backgroundColor)
         {
             if (x < 0) x = 0;
             if (y < 0) y = 0;
@@ -416,36 +410,26 @@ namespace SMWControlLibRendering
         /// <param name="zoom">The zoom.</param>
         public override void ZoomIn(int zoom)
         {
-            CPUBitmapBuffer b = new CPUBitmapBuffer(Pixels, Width);
+            CPUBitmapBuffer<T> b = new CPUBitmapBuffer<T>(Pixels, Width);
 
             int wz = Width * zoom;
-            SetPixels(new uint[wz * Height * zoom], wz);
+            Initialize(new T[wz * Height * zoom], wz);
 
-            DrawBitmap(b, 0, 0, zoom);
+            DrawBitmapBuffer(b, 0, 0, zoom);
         }
         /// <summary>
         /// Zooms the in.
         /// </summary>
         /// <param name="zoom">The zoom.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public override void ZoomIn(int zoom, uint backgroundColor)
+        public override void ZoomIn(int zoom, T backgroundColor)
         {
-            CPUBitmapBuffer b = new CPUBitmapBuffer(Pixels, Width);
+            CPUBitmapBuffer<T> b = new CPUBitmapBuffer<T>(Pixels, Width);
 
             int wz = Width * zoom;
-            SetPixels(new uint[wz * Height * zoom], wz);
+            Initialize(new T[wz * Height * zoom], wz);
 
-            DrawBitmap(b, 0, 0, zoom, backgroundColor);
-        }
-        /// <summary>
-        /// Initializes the.
-        /// </summary>
-        /// <param name="pixels">The pixels.</param>
-        /// <param name="width">The width.</param>
-        /// <returns>A BitmapBuffer.</returns>
-        protected override BitmapBuffer Initialize(uint[] pixels, int width)
-        {
-            return new CPUBitmapBuffer(pixels, width);
+            DrawBitmapBuffer(b, 0, 0, zoom, backgroundColor);
         }
     }
 }
