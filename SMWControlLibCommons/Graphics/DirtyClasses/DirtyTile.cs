@@ -6,13 +6,12 @@ namespace SMWControlLibCommons.Graphics.DirtyClasses
     /// <summary>
     /// The dirty sprite tile.
     /// </summary>
-    public class DirtyTile<T, U> : DirtyClass<Tile<T, U>> where T : struct
-                                                          where U : struct
+    public class DirtyTile : DirtyClass<Tile>
     {
         /// <summary>
         /// Gets the tile.
         /// </summary>
-        public Tile<T, U> Tile
+        public Tile Tile
         {
             get
             {
@@ -24,7 +23,7 @@ namespace SMWControlLibCommons.Graphics.DirtyClasses
         /// </summary>
         /// <param name="size">The size.</param>
         /// <param name="index">The index.</param>
-        public DirtyTile(TileSize size, TileIndex index) : base(new Tile<T, U>(size, index))
+        public DirtyTile(TileSize size, TileIndex index) : base(new Tile(size, index))
         {
         }
         /// <summary>

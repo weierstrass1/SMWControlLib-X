@@ -9,8 +9,7 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile section.
     /// </summary>
-    public class TileSection<T, U> : ExchangeableDynamicList<TileMaskCollection<T, U>>  where T : struct
-                                                                                        where U : struct
+    public class TileSection : ExchangeableDynamicList<TileMaskCollection>
     {
         private int left;
         private bool requireUpdateLeft = true;
@@ -117,7 +116,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
-        private void onFrameRemoved(ExchangeableDynamicList<TileMaskCollection<T, U>> arg1, int arg2)
+        private void onFrameRemoved(ExchangeableDynamicList<TileMaskCollection> arg1, int arg2)
         {
             elements[arg2].OnCollectionAdded -= onCollectionAdded;
             elements[arg2].OnMoveTo -= onMoveTo;
@@ -133,7 +132,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
-        private void onFrameAdded(ExchangeableDynamicList<TileMaskCollection<T, U>> arg1, int arg2)
+        private void onFrameAdded(ExchangeableDynamicList<TileMaskCollection> arg1, int arg2)
         {
             elements[arg2].OnCollectionAdded += onCollectionAdded;
             elements[arg2].OnMoveTo += onMoveTo;
@@ -145,7 +144,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
-        private void onTileAdded(TileMaskCollection<T, U> arg1, TileMask<T, U> arg2)
+        private void onTileAdded(TileMaskCollection arg1, TileMask arg2)
         {
             requireUpdateLeft = true;
             requireUpdateTop = true;
@@ -158,7 +157,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
         /// <param name="arg3">The arg3.</param>
-        private void onMoveTo(TileMaskCollection<T, U> arg1, int arg2, int arg3)
+        private void onMoveTo(TileMaskCollection arg1, int arg2, int arg3)
         {
             requireUpdateLeft = true;
             requireUpdateTop = true;
@@ -170,7 +169,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="arg1">The arg1.</param>
         /// <param name="arg2">The arg2.</param>
-        private void onCollectionAdded(TileMaskCollection<T, U> arg1, TileMaskCollection<T, U> arg2)
+        private void onCollectionAdded(TileMaskCollection arg1, TileMaskCollection arg2)
         {
             requireUpdateLeft = true;
             requireUpdateTop = true;
@@ -201,7 +200,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="index">The index.</param>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public BitmapBuffer<U> GetGraphics(int index, Zoom z)
+        public BitmapBuffer GetGraphics(int index, Zoom z)
         {
             if (Lenght == 0) return null;
             return elements[index].GetGraphics(z);

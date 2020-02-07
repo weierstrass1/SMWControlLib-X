@@ -9,8 +9,7 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile section mask.
     /// </summary>
-    public class TileSectionMask<T, U> : IGridDrawable<U> where T : struct
-                                                          where U : struct
+    public class TileSectionMask : IGridDrawable
     {
         private int index;
         /// <summary>
@@ -67,12 +66,12 @@ namespace SMWControlLibCommons.Graphics
         /// <summary>
         /// Gets the section.
         /// </summary>
-        public TileSection<T, U> Section { get; private set; }
+        public TileSection Section { get; private set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="TileSectionMask"/> class.
         /// </summary>
         /// <param name="s">The s.</param>
-        public TileSectionMask(TileSection<T, U> s)
+        public TileSectionMask(TileSection s)
         {
             Section = s;
             X = -1;
@@ -82,7 +81,7 @@ namespace SMWControlLibCommons.Graphics
         /// Gets the collection.
         /// </summary>
         /// <returns>A SpriteTileMaskCollection.</returns>
-        public TileMaskCollection<T, U> GetCollection()
+        public TileMaskCollection GetCollection()
         {
             return Section[Index];
         }
@@ -91,7 +90,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public BitmapBuffer<U> GetGraphics(Zoom z)
+        public BitmapBuffer GetGraphics(Zoom z)
         {
             return Section.GetGraphics(Index, z);
         }
@@ -104,7 +103,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="height">The height.</param>
         public ITileCollection Select(int x, int y, int width, int height)
         {
-            TileMaskCollection<T, U> sel = GetCollection();
+            TileMaskCollection sel = GetCollection();
 
             if (width < 2 || height < 2)
                 return sel.FindByPosition(x, y);
@@ -118,7 +117,7 @@ namespace SMWControlLibCommons.Graphics
         public void AddTiles(ITileCollection tiles)
         {
             
-            GetCollection().AddCollection((TileMaskCollection<T, U>)tiles);
+            GetCollection().AddCollection((TileMaskCollection)tiles);
             X = Section.Left;
             Y = Section.Top;
         }

@@ -3,7 +3,6 @@ using Eto.Forms;
 using SMWControlLibSNES.Graphics;
 using SMWControlLibFrontend.Enumerators;
 using SMWControlLibCommons.Enumerators.Graphics;
-using SMWControlLibRendering.Colors;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -21,8 +20,12 @@ namespace SMWControlLibFrontend.Graphics
 			{
 				Zoom = Zoom.X8,
 				CellSize = GridCellSize.Size16x16,
-				BackgroundColor = new ColorR5G5B5((byte)0xB0, (byte)0xC0, (byte)0xD0),
-				SelectionColor = new ColorR5G5B5((byte)0xE0, (byte)0x80, (byte)0x40),
+				BackgroundColorR = 0xB0, 
+				BackgroundColorG = 0xC0, 
+				BackgroundColorB = 0xD0,
+				SelectionColorR = 0xE0, 
+				SelectionColorG = 0x80, 
+				SelectionColorB = 0x40,
 				GridType = GridType.DottedLine,
 				DrawGrid = false,
 				DrawGuidelines = false

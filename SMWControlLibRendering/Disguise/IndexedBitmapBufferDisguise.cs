@@ -6,8 +6,7 @@ namespace SMWControlLibRendering.Disguise
     /// <summary>
     /// The indexed bitmap buffer disguise.
     /// </summary>
-    public class IndexedBitmapBufferDisguise<T, U> : DisguiseWithObjsParams<IndexedBitmapBufferFactory<T, U>, IndexedBitmapBuffer<T, U>> where T : struct
-                                                                                                                                         where U : struct
+    public class IndexedBitmapBufferDisguise : DisguiseWithObjsParams<IndexedBitmapBufferFactory, IndexedBitmapBuffer>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IndexedBitmapBufferDisguise"/> class.

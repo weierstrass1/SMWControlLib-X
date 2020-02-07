@@ -6,7 +6,7 @@ namespace SMWControlLibRendering.Disguise
     /// <summary>
     /// The color palette disguise.
     /// </summary>
-    public class ColorPaletteDisguise<T> : DisguiseWithObjsParams<ColorPaletteFactory<T>, ColorPalette<T>> where T : struct
+    public class ColorPaletteDisguise : DisguiseWithObjsParams<ColorPaletteFactory, ColorPalette>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ColorPaletteDisguise"/> class.

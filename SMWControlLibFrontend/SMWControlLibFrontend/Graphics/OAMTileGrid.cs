@@ -6,9 +6,7 @@ using System;
 using System.Collections.Generic;
 using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Delegates;
-using SMWControlLibRendering.Colors;
 using SMWControlLibCommons.Interfaces.Graphics;
-using SMWControlLibRendering;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -22,7 +20,7 @@ namespace SMWControlLibFrontend.Graphics
 		/// <summary>
 		/// Gets or sets the target.
 		/// </summary>
-		public IGridDrawable<ColorR5G5B5> Target
+		public IGridDrawable Target
 		{
 			get => grid.Target;
 			set
@@ -34,7 +32,7 @@ namespace SMWControlLibFrontend.Graphics
 				}
 			}
 		}
-		public SelectionHandler<byte, ColorR5G5B5> AddingTiles;
+		public SelectionHandler AddingTiles;
 		/// <summary>
 		/// Gets the zoom.
 		/// </summary>
@@ -67,6 +65,7 @@ namespace SMWControlLibFrontend.Graphics
 		/// </summary>
 		public OAMTileGrid()
 		{
+			InitializeComponent();
 			Paint += paint;
 			MouseDown += mouseDown;
 			MouseMove += mouseMove;
@@ -202,7 +201,7 @@ namespace SMWControlLibFrontend.Graphics
 		{
 			if (grid.Changed)
 			{
-				ColorR5G5B5[] b = grid.GetGraphics();
+				byte[] b = grid.GetGraphics();
 				if (image.Width * image.Height != b.Length)
 					image = new Bitmap((int)Math.Sqrt(b.Length), (int)Math.Sqrt(b.Length), PixelFormat.Format32bppRgba);
 
@@ -210,9 +209,9 @@ namespace SMWControlLibFrontend.Graphics
 				unsafe
 				{
 					byte* bs = (byte*)bd.Data;
-					int l = (b.Length << 1) + b.Length;
+					int l = b.Length;
 
-					fixed (ColorR5G5B5* bp = b)
+					fixed (byte* bp = b)
 					{
 						Buffer.MemoryCopy(bp, bs, l, l);
 					}

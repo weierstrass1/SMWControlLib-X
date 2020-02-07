@@ -10,8 +10,7 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile grid.
     /// </summary>
-    public class TileGrid<T, U> where T: struct
-                                where U : struct
+    public class TileGrid
     {
         /// <summary>
         /// Gets the side.
@@ -20,19 +19,43 @@ namespace SMWControlLibCommons.Graphics
         /// <summary>
         /// Gets or sets the target.
         /// </summary>
-        public IGridDrawable<U> Target { get; set; }
+        public IGridDrawable Target { get; set; }
         /// <summary>
         /// Gets or sets the background color.
         /// </summary>
-        public U BackgroundColor { get; set; }
+        public byte BackgroundColorR { get; set; }
+        /// <summary>
+        /// Gets or sets the background color g.
+        /// </summary>
+        public byte BackgroundColorG { get; set; }
+        /// <summary>
+        /// Gets or sets the background color b.
+        /// </summary>
+        public byte BackgroundColorB { get; set; }
         /// <summary>
         /// Gets or sets the grid color.
         /// </summary>
-        public U GridColor { get; set; }
+        public byte GridColorR { get; set; }
+        /// <summary>
+        /// Gets or sets the grid color g.
+        /// </summary>
+        public byte GridColorG { get; set; }
+        /// <summary>
+        /// Gets or sets the grid color b.
+        /// </summary>
+        public byte GridColorB { get; set; }
         /// <summary>
         /// Gets or sets the grid color.
         /// </summary>
-        public U SelectionColor { get; set; }
+        public byte SelectionColorR { get; set; }
+        /// <summary>
+        /// Gets or sets the selection color g.
+        /// </summary>
+        public byte SelectionColorG { get; set; }
+        /// <summary>
+        /// Gets or sets the selection color b.
+        /// </summary>
+        public byte SelectionColorB { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether draw grid.
         /// </summary>
@@ -53,7 +76,7 @@ namespace SMWControlLibCommons.Graphics
         /// Gets or sets the grid type.
         /// </summary>
         public GridType GridType { get; set; }
-        private BitmapBuffer<U> image;
+        private BitmapBuffer image;
         private ITileCollection tileSelection;
         private bool moved = false;
         private bool selectionChanged = false;
@@ -74,19 +97,19 @@ namespace SMWControlLibCommons.Graphics
         /// Gets the graphics.
         /// </summary>
         /// <returns>An array of uint.</returns>
-        public U[] GetGraphics()
+        public byte[] GetGraphics()
         {
             Changed = false;
             int s = Side;
             int s2 = s * s;
             if (image == null)
             {
-                image = BitmapBuffer<U>.CreateInstance(new U[s2], s);
+                image = BitmapBuffer.CreateInstance(new byte[s2], s);
                 Changed = true;
             }
             else if(image.Length != s2)
             {
-                image.Initialize(new U[s2], s);
+                image.Initialize(new byte[s2], s);
                 Changed = true;
             }
 
@@ -94,22 +117,22 @@ namespace SMWControlLibCommons.Graphics
             {
                 if (Target != null)
                 {
-                    BitmapBuffer<U> t = Target.GetGraphics(Zoom);
+                    BitmapBuffer t = Target.GetGraphics(Zoom);
                     if (t != null)
-                        image.DrawBitmapBuffer(t, Target.Left * Zoom, Target.Top * Zoom, BackgroundColor);
+                        image.DrawBitmapBuffer(t, Target.Left * Zoom, Target.Top * Zoom, BackgroundColorR, BackgroundColorG, BackgroundColorB);
                     else
-                        image.FillWithColor(BackgroundColor);
+                        image.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
                 }
                 else
                 {
-                    image.FillWithColor(BackgroundColor);
+                    image.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
                 }
                 Changed = true;
             }
 
             if (DrawGrid && (requireRefresh || moved)) 
             {
-                image.DrawGrid(Zoom, CellSize, GridType, GridColor);
+                image.DrawGrid(Zoom, CellSize, GridType, GridColorR, GridColorG, GridColorB);
                 Changed = true;
             }
 
@@ -117,15 +140,15 @@ namespace SMWControlLibCommons.Graphics
             {
                 int guideRectSize = 16 * Zoom;
                 int guideRectOffset = 112 * Zoom;
-                image.DrawRectangleBorder(guideRectOffset, guideRectOffset, guideRectSize, guideRectSize, SelectionColor);
+                image.DrawRectangleBorder(guideRectOffset, guideRectOffset, guideRectSize, guideRectSize, SelectionColorR, SelectionColorG, SelectionColorB);
                 int guideLineOffset = 120 * Zoom;
-                image.DrawLine(guideLineOffset, 0, guideLineOffset, Side, SelectionColor);
-                image.DrawLine(0, guideLineOffset, Side, guideLineOffset, SelectionColor);
+                image.DrawLine(guideLineOffset, 0, guideLineOffset, Side, SelectionColorR, SelectionColorG, SelectionColorB);
+                image.DrawLine(0, guideLineOffset, Side, guideLineOffset, SelectionColorR, SelectionColorG, SelectionColorB);
                 Changed = true;
             }
             requireRefresh = false;
 
-            BitmapBuffer<U> im = image;
+            BitmapBuffer im = image;
             if (selectionChanged || moved)
             {
                 if (tileSelection != null)
@@ -137,7 +160,7 @@ namespace SMWControlLibCommons.Graphics
 
                         Parallel.ForEach(rects, r =>
                         {
-                            im.DrawRectangleBorder(r.X * Zoom, r.Y * Zoom, r.Width * Zoom, r.Height * Zoom, SelectionColor);
+                            im.DrawRectangleBorder(r.X * Zoom, r.Y * Zoom, r.Width * Zoom, r.Height * Zoom, SelectionColorR, SelectionColorG, SelectionColorB);
                         });
 
                     }
@@ -155,7 +178,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="selection">The selection.</param>
-        public void AddingAtPosition(int x, int y, TileMaskCollection<T, U> selection)
+        public void AddingAtPosition(int x, int y, TileMaskCollection selection)
         {
             if (Target == null || selection == null || selection.Count <= 0)
             {
@@ -166,7 +189,7 @@ namespace SMWControlLibCommons.Graphics
             x -= x % CellSize;
             y /= Zoom;
             y -= y % CellSize;
-            TileMaskCollection<T, U> sel = selection.Clone();
+            TileMaskCollection sel = selection.Clone();
             sel.MoveTo(x, y);
             Target.AddTiles(sel);
             requireRefresh = true;
@@ -225,7 +248,7 @@ namespace SMWControlLibCommons.Graphics
                 bool b = Target.MoveTiles(x, y);
                 if (b)
                 {
-                    image.DrawRectangle(drx, dry, drw, drh, BackgroundColor);
+                    image.DrawRectangle(drx, dry, drw, drh, BackgroundColorR, BackgroundColorG, BackgroundColorB);
                 }
 
                 moved = moved || b;

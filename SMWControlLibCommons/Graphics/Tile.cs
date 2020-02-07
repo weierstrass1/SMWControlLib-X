@@ -1,13 +1,13 @@
 ﻿using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibRendering.Disguise;
+using System;
 
 namespace SMWControlLibCommons.Graphics
 {
     /// <summary>
     /// Represent an OAM tile of the SNES.
     /// </summary>
-    public class Tile<T, U> : IndexedBitmapBufferDisguise<T, U> where T : struct
-                                                                where U : struct
+    public class Tile : IndexedBitmapBufferDisguise
     {
         /// <summary>
         /// Size of the tile. Normally 8x8 or 16x16.
@@ -24,6 +24,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="size">Size of the tile.</param>
         public Tile(TileSize size, TileIndex index) : base(size.Width, size.Height)
         {
+            if (size == null || index == null) throw new ArgumentNullException("Argument can't be null on Tile Instance");
             Size = size;
             Index = index;
         }

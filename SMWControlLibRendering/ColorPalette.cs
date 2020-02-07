@@ -9,12 +9,12 @@ namespace SMWControlLibRendering
     /// <summary>
     /// The color palette.
     /// </summary>
-    public abstract class ColorPalette<T> : CanFactoryWithObjsParams, ICanLoad where T : struct
+    public abstract class ColorPalette : CanFactoryWithObjsParams, ICanLoad
     {
         /// <summary>
-        /// Gets or sets the colors.
+        /// Gets or sets the bytes per color.
         /// </summary>
-        public T[] Colors { get; protected set; }
+        public int BytesPerColor { get; protected set; }
         /// <summary>
         /// Gets or sets the index.
         /// </summary>
@@ -22,16 +22,9 @@ namespace SMWControlLibRendering
         /// <summary>
         /// Gets the length.
         /// </summary>
-        public int Length
-        {
-            get
-            {
-                if (Colors == null) return 0;
-                return Colors.Length;
-            }
-        }
+        public virtual int Length { get; protected set; }
         public event Action OnPaletteChange;
-        public event Action<int, T> OnColorChange;
+        public event Action<int, byte, byte, byte> OnColorChange;
         /// <summary>
         /// Initializes a new instance of the <see cref="ColorPalette"/> class.
         /// </summary>
@@ -45,13 +38,16 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="index">Index of the Color</param>
         /// <returns>Color on the index</returns>
-        public abstract T GetColor(int index);
+        public abstract byte[] GetColor(int index);
         /// <summary>
         /// Set the color on the specific index.
         /// </summary>
         /// <param name="index">Index of the Color.</param>
         /// <param name="NewColor">New color that will be changed on that index.</param>
-        public abstract void SetColor(int index, T c);
+        public virtual void SetColor(int index, byte R, byte G, byte B)
+        {
+            OnColorChange?.Invoke(index, R, G, B);
+        }
         /// <summary>
         /// Sets the colors.
         /// </summary>
@@ -59,7 +55,10 @@ namespace SMWControlLibRendering
         /// <param name="srcOffset">The src offset.</param>
         /// <param name="dstOffset">The dst offset.</param>
         /// <param name="lenght">The lenght.</param>
-        public abstract void SetColors(T[] newColors, int srcOffset, int dstOffset, int lenght);
+        public virtual void SetColors(byte[] newColors, int srcOffset, int dstOffset, int lenght)
+        {
+            OnPaletteChange?.Invoke();
+        }
 
         /// <summary>
         /// Loads the.
@@ -103,7 +102,8 @@ namespace SMWControlLibRendering
         public override void Initialize(params object[] args)
         {
             Index = (ColorPaletteIndex)args[0];
-            Colors = new T[(int)args[1]];
+            Length = (int)args[1];
+            OnPaletteChange?.Invoke();
         }
     }
 }

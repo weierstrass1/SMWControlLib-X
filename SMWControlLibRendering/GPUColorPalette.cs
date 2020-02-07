@@ -1,12 +1,14 @@
-﻿using ILGPU.Runtime;
+﻿using ILGPU;
+using ILGPU.Runtime;
 using SMWControlLibRendering.Enumerators.Graphics;
+using System;
 
 namespace SMWControlLibRendering
 {
     /// <summary>
     /// The g p u color palette.
     /// </summary>
-    public class GPUColorPalette<T> : ColorPalette<T> where T : struct
+    public class GPUColorPalette : ColorPalette
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUColorPalette"/> class.
@@ -19,7 +21,7 @@ namespace SMWControlLibRendering
         /// <summary>
         /// Gets or sets the buffer.
         /// </summary>
-        public MemoryBuffer<T> Buffer { get; protected set; }
+        public MemoryBuffer<byte> Buffer { get; protected set; }
         /// <summary>
         /// Initializes the.
         /// </summary>
@@ -27,16 +29,18 @@ namespace SMWControlLibRendering
         public override void Initialize(params object[] args)
         {
             base.Initialize(args);
-            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<T>((int)args[1]);
+            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>((int)args[1]);
         }
         /// <summary>
         /// Gets the color.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>A T.</returns>
-        public override T GetColor(int index)
+        public override byte[] GetColor(int index)
         {
-            return Buffer.ToArrayView()[index];
+            byte[] color = new byte[BytesPerColor];
+            Buffer.CopyTo(color, new Index(index*3), 0, new Index(BytesPerColor));
+            return color;
         }
         /// <summary>
         /// Loads the.
@@ -45,7 +49,11 @@ namespace SMWControlLibRendering
         /// <param name="offset">The offset.</param>
         public override void Load(byte[] bin, int offset)
         {
-            throw new System.NotImplementedException();
+            if (bin == null) throw new ArgumentNullException(nameof(bin));
+            int w = Math.Min(bin.Length - (offset * 3), Buffer.Length);
+            if (w <= 0) return;
+
+            Buffer.CopyFrom(bin, offset * 3, new Index(0), Buffer.Extent);
         }
 
         /// <summary>
@@ -53,9 +61,10 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="c">The c.</param>
-        public override void SetColor(int index, T c)
+        public override void SetColor(int index, byte R, byte G, byte B)
         {
-            Buffer.ToArrayView()[index] = c;
+            byte[] color = { R, G, B };
+            Buffer.CopyFrom(color, 0, new Index(index * 3), new Index(3));
         }
 
         /// <summary>
@@ -65,7 +74,7 @@ namespace SMWControlLibRendering
         /// <param name="srcOffset">The src offset.</param>
         /// <param name="dstOffset">The dst offset.</param>
         /// <param name="lenght">The lenght.</param>
-        public override void SetColors(T[] newColors, int srcOffset, int dstOffset, int lenght)
+        public override void SetColors(byte[] newColors, int srcOffset, int dstOffset, int lenght)
         {
             Buffer.CopyFrom(newColors, srcOffset, dstOffset, lenght);
         }

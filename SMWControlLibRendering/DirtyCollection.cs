@@ -52,6 +52,7 @@ namespace SMWControlLibRendering
         /// <param name="update">The update.</param>
         public T DirtyAction(K key, ActionWithReturnHanlder<T> create, Action<T> update)
         {
+            if (create == null) throw new ArgumentNullException(nameof(create));
             T e;
             if (!elements.ContainsKey(key))
             {

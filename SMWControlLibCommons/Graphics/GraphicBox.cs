@@ -12,14 +12,12 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile g f x box.
     /// </summary>
-    public abstract class GraphicBox<T, U, A, B, C> : IndexedBitmapBufferDisguise<T, U>, ICanLoad    where T : struct
-                                                                                            where U : struct
-                                                                                            where A : DirtyTile<T, U>
-                                                                                            where B : Tile<T, U>
-                                                                                            where C : DirtyTileFactory<T, U>, new()
+    public abstract class GraphicBox<A, B, C> : IndexedBitmapBufferDisguise, ICanLoad    where A : DirtyTile
+                                                                                            where B : Tile
+                                                                                            where C : DirtyTileFactory, new()
     {
         protected C tileFactory = new C();
-        protected TileDirtyCollectionDisguise<T, U> tiles = new TileDirtyCollectionDisguise<T, U>();
+        protected TileDirtyCollectionDisguise tiles = new TileDirtyCollectionDisguise();
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicBox"/> class.
         /// </summary>

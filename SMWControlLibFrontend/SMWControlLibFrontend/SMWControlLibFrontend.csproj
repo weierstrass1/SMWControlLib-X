@@ -11,11 +11,15 @@
   </PropertyGroup>
 	
   <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+	
+  <ItemGroup>
     <PackageReference Include="Eto.Forms" Version="2.4.1" />
   </ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\..\SMWControlLibBackend\SMWControlLibSNES.csproj" />
+    <ProjectReference Include="..\..\SMWControlLibSNES\SMWControlLibSNES.csproj" />
   </ItemGroup>
   
 </Project>

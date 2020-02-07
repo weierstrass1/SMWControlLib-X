@@ -1,6 +1,7 @@
 ﻿using SMWControlLibCommons.DataStructs;
 using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibRendering;
+using System;
 using System.Collections;
 
 namespace SMWControlLibCommons.Graphics
@@ -8,17 +9,16 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile mask.
     /// </summary>
-    public class TileMask<T, U> : IComparer where T : struct
-                                            where U : struct
+    public class TileMask : IComparer
     {
         /// <summary>
         /// Gets the tile.
         /// </summary>
-        public Tile<T, U> Tile { get; private set; }
+        public Tile Tile { get; private set; }
         /// <summary>
         /// Gets the properties.
         /// </summary>
-        public TileProperties<U> Properties { get; private set; }
+        public TileProperties Properties { get; private set; }
         private int x;
         /// <summary>
         /// Gets or sets the x.
@@ -64,7 +64,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="y">The y.</param>
         /// <param name="tile">The tile.</param>
         /// <param name="props">The props.</param>
-        public TileMask(int x, int y, Tile<T, U> tile, TileProperties<U> props)
+        public TileMask(int x, int y, Tile tile, TileProperties props)
         {
             Border = new TileBorder(x, y, tile.Size);
             Tile = tile;
@@ -78,7 +78,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public BitmapBuffer<U> GetGraphics(Zoom z)
+        public BitmapBuffer GetGraphics(Zoom z)
         {
             return Tile.RealObject.CreateBitmapBuffer(Properties.Flip, Properties.Palette, z);
         }
@@ -90,8 +90,12 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>An int.</returns>
         public int Compare(object o1, object o2)
         {
-            TileMask<T, U> x = (TileMask<T, U>)o1;
-            TileMask<T, U> y = (TileMask<T, U>)o2;
+            if(o1 == null || o2 == null)
+            {
+                throw new ArgumentNullException("Can't compare null objects");
+            }
+            TileMask x = (TileMask)o1;
+            TileMask y = (TileMask)o2;
             if (x.Z < y.Z) return -1;
             if (x.Z > y.Z) return 1;
             return 0;
@@ -100,9 +104,9 @@ namespace SMWControlLibCommons.Graphics
         /// Clones the.
         /// </summary>
         /// <returns>A SpriteTileMask.</returns>
-        public TileMask<T, U> Clone()
+        public TileMask Clone()
         {
-            return new TileMask<T, U>(X, Y, Tile, Properties);
+            return new TileMask(X, Y, Tile, Properties);
         }
         
     }

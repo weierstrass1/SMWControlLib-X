@@ -6,7 +6,6 @@ using SMWControlLibFrontend.Enumerators;
 using SMWControlLibRendering.Enumerators;
 using System;
 using SMWControlLibRendering;
-using SMWControlLibRendering.Colors;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -162,7 +161,7 @@ namespace SMWControlLibFrontend.Graphics
         /// </summary>
         private void updateGraphics()
         {
-            BitmapBuffer<ColorR5G5B5> b = gfxBox.RealObject.CreateBitmapBuffer(Flip.NotFlipped, palette.RealObject, Zoom);
+            BitmapBuffer b = gfxBox.RealObject.CreateBitmapBuffer(Flip.NotFlipped, palette.RealObject, Zoom);
 
             if (b == previewsBitmap && lastRenderedSelection == selectionRectangle && previewsBitmap != null)
                 return;
@@ -176,9 +175,9 @@ namespace SMWControlLibFrontend.Graphics
                 unsafe
                 {
                     byte* bs = (byte*)bd.Data;
-                    int l = (b.Length << 1) + b.Length;
+                    int l = b.Length;
 
-                    fixed (ColorR5G5B5* bp = b.Pixels)
+                    fixed (byte* bp = b.Pixels)
                     {
                         Buffer.MemoryCopy(bp, bs, l, l);
                     }

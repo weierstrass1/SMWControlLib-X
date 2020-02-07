@@ -14,24 +14,23 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile mask collection.
     /// </summary>
-    public class TileMaskCollection<T, U> : ITileCollection where T : struct
-                                                            where U : struct
+    public class TileMaskCollection : ITileCollection
     {
-        private List<TileMask<T, U>> tiles;
+        private List<TileMask> tiles;
         /// <summary>
         /// Gets the count.
         /// </summary>
         public int Count => tiles.Count;
-        public event Action<TileMaskCollection<T, U>, TileMaskCollection<T, U>> OnCollectionAdded, OnSelectionChanged, OnSelectionZIndexChanged;
-        public event Action<TileMaskCollection<T, U>> OnSelectionClear;
-        public event Action<TileMaskCollection<T, U>, TileMask<T, U>> OnTileAdded;
-        public event Action<TileMaskCollection<T, U>, int, int> OnMoveTo;
+        public event Action<TileMaskCollection, TileMaskCollection> OnCollectionAdded, OnSelectionChanged, OnSelectionZIndexChanged;
+        public event Action<TileMaskCollection> OnSelectionClear;
+        public event Action<TileMaskCollection, TileMask> OnTileAdded;
+        public event Action<TileMaskCollection, int, int> OnMoveTo;
         /// <summary>
         /// Gets a value indicating whether require refresh.
         /// </summary>
         public bool RequireRefresh { get; private set; }
         private bool sorted = true;
-        private TileMaskCollection<T, U> selection;
+        private TileMaskCollection selection;
         /// <summary>
         /// Gets the left.
         /// </summary>
@@ -48,7 +47,7 @@ namespace SMWControlLibCommons.Graphics
         /// Gets the bottom.
         /// </summary>
         public int Bottom { get; private set; }
-        public ConcurrentDictionary<Zoom, DirtyBitmap<U>> bitmaps;
+        public ConcurrentDictionary<Zoom, DirtyBitmap> bitmaps;
         /// <summary>
         /// Gets the width.
         /// </summary>
@@ -62,8 +61,8 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         public TileMaskCollection()
         {
-            tiles = new List<TileMask<T, U>>();
-            bitmaps = new ConcurrentDictionary<Zoom, DirtyBitmap<U>>();
+            tiles = new List<TileMask>();
+            bitmaps = new ConcurrentDictionary<Zoom, DirtyBitmap>();
             Left = -1;
             Top = -1;
             Right = -1;
@@ -75,7 +74,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public BitmapBuffer<U> GetGraphics(Zoom z)
+        public BitmapBuffer GetGraphics(Zoom z)
         {
             if (Width == 0 || Height == 0) 
                 return null;
@@ -93,16 +92,16 @@ namespace SMWControlLibCommons.Graphics
 
             if (!bitmaps.ContainsKey(z))
             {
-                bitmaps.TryAdd(z, new DirtyBitmap<U>(BitmapBuffer<U>.CreateInstance(new U[lenght], Width * z)));
+                bitmaps.TryAdd(z, new DirtyBitmap(BitmapBuffer.CreateInstance(new byte[lenght], Width * z)));
             }
 
-            DirtyBitmap<U> d = bitmaps[z];
+            DirtyBitmap d = bitmaps[z];
             if (d.IsDirty)
             {
                 if (d.Bitmap.Length < lenght)
-                    d.Bitmap = BitmapBuffer<U>.CreateInstance(new U[lenght], Width * z);
+                    d.Bitmap = BitmapBuffer.CreateInstance(new byte[lenght], Width * z);
 
-                foreach (TileMask<T, U> t in tiles)
+                foreach (TileMask t in tiles)
                 {
                     d.Bitmap.DrawBitmapBuffer(t.GetGraphics(z), (t.X - Left) * z, (t.Y - Top) * z);
                 }
@@ -120,12 +119,12 @@ namespace SMWControlLibCommons.Graphics
 
             uint selMinZ = selection.tiles.First().Z;
             uint selMaxZ = selection.tiles.Last().Z;
-            TileMask<T, U> MinZTile = tiles.FirstOrDefault(t =>
+            TileMask MinZTile = tiles.FirstOrDefault(t =>
             {
                 return t.Z < selMinZ && !selection.tiles.Contains(t);
             });
 
-            if (MinZTile != default(TileMask<T, U>))
+            if (MinZTile != default(TileMask))
             {
                 var upperTiles = tiles.Where(t =>
                 {
@@ -134,13 +133,13 @@ namespace SMWControlLibCommons.Graphics
 
                 uint i = MinZTile.Z - 1;
 
-                foreach (TileMask<T, U> t in selection.tiles)
+                foreach (TileMask t in selection.tiles)
                 {
                     t.Z = i;
                     i--;
                 }
 
-                foreach (TileMask<T, U> t in upperTiles)
+                foreach (TileMask t in upperTiles)
                 {
                     t.Z = i;
                     i--;
@@ -161,12 +160,12 @@ namespace SMWControlLibCommons.Graphics
 
             uint selMinZ = selection.tiles.First().Z;
             uint selMaxZ = selection.tiles.Last().Z;
-            TileMask<T, U> MaxZTile = tiles.FirstOrDefault(t =>
+            TileMask MaxZTile = tiles.FirstOrDefault(t =>
             {
                 return t.Z > selMinZ && !selection.tiles.Contains(t);
             });
 
-            if (MaxZTile != default(TileMask<T, U>))
+            if (MaxZTile != default(TileMask))
             {
                 var upperTiles = tiles.Where(t =>
                 {
@@ -175,13 +174,13 @@ namespace SMWControlLibCommons.Graphics
 
                 uint i = MaxZTile.Z + 1;
 
-                foreach (TileMask<T, U> t in selection.tiles)
+                foreach (TileMask t in selection.tiles)
                 {
                     t.Z = i;
                     i++;
                 }
 
-                foreach (TileMask<T, U> t in upperTiles)
+                foreach (TileMask t in upperTiles)
                 {
                     t.Z = i;
                     i++;
@@ -201,7 +200,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="newY">The new y.</param>
         public bool MoveSelection(int newX, int newY)
         {
-            if (selection == null) selection = new TileMaskCollection<T, U>();
+            if (selection == null) selection = new TileMaskCollection();
             if (selection.Left == newX && selection.Top == newY) return false;
             bool b = selection.MoveTo(newX, newY);
             UpdateContainer();
@@ -256,7 +255,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         public void ClearSelection()
         {
-            if (selection == null) selection = new TileMaskCollection<T, U>();
+            if (selection == null) selection = new TileMaskCollection();
             selection.tiles.Clear();
             selection.Left = -1;
             selection.Top = -1;
@@ -300,9 +299,9 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="width">The width.</param>
         /// <param name="y">The y.</param>
         /// <param name="height">The height.</param>
-        public TileMaskCollection<T, U> FindByArea(int x, int y, int width, int height)
+        public TileMaskCollection FindByArea(int x, int y, int width, int height)
         {
-            if (selection == null) selection = new TileMaskCollection<T, U>();
+            if (selection == null) selection = new TileMaskCollection();
             selection.tiles = tiles.Where((t) =>
             {
                 if (t.X + t.Width < x) return false;
@@ -322,11 +321,11 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        public TileMaskCollection<T, U> FindByPosition(int x, int y)
+        public TileMaskCollection FindByPosition(int x, int y)
         {
             ClearSelection();
 
-            TileMask<T, U> tm = tiles.FirstOrDefault((t) =>
+            TileMask tm = tiles.FirstOrDefault((t) =>
             {
                 if (t.X <= x && t.X + t.Width >= x
                     && t.Y <= y && t.Y + t.Height >= y)
@@ -346,10 +345,10 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         public void RemoveSelection()
         {
-            if (selection == null) selection = new TileMaskCollection<T, U>();
+            if (selection == null) selection = new TileMaskCollection();
             if (selection.Left > 0)
             {
-                foreach (TileMask<T, U> t in selection.tiles)
+                foreach (TileMask t in selection.tiles)
                 {
                     tiles.Remove(t);
                 }
@@ -364,11 +363,11 @@ namespace SMWControlLibCommons.Graphics
         /// Adds the collection.
         /// </summary>
         /// <param name="col">The col.</param>
-        public void AddCollection(TileMaskCollection<T, U> col)
+        public void AddCollection(TileMaskCollection col)
         {
             ClearSelection();
             col.Sort();
-            foreach (TileMask<T, U> t in col.tiles)
+            foreach (TileMask t in col.tiles)
             {
                 Add(t);
             }
@@ -379,7 +378,7 @@ namespace SMWControlLibCommons.Graphics
         /// Adds the.
         /// </summary>
         /// <param name="tile">The tile.</param>
-        public void Add(TileMask<T, U> tile)
+        public void Add(TileMask tile)
         {
             if (Count > 0)
                 tile.Z = tiles.Last().Z + 1;
@@ -412,7 +411,7 @@ namespace SMWControlLibCommons.Graphics
                 RequireRefresh = true;
             }
         }
-        public TileMask<T, U> this[int index]
+        public TileMask this[int index]
         {
             get
             {
@@ -424,7 +423,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="args">The args.</param>
         /// <returns>A SpriteTileMaskCollection.</returns>
-        public static TileMaskCollection<T, U> Fusion(params TileMaskCollection<T, U>[] args)
+        public static TileMaskCollection Fusion(params TileMaskCollection[] args)
         {
             if (args.Length == 1)
                 return args[0];
@@ -436,9 +435,9 @@ namespace SMWControlLibCommons.Graphics
                 col.Sort();
             });
 
-            TileMaskCollection<T, U>[] objs = new TileMaskCollection<T, U>[(args.Length >> 1) + (args.Length % 2)];
-            TileMaskCollection<T, U>[] res = args;
-            TileMaskCollection<T, U>[] aux = null;
+            TileMaskCollection[] objs = new TileMaskCollection[(args.Length >> 1) + (args.Length % 2)];
+            TileMaskCollection[] res = args;
+            TileMaskCollection[] aux = null;
             while (objs.Length > 1)
             {
                 Parallel.For(0, res.Length >> 1, i =>
@@ -449,7 +448,7 @@ namespace SMWControlLibCommons.Graphics
                 if (res.Length % 2 == 1) objs[objs.Length - 1] = res[res.Length - 1];
 
                 aux = objs;
-                objs = new TileMaskCollection<T, U>[(res.Length >> 1) + (res.Length % 2)];
+                objs = new TileMaskCollection[(res.Length >> 1) + (res.Length % 2)];
                 res = aux;
             }
 
@@ -461,7 +460,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="c1">The c1.</param>
         /// <param name="c2">The c2.</param>
         /// <returns>A SpriteTileMaskCollection.</returns>
-        public static TileMaskCollection<T, U> Fusion(TileMaskCollection<T, U> c1, TileMaskCollection<T, U> c2)
+        public static TileMaskCollection Fusion(TileMaskCollection c1, TileMaskCollection c2)
         {
             c1.Sort();
             c2.Sort();
@@ -469,7 +468,7 @@ namespace SMWControlLibCommons.Graphics
             var vals1 = c1.tiles;
             var vals2 = c2.tiles;
 
-            TileMaskCollection<T, U> ret = new TileMaskCollection<T, U>();
+            TileMaskCollection ret = new TileMaskCollection();
 
             int total = vals1.Count + vals2.Count;
             var enum1 = vals1.GetEnumerator();
@@ -509,7 +508,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="tiles">The tiles.</param>
         public void AddTiles(ITileCollection tiles)
         {
-            AddCollection((TileMaskCollection<T, U>)tiles);
+            AddCollection((TileMaskCollection)tiles);
         }
 
         /// <summary>
@@ -520,7 +519,7 @@ namespace SMWControlLibCommons.Graphics
             RemoveSelection();
         }
 
-        public static explicit operator TileMask<T, U>[](TileMaskCollection<T, U> c)
+        public static explicit operator TileMask[](TileMaskCollection c)
         {
             return c.tiles.ToArray();
         }
@@ -529,10 +528,10 @@ namespace SMWControlLibCommons.Graphics
         /// Clones the.
         /// </summary>
         /// <returns>A SpriteTileMaskCollection.</returns>
-        public TileMaskCollection<T, U> Clone()
+        public TileMaskCollection Clone()
         {
-            TileMaskCollection<T, U> col = new TileMaskCollection<T, U>();
-            foreach (TileMask<T, U> t in tiles)
+            TileMaskCollection col = new TileMaskCollection();
+            foreach (TileMask t in tiles)
             {
                 col.Add(t.Clone());
             }
@@ -549,7 +548,7 @@ namespace SMWControlLibCommons.Graphics
 
             if (tiles != null && tiles.Count > 0) 
             {
-                foreach (TileMask<T, U> t in tiles)
+                foreach (TileMask t in tiles)
                 {
                     ret.Add(t.Border);
                 }

@@ -2,7 +2,6 @@
 using ILGPU.Runtime;
 using ILGPU.Runtime.Cuda;
 using ILGPU.Runtime.OpenCL;
-using System.Collections.Generic;
 
 namespace SMWControlLibRendering
 {

@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibFrontend", "SMWControlLibFrontend\SMWControlLibFrontend\SMWControlLibFrontend.csproj", "{FDA55BDF-00F5-4B42-B8E9-61A25A70C501}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6239F537-78E0-4F54-8EAC-8DCEA93EDD63} = {6239F537-78E0-4F54-8EAC-8DCEA93EDD63}
+		{32599284-B077-4783-A342-409E5E7E9C56} = {32599284-B077-4783-A342-409E5E7E9C56}
+		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD} = {BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibFrontend.Gtk", "SMWControlLibFrontend\SMWControlLibFrontend.Gtk\SMWControlLibFrontend.Gtk.csproj", "{69FA364C-10D8-4182-A66B-433B890A9F4A}"
 EndProject
@@ -11,13 +16,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibFrontend.Mac",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibFrontend.Wpf", "SMWControlLibFrontend\SMWControlLibFrontend.Wpf\SMWControlLibFrontend.Wpf.csproj", "{BDF1D628-255F-4335-89FF-8103945A14A5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibSNES", "SMWControlLibBackend\SMWControlLibSNES.csproj", "{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibRendering", "SMWControlLibRendering\SMWControlLibRendering.csproj", "{32599284-B077-4783-A342-409E5E7E9C56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWControlLibRendering", "SMWControlLibRendering\SMWControlLibRendering.csproj", "{32599284-B077-4783-A342-409E5E7E9C56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibUtils", "SMWControlLibUtils\SMWControlLibUtils.csproj", "{6239F537-78E0-4F54-8EAC-8DCEA93EDD63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWControlLibUtils", "SMWControlLibUtils\SMWControlLibUtils.csproj", "{6239F537-78E0-4F54-8EAC-8DCEA93EDD63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMWControlLibCommons", "SMWControlLibCommons\SMWControlLibCommons.csproj", "{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWControlLibCommons", "SMWControlLibCommons\SMWControlLibCommons.csproj", "{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMWControlLibSNES", "SMWControlLibSNES\SMWControlLibSNES.csproj", "{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4CD6384B-C997-42D9-B3DF-384B52817067}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,22 +105,6 @@ Global
 		{BDF1D628-255F-4335-89FF-8103945A14A5}.Release|x64.Build.0 = Release|Any CPU
 		{BDF1D628-255F-4335-89FF-8103945A14A5}.Release|x86.ActiveCfg = Release|Any CPU
 		{BDF1D628-255F-4335-89FF-8103945A14A5}.Release|x86.Build.0 = Release|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Debug|ARM.Build.0 = Debug|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Debug|x64.Build.0 = Debug|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Debug|x86.Build.0 = Debug|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|ARM.ActiveCfg = Release|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|ARM.Build.0 = Release|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|x64.ActiveCfg = Release|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|x64.Build.0 = Release|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|x86.ActiveCfg = Release|Any CPU
-		{D3566C5E-A283-46BB-AFE9-A06DE46E6CBB}.Release|x86.Build.0 = Release|Any CPU
 		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32599284-B077-4783-A342-409E5E7E9C56}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -159,6 +153,22 @@ Global
 		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|x64.Build.0 = Release|Any CPU
 		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|x86.ActiveCfg = Release|Any CPU
 		{BA391BE4-F4E1-468B-9CF5-7A349D0ADEFD}.Release|x86.Build.0 = Release|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Debug|ARM.Build.0 = Debug|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Debug|x64.Build.0 = Debug|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Debug|x86.Build.0 = Debug|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Release|ARM.ActiveCfg = Release|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Release|ARM.Build.0 = Release|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Release|x64.ActiveCfg = Release|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Release|x64.Build.0 = Release|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Release|x86.ActiveCfg = Release|Any CPU
+		{87F587B2-DB92-4ACB-8259-DC4BD3B7D39A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

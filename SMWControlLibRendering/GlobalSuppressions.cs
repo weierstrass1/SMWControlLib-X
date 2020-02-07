@@ -3,4 +3,8 @@
 // Project-level suppressions either have no target or are given
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>", Scope = "member", Target = "~M:SMWControlLibRendering.Colors.ColorR8G8B8.op_Implicit(SMWControlLibRendering.Colors.ColorR8G8B8)~System.Boolean")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1715:Identifiers should have correct prefix", Justification = "<Pending>", Scope = "type", Target = "~T:SMWControlLibRendering.DirtyCollection`5")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>", Scope = "member", Target = "~F:SMWControlLibRendering.Enumerators.Flip.HorizontalVerticalFlip")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>", Scope = "member", Target = "~F:SMWControlLibRendering.Enumerators.Flip.VerticalFlip")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>", Scope = "member", Target = "~F:SMWControlLibRendering.Enumerators.Flip.HorizontalFlip")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2211:Non-constant fields should not be visible", Justification = "<Pending>", Scope = "member", Target = "~F:SMWControlLibRendering.Enumerators.Flip.NotFlipped")]

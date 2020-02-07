@@ -3,7 +3,7 @@ using SMWControlLibRendering;
 
 namespace SMWControlLibCommons.Interfaces.Graphics
 {
-    public interface IGridDrawable<T> : ITileCollection where T : struct
+    public interface IGridDrawable : ITileCollection
     {
         /// <summary>
         /// Gets or sets the x.
@@ -26,7 +26,7 @@ namespace SMWControlLibCommons.Interfaces.Graphics
         /// </summary>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        BitmapBuffer<T> GetGraphics(Zoom z);
+        BitmapBuffer GetGraphics(Zoom z);
         /// <summary>
         /// Selects the.
         /// </summary>

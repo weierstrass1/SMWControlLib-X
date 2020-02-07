@@ -9,7 +9,7 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile frame.
     /// </summary>
-    public class TileFrame<T> : IGridDrawable<T> where T: struct
+    public class TileFrame : IGridDrawable
     {
         /// <summary>
         /// Gets or sets the x.
@@ -60,7 +60,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         /// <param name="z">The z.</param>
         /// <returns>An array of uint.</returns>
-        public BitmapBuffer<T> GetGraphics(Zoom z)
+        public BitmapBuffer GetGraphics(Zoom z)
         {
             throw new System.NotImplementedException();
         }

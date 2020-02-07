@@ -4,9 +4,7 @@ using SMWControlLibSNES.Enumerators.Graphics;
 using SMWControlLibSNES.Graphics;
 using SMWControlLibFrontend.Enumerators;
 using SMWControlLibCommons.Enumerators.Graphics;
-using SMWControlLibRendering.Colors;
 using SMWControlLibRendering;
-using SMWControlLibRendering.Enumerators.Graphics;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -59,7 +57,7 @@ namespace SMWControlLibFrontend.Graphics
         private Rectangle selectionRectangle, lastRenderedSelection;
         private MouseState state = MouseState.Idle;
         private GFXBoxSize size = GFXBoxSize.Size128x128;
-        private BitmapBuffer<ColorR5G5B5> previewsBitmap;
+        private BitmapBuffer previewsBitmap;
         private PointF pointer;
         private Bitmap image;
         /// <summary>

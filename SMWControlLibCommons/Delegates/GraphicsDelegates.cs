@@ -2,6 +2,5 @@
 
 namespace SMWControlLibCommons.Delegates
 {
-    public delegate TileMaskCollection<T, U> SelectionHandler<T, U>() where T : struct
-                                                                        where U : struct;
+    public delegate TileMaskCollection SelectionHandler();
 }
