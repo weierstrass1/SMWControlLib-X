@@ -8,124 +8,124 @@ namespace SMWControlLibRendering.KernelStrategies
     /// <summary>
     /// The kernel strategy without params.
     /// </summary>
-    public abstract class KernelStrategy<T, U> : Strategy<T, U> where T : struct, IIndex
-                                                                where U : struct
+    public abstract class KernelStrategy<T1, T2> : Strategy<T1, T2> where T1 : struct, IIndex
+                                                                    where T2 : struct
     {
         /// <summary>
         /// Gets or sets the kernel.
         /// </summary>
-        protected Action<T, U> kernel { get; set; }
+        protected Action<T1, T2> kernel { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="KernelStrategy"/> class.
         /// </summary>
         public KernelStrategy()
         {
-            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T, U> (strategy);
+            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T1, T2>(strategy);
         }
     }
     /// <summary>
     /// The kernel strategy.
     /// </summary>
-    public abstract class KernelStrategy<T, U, V> : Strategy<T, U, V>   where T : struct, IIndex
-                                                                        where U : struct
-                                                                        where V : struct
+    public abstract class KernelStrategy<T1, T2, T3> : Strategy<T1, T2, T3> where T1 : struct, IIndex
+                                                                            where T2 : struct
+                                                                            where T3 : struct
     {
         /// <summary>
         /// Gets or sets the kernel.
         /// </summary>
-        protected Action<T, U, V> kernel { get; set; }
+        protected Action<T1, T2, T3> kernel { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="KernelStrategy"/> class.
         /// </summary>
         public KernelStrategy()
         {
-            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T, U, V>(strategy);
+            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T1, T2, T3>(strategy);
         }
     }
     /// <summary>
     /// The kernel strategy.
     /// </summary>
-    public abstract class KernelStrategy<T, U, V, W> : Strategy<T, U, V, W> where T : struct, IIndex
-                                                                            where U : struct
-                                                                            where V : struct
-                                                                            where W : struct
+    public abstract class KernelStrategy<T1, T2, T3, T4> : Strategy<T1, T2, T3, T4> where T1 : struct, IIndex
+                                                                                    where T2 : struct
+                                                                                    where T3 : struct
+                                                                                    where T4 : struct
     {
         /// <summary>
         /// Gets or sets the kernel.
         /// </summary>
-        protected Action<T, U, V, W> kernel { get; set; }
+        protected Action<T1, T2, T3, T4> kernel { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="KernelStrategy"/> class.
         /// </summary>
         public KernelStrategy()
         {
-            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T, U, V, W>(strategy);
+            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T1, T2, T3, T4>(strategy);
         }
     }
     /// <summary>
     /// The kernel strategy.
     /// </summary>
-    public abstract class KernelStrategy<T, U, V, W, X> : Strategy<T, U, V, W, X> where T : struct, IIndex
-                                                                                    where U : struct
-                                                                                    where V : struct
-                                                                                    where W : struct
-                                                                                    where X : struct
+    public abstract class KernelStrategy<T1, T2, T3, T4, T5> : Strategy<T1, T2, T3, T4, T5> where T1 : struct, IIndex
+                                                                                            where T2 : struct
+                                                                                            where T3 : struct
+                                                                                            where T4 : struct
+                                                                                            where T5 : struct
     {
         /// <summary>
         /// Gets or sets the kernel.
         /// </summary>
-        protected Action<T, U, V, W, X> kernel { get; set; }
+        protected Action<T1, T2, T3, T4, T5> kernel { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="KernelStrategy"/> class.
         /// </summary>
         public KernelStrategy()
         {
-            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T, U, V, W, X>(strategy);
+            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T1, T2, T3, T4, T5>(strategy);
         }
     }
     /// <summary>
     /// The kernel strategy.
     /// </summary>
-    public abstract class KernelStrategy<T, U, V, W, X, Y> : Strategy<T, U, V, W, X, Y> where T : struct, IIndex
-                                                                                        where U : struct
-                                                                                        where V : struct
-                                                                                        where W : struct
-                                                                                        where X : struct
-                                                                                        where Y : struct
+    public abstract class KernelStrategy<T1, T2, T3, T4, T5, T6> : Strategy<T1, T2, T3, T4, T5, T6> where T1 : struct, IIndex
+                                                                                                    where T2 : struct
+                                                                                                    where T3 : struct
+                                                                                                    where T4 : struct
+                                                                                                    where T5 : struct
+                                                                                                    where T6 : struct
     {
         /// <summary>
         /// Gets or sets the kernel.
         /// </summary>
-        protected Action<T, U, V, W, X, Y> kernel { get; set; }
+        protected Action<T1, T2, T3, T4, T5, T6> kernel { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="KernelStrategy"/> class.
         /// </summary>
         public KernelStrategy()
         {
-            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T, U, V, W, X, Y>(strategy);
+            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T1, T2, T3, T4, T5, T6>(strategy);
         }
     }
     /// <summary>
     /// The kernel strategy.
     /// </summary>
-    public abstract class KernelStrategy<T, U, V, W, X, Y, Z> : Strategy<T, U, V, W, X, Y, Z> where T : struct, IIndex
-                                                                                        where U : struct
-                                                                                        where V : struct
-                                                                                        where W : struct
-                                                                                        where X : struct
-                                                                                        where Y : struct
-                                                                                        where Z : struct
+    public abstract class KernelStrategy<T1, T2, T3, T4, T5, T6, T7> : Strategy<T1, T2, T3, T4, T5, T6, T7> where T1 : struct, IIndex
+                                                                                                            where T2 : struct 
+                                                                                                            where T3 : struct
+                                                                                                            where T4 : struct
+                                                                                                            where T5 : struct
+                                                                                                            where T6 : struct 
+                                                                                                            where T7 : struct
     {
         /// <summary>
         /// Gets or sets the kernel.
         /// </summary>
-        protected Action<T, U, V, W, X, Y, Z> kernel { get; set; }
+        protected Action<T1, T2, T3, T4, T5, T6, T7> kernel { get; set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="KernelStrategy"/> class.
         /// </summary>
         public KernelStrategy()
         {
-            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T, U, V, W, X, Y, Z>(strategy);
+            kernel = HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<T1, T2, T3, T4, T5, T6, T7>(strategy);
         }
     }
     /// <summary>
