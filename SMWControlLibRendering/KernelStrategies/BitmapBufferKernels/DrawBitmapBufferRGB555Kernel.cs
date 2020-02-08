@@ -1,13 +1,17 @@
 ﻿using ILGPU;
+using ILGPU.Runtime;
+using System;
 
 namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 {
     /// <summary>
     /// The draw bitmap buffer.
     /// </summary>
-    public class DrawBitmapBufferRGB555Kernel : KernelStrategy<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int>
+    public static class DrawBitmapBufferRGB555Kernel
     {
-        private static readonly DrawBitmapBufferRGB555Kernel instance = new DrawBitmapBufferRGB555Kernel();
+        private static readonly Action<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int> kernel = 
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int>
+            (strategy);
         /// <summary>
         /// Executes the.
         /// </summary>
@@ -20,7 +24,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         public static void Execute(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
             int dstWidth, int srcWidth)
         {
-            instance.kernel(index, destBuffer, srcBuffer, offset, dstWidth, srcWidth);
+            kernel(index, destBuffer, srcBuffer, offset, dstWidth, srcWidth);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -32,7 +36,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="offset">The offset.</param>
         /// <param name="dstWidth">The dst width.</param>
         /// <param name="srcWidth">The src width.</param>
-        protected override void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
+        private static void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
             int dstWidth, int srcWidth)
         {
             int indsrc = ((index.Y * srcWidth) + index.X) * 3;

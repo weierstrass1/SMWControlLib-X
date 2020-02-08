@@ -3,10 +3,6 @@ using Eto.Forms;
 using SMWControlLibSNES.Graphics;
 using SMWControlLibFrontend.Enumerators;
 using System;
-using System.Collections.Generic;
-using SMWControlLibCommons.Enumerators.Graphics;
-using SMWControlLibCommons.Delegates;
-using SMWControlLibCommons.Interfaces.Graphics;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -15,51 +11,6 @@ namespace SMWControlLibFrontend.Graphics
 	/// </summary>
 	public partial class OAMTileGrid : Drawable
 	{
-		private SpriteTileGrid grid;
-		private Bitmap image;
-		/// <summary>
-		/// Gets or sets the target.
-		/// </summary>
-		public IGridDrawable Target
-		{
-			get => grid.Target;
-			set
-			{
-				if (grid.Target != value)
-				{
-					grid.Target = value;
-					Invalidate();
-				}
-			}
-		}
-		public SelectionHandler AddingTiles;
-		/// <summary>
-		/// Gets the zoom.
-		/// </summary>
-		public Zoom Zoom
-		{
-			get => grid.Zoom; set
-			{
-				if (grid.Zoom != value)
-				{
-					grid.Zoom = value;
-					Width = grid.Side;
-					Height = grid.Side;
-					image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
-					Invalidate();
-				}
-			}
-		}
-		/// <summary>
-		/// Gets or sets the cell size.
-		/// </summary>
-		public GridCellSize CellSize { get => grid.CellSize; set { grid.CellSize = value; Invalidate(); } }
-		/// <summary>
-		/// Gets or sets the grid type.
-		/// </summary>
-		public GridType GridType { get => grid.GridType; set { grid.GridType = value; Invalidate(); } }
-		private MouseState state;
-		private Point select, action;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAMTileGrid"/> class.
 		/// </summary>
@@ -190,8 +141,6 @@ namespace SMWControlLibFrontend.Graphics
 				}
 			}
 		}
-
-		readonly List<long> times = new List<long>();
 		/// <summary>
 		/// paints the.
 		/// </summary>
@@ -199,22 +148,17 @@ namespace SMWControlLibFrontend.Graphics
 		/// <param name="e">The e.</param>
 		private void paint(object sender, PaintEventArgs e)
 		{
-			if (grid.Changed)
+			if (grid.GetGraphics())
 			{
-				byte[] b = grid.GetGraphics();
-				if (image.Width * image.Height != b.Length)
-					image = new Bitmap((int)Math.Sqrt(b.Length), (int)Math.Sqrt(b.Length), PixelFormat.Format32bppRgba);
+				if (image.Width * image.Height != grid.Lenght)
+					image = new Bitmap(grid.WidthWithZoom, grid.HeightWithZoom, PixelFormat.Format24bppRgb);
 
 				BitmapData bd = image.Lock();
 				unsafe
 				{
 					byte* bs = (byte*)bd.Data;
-					int l = b.Length;
 
-					fixed (byte* bp = b)
-					{
-						Buffer.MemoryCopy(bp, bs, l, l);
-					}
+					grid.CopyTo(bs);
 				}
 				bd.Dispose();
 			}

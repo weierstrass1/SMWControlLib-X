@@ -34,7 +34,7 @@ namespace SMWControlLibCommons.Interfaces.Graphics
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        ITileCollection Select(int x, int y, int width, int height);
+        ITileCollection SelectTiles(int x, int y, int width, int height);
         /// <summary>
         /// Moves the tiles.
         /// </summary>

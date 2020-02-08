@@ -20,6 +20,8 @@ namespace SMWControlLibFrontend.Graphics
         public GFXBoxControl()
         {
             InitializeComponent();
+            palette.RealObject.Load("pal.pal", 128);
+            gfxBox.Load("gfx.bin");
             MouseDown += mouseDown;
             MouseUp += mouseUp;
             MouseMove += mouseMove;
@@ -175,12 +177,7 @@ namespace SMWControlLibFrontend.Graphics
                 unsafe
                 {
                     byte* bs = (byte*)bd.Data;
-                    int l = b.Length;
-
-                    fixed (byte* bp = b.Pixels)
-                    {
-                        Buffer.MemoryCopy(bp, bs, l, l);
-                    }
+                    b.CopyTo(bs);
                 }
                 bd.Dispose();
             }

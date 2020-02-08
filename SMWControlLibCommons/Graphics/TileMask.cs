@@ -66,8 +66,8 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="props">The props.</param>
         public TileMask(int x, int y, Tile tile, TileProperties props)
         {
+            Tile = tile ?? throw new ArgumentNullException(nameof(tile));
             Border = new TileBorder(x, y, tile.Size);
-            Tile = tile;
             X = x;
             Y = y;
             Z = 0;
@@ -90,10 +90,8 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>An int.</returns>
         public int Compare(object o1, object o2)
         {
-            if(o1 == null || o2 == null)
-            {
-                throw new ArgumentNullException("Can't compare null objects");
-            }
+            if (o1 == null) throw new ArgumentNullException(nameof(o1));
+            if (o2 == null) throw new ArgumentNullException(nameof(o2));
             TileMask x = (TileMask)o1;
             TileMask y = (TileMask)o2;
             if (x.Z < y.Z) return -1;

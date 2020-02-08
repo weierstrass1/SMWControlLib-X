@@ -92,14 +92,14 @@ namespace SMWControlLibCommons.Graphics
 
             if (!bitmaps.ContainsKey(z))
             {
-                bitmaps.TryAdd(z, new DirtyBitmap(BitmapBuffer.CreateInstance(new byte[lenght], Width * z)));
+                bitmaps.TryAdd(z, new DirtyBitmap(BitmapBuffer.CreateInstance(Width * z, Height * z)));
             }
 
             DirtyBitmap d = bitmaps[z];
             if (d.IsDirty)
             {
                 if (d.Bitmap.Length < lenght)
-                    d.Bitmap = BitmapBuffer.CreateInstance(new byte[lenght], Width * z);
+                    d.Bitmap = BitmapBuffer.CreateInstance(Width * z, Height * z);
 
                 foreach (TileMask t in tiles)
                 {
@@ -366,10 +366,13 @@ namespace SMWControlLibCommons.Graphics
         public void AddCollection(TileMaskCollection col)
         {
             ClearSelection();
-            col.Sort();
-            foreach (TileMask t in col.tiles)
+            if (col != null)
             {
-                Add(t);
+                col.Sort();
+                foreach (TileMask t in col.tiles)
+                {
+                    Add(t);
+                }
             }
             RequireRefresh = true;
             OnCollectionAdded?.Invoke(this, col);
@@ -380,6 +383,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="tile">The tile.</param>
         public void Add(TileMask tile)
         {
+            if (tile == null) return;
             if (Count > 0)
                 tile.Z = tiles.Last().Z + 1;
             else
@@ -462,6 +466,8 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>A SpriteTileMaskCollection.</returns>
         public static TileMaskCollection Fusion(TileMaskCollection c1, TileMaskCollection c2)
         {
+            if (c1 == null) throw new ArgumentNullException(nameof(c1));
+            if (c2 == null) throw new ArgumentNullException(nameof(c2));
             c1.Sort();
             c2.Sort();
 
@@ -519,11 +525,6 @@ namespace SMWControlLibCommons.Graphics
             RemoveSelection();
         }
 
-        public static explicit operator TileMask[](TileMaskCollection c)
-        {
-            return c.tiles.ToArray();
-        }
-
         /// <summary>
         /// Clones the.
         /// </summary>
@@ -564,6 +565,6 @@ namespace SMWControlLibCommons.Graphics
         public bool IsEmpty()
         {
             return tiles != null && tiles.Count > 0;
-;        }
+        }
     }
 }

@@ -68,6 +68,7 @@ namespace SMWControlLibRendering
         public static void Dispose()
         {
             if (context != null) context.Dispose();
+            if (GPUAccelerator != null) GPUAccelerator.Dispose();
         }
     }
 }

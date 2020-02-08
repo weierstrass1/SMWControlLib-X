@@ -22,11 +22,11 @@ namespace SMWControlLibCommons.Graphics
         /// Constructor of the class.
         /// </summary>
         /// <param name="size">Size of the tile.</param>
-        public Tile(TileSize size, TileIndex index) : base(size.Width, size.Height)
+        public Tile(TileSize size, TileIndex index) : base(size != null ? size.Width : 0,
+                                                            size != null ? size.Height : 0)
         {
-            if (size == null || index == null) throw new ArgumentNullException("Argument can't be null on Tile Instance");
-            Size = size;
-            Index = index;
+            Size = size ?? throw new ArgumentNullException(nameof(size));
+            Index = index ?? throw new ArgumentNullException(nameof(index));
         }
     }
 }

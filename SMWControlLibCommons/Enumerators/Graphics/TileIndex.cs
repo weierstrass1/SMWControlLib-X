@@ -1,4 +1,5 @@
 ﻿using SMWControlLibUtils;
+using System.Globalization;
 
 namespace SMWControlLibCommons.Enumerators.Graphics
 {
@@ -28,7 +29,7 @@ namespace SMWControlLibCommons.Enumerators.Graphics
         {
             X = x;
             Y = y;
-            StringValue = Value.ToString("X2");
+            StringValue = Value.ToString("X2", CultureInfo.InvariantCulture);
         }
         /// <summary>
         /// Tos the string.

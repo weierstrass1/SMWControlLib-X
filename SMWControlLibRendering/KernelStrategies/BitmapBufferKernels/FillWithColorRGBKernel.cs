@@ -1,13 +1,17 @@
 ﻿using ILGPU;
+using ILGPU.Runtime;
+using System;
 
 namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 {
     /// <summary>
     /// The fill with color.
     /// </summary>
-    public class FillWithColorRGBKernel : KernelStrategy<Index, ArrayView<byte>, byte, byte, byte>
+    public static class FillWithColorRGBKernel
     {
-        private static readonly FillWithColorRGBKernel instance = new FillWithColorRGBKernel();
+        private static readonly Action<Index, ArrayView<byte>, byte, byte, byte> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index, ArrayView<byte>, byte, byte, byte>
+            (strategy);
         /// <summary>
         /// Executes the.
         /// </summary>
@@ -16,7 +20,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="backgroundColor">The background color.</param>
         public static void Execute(Index index, ArrayView<byte> destBuffer, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
-            instance.kernel(index, destBuffer, backgroundColorR, backgroundColorG, backgroundColorB);
+            kernel(index, destBuffer, backgroundColorR, backgroundColorG, backgroundColorB);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -25,12 +29,12 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="index">The index.</param>
         /// <param name="destBuffer">The dest buffer.</param>
         /// <param name="backgroundColor">The background color.</param>
-        protected override void strategy(Index index, ArrayView<byte> destBuffer, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        private static void strategy(Index index, ArrayView<byte> destBuffer, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
             int ind = index * 3;
-            destBuffer[ind] = backgroundColorR;
+            destBuffer[ind] = backgroundColorB;
             destBuffer[ind + 1] = backgroundColorG;
-            destBuffer[ind + 2] = backgroundColorB;
+            destBuffer[ind + 2] = backgroundColorR;
         }
     }
 }

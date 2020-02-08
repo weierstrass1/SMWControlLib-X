@@ -1,13 +1,17 @@
 ﻿using ILGPU;
+using ILGPU.Runtime;
+using System;
 
 namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 {
     /// <summary>
     /// The draw bitmap buffer with zoom.
     /// </summary>
-    public class DrawBitmapBufferWithZoomRGB555Kernel : KernelStrategy<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int>
+    public static class DrawBitmapBufferWithZoomRGB555Kernel
     {
-        private static readonly DrawBitmapBufferWithZoomRGB555Kernel instance = new DrawBitmapBufferWithZoomRGB555Kernel();
+        private static readonly Action<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int>
+            (strategy);
         /// <summary>
         /// Executes the.
         /// </summary>
@@ -21,7 +25,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         public static void Execute(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
             int dstWidth, int srcWidth, int zoom)
         {
-            instance.kernel(index, destBuffer, srcBuffer, offset, dstWidth, srcWidth, zoom);
+            kernel(index, destBuffer, srcBuffer, offset, dstWidth, srcWidth, zoom);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -34,7 +38,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="dstWidth">The dst width.</param>
         /// <param name="srcWidth">The src width.</param>
         /// <param name="zoom">The zoom.</param>
-        protected override void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
+        private static void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
             int dstWidth, int srcWidth, int zoom)
         {
             int indsrc = ((index.Y * srcWidth) + index.X) * 3;

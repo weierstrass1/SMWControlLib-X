@@ -1,13 +1,17 @@
 ﻿using ILGPU;
+using ILGPU.Runtime;
+using System;
 
 namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 {
     /// <summary>
     /// The draw rectangle border.
     /// </summary>
-    public class DrawRectangleBorderRGBKernel : KernelStrategy<Index, ArrayView<byte>, int, int, int, int, int, int, byte, byte, byte> 
+    public static class DrawRectangleBorderRGBKernel
     {
-        private static readonly DrawRectangleBorderRGBKernel instance = new DrawRectangleBorderRGBKernel();
+        private static readonly Action<Index, ArrayView<byte>, int, int, int, int, int, int, byte, byte, byte> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index, ArrayView<byte>, int, int, int, int, int, int, byte, byte, byte>
+            (strategy);
         /// <summary>
         /// Executes the.
         /// </summary>
@@ -23,7 +27,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         public static void Execute(Index index, ArrayView<byte> destBuffer, int offset, int dstWidth,
             int xoffset, int yoffset, int rWidth, int rHeight, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
-            instance.kernel(index, destBuffer, offset, dstWidth, xoffset, yoffset, rWidth, rHeight, backgroundColorR, backgroundColorG, backgroundColorB);
+            kernel(index, destBuffer, offset, dstWidth, xoffset, yoffset, rWidth, rHeight, backgroundColorR, backgroundColorG, backgroundColorB);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -38,7 +42,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="rWidth">The r width.</param>
         /// <param name="rHeight">The r height.</param>
         /// <param name="rectangleColor">The rectangle color.</param>
-        protected override void strategy(Index index, ArrayView<byte> destBuffer, int offset, int dstWidth, 
+        private static void strategy(Index index, ArrayView<byte> destBuffer, int offset, int dstWidth, 
             int xoffset, int yoffset, int rWidth, int rHeight, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
             if (index <= rWidth)

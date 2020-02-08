@@ -29,7 +29,7 @@ namespace SMWControlLibFrontend.Graphics
                 gfxBox = new SpriteTileGFXBox(size);
                 Width = size.Width * Zoom;
                 Height = size.Height * Zoom;
-                image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
+                image = new Bitmap(Width, Height, PixelFormat.Format24bppRgb);
             }
         }
 
@@ -45,7 +45,7 @@ namespace SMWControlLibFrontend.Graphics
                 zoom = value;
                 Width = size.Width * value;
                 Height = size.Height * value;
-                image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
+                image = new Bitmap(Width, Height, PixelFormat.Format24bppRgb);
             }
         }
 
@@ -68,7 +68,7 @@ namespace SMWControlLibFrontend.Graphics
             gfxBox = new SpriteTileGFXBox(size);
             Width = size.Width * Zoom;
             Height = size.Height * Zoom;
-            image = new Bitmap(Width, Height, PixelFormat.Format32bppRgba);
+            image = new Bitmap(Width, Height, PixelFormat.Format24bppRgb);
             ClientSize = new Size(Width, Height);
             selectionRectangle = new Rectangle();
             palette = new SNESColorPalette(SpriteColorPaletteIndex.SpritePalette0, 16);

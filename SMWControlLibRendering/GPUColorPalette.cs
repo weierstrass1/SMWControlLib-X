@@ -28,8 +28,10 @@ namespace SMWControlLibRendering
         /// <param name="args">The args.</param>
         public override void Initialize(params object[] args)
         {
+            if (Buffer != null) Buffer.Dispose();
+            BytesPerColor = 3;
             base.Initialize(args);
-            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>((int)args[1]);
+            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>((int)args[1] * BytesPerColor);
         }
         /// <summary>
         /// Gets the color.
@@ -50,10 +52,10 @@ namespace SMWControlLibRendering
         public override void Load(byte[] bin, int offset)
         {
             if (bin == null) throw new ArgumentNullException(nameof(bin));
-            int w = Math.Min(bin.Length - (offset * 3), Buffer.Length);
+            int w = Math.Min(bin.Length - (offset * BytesPerColor), Buffer.Length);
             if (w <= 0) return;
 
-            Buffer.CopyFrom(bin, offset * 3, new Index(0), Buffer.Extent);
+            Buffer.CopyFrom(bin, offset * BytesPerColor, new Index(0), Buffer.Extent);
         }
 
         /// <summary>
@@ -64,7 +66,7 @@ namespace SMWControlLibRendering
         public override void SetColor(int index, byte R, byte G, byte B)
         {
             byte[] color = { R, G, B };
-            Buffer.CopyFrom(color, 0, new Index(index * 3), new Index(3));
+            Buffer.CopyFrom(color, 0, new Index(index * BytesPerColor), new Index(3));
         }
 
         /// <summary>

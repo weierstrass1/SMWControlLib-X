@@ -13,9 +13,25 @@ namespace SMWControlLibCommons.Graphics
     public class TileGrid
     {
         /// <summary>
-        /// Gets the side.
+        /// Gets or sets the lenght.
         /// </summary>
-        public int Side => Zoom * 255;
+        public int Lenght { get; protected set; }
+        /// <summary>
+        /// Gets or sets the width.
+        /// </summary>
+        public int WidthWithZoom { get; protected set; }
+        /// <summary>
+        /// Gets or sets the height.
+        /// </summary>
+        public int HeightWithZoom { get; protected set; }
+        /// <summary>
+        /// Gets or sets the width.
+        /// </summary>
+        public int Width { get; protected set; }
+        /// <summary>
+        /// Gets or sets the height.
+        /// </summary>
+        public int Height { get; protected set; }
         /// <summary>
         /// Gets or sets the target.
         /// </summary>
@@ -64,10 +80,21 @@ namespace SMWControlLibCommons.Graphics
         /// Gets or sets a value indicating whether draw guidelines.
         /// </summary>
         public bool DrawGuidelines { get; set; }
+        private Zoom zoom;
         /// <summary>
         /// Gets or sets the zoom.
         /// </summary>
-        public Zoom Zoom { get; set; }
+        public Zoom Zoom
+        {
+            get => zoom;
+            set
+            {
+                zoom = value;
+                WidthWithZoom = Width * zoom;
+                HeightWithZoom = Height * zoom;
+                Lenght = WidthWithZoom * HeightWithZoom;
+            }
+        }
         /// <summary>
         /// Gets or sets the cell size.
         /// </summary>
@@ -76,41 +103,36 @@ namespace SMWControlLibCommons.Graphics
         /// Gets or sets the grid type.
         /// </summary>
         public GridType GridType { get; set; }
-        private BitmapBuffer image;
+        private BitmapBuffer layer1, layer2;
         private ITileCollection tileSelection;
         private bool moved = false;
         private bool selectionChanged = false;
         private bool requireRefresh = true;
         /// <summary>
-        /// Gets a value indicating whether changed.
-        /// </summary>
-        public bool Changed { get; private set; } = true;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TileGrid"/> class.
         /// </summary>
-        public TileGrid()
+        public TileGrid(int width, int height)
         {
+            Width = width;
+            Height = height;
         }
 
         /// <summary>
         /// Gets the graphics.
         /// </summary>
         /// <returns>An array of uint.</returns>
-        public byte[] GetGraphics()
+        public bool GetGraphics()
         {
-            Changed = false;
-            int s = Side;
-            int s2 = s * s;
-            if (image == null)
+            bool changed = false;
+            if (layer1 == null)
             {
-                image = BitmapBuffer.CreateInstance(new byte[s2], s);
-                Changed = true;
+                layer1 = BitmapBuffer.CreateInstance(WidthWithZoom, HeightWithZoom);
+                changed = true;
             }
-            else if(image.Length != s2)
+            else if (layer1.Length != Lenght * layer1.BytesPerColor)  
             {
-                image.Initialize(new byte[s2], s);
-                Changed = true;
+                layer1.Initialize(WidthWithZoom, HeightWithZoom);
+                changed = true;
             }
 
             if (requireRefresh || moved)
@@ -119,36 +141,36 @@ namespace SMWControlLibCommons.Graphics
                 {
                     BitmapBuffer t = Target.GetGraphics(Zoom);
                     if (t != null)
-                        image.DrawBitmapBuffer(t, Target.Left * Zoom, Target.Top * Zoom, BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                        layer1.DrawBitmapBuffer(t, Target.Left * Zoom, Target.Top * Zoom, BackgroundColorR, BackgroundColorG, BackgroundColorB);
                     else
-                        image.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                        layer1.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
                 }
                 else
                 {
-                    image.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                    layer1.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
                 }
-                Changed = true;
+                changed = true;
             }
 
             if (DrawGrid && (requireRefresh || moved)) 
             {
-                image.DrawGrid(Zoom, CellSize, GridType, GridColorR, GridColorG, GridColorB);
-                Changed = true;
+                layer1.DrawGrid(Zoom, CellSize, GridType, GridColorR, GridColorG, GridColorB);
+                changed = true;
             }
 
             if (DrawGuidelines && (requireRefresh || moved))
             {
                 int guideRectSize = 16 * Zoom;
                 int guideRectOffset = 112 * Zoom;
-                image.DrawRectangleBorder(guideRectOffset, guideRectOffset, guideRectSize, guideRectSize, SelectionColorR, SelectionColorG, SelectionColorB);
+                layer1.DrawRectangleBorder(guideRectOffset, guideRectOffset, guideRectSize, guideRectSize, SelectionColorR, SelectionColorG, SelectionColorB);
                 int guideLineOffset = 120 * Zoom;
-                image.DrawLine(guideLineOffset, 0, guideLineOffset, Side, SelectionColorR, SelectionColorG, SelectionColorB);
-                image.DrawLine(0, guideLineOffset, Side, guideLineOffset, SelectionColorR, SelectionColorG, SelectionColorB);
-                Changed = true;
+                layer1.DrawLine(guideLineOffset, 0, guideLineOffset, HeightWithZoom, SelectionColorR, SelectionColorG, SelectionColorB);
+                layer1.DrawLine(0, guideLineOffset, WidthWithZoom, guideLineOffset, SelectionColorR, SelectionColorG, SelectionColorB);
+                changed = true;
             }
             requireRefresh = false;
 
-            BitmapBuffer im = image;
+            layer2 = layer1;
             if (selectionChanged || moved)
             {
                 if (tileSelection != null)
@@ -156,21 +178,21 @@ namespace SMWControlLibCommons.Graphics
                     List<TileBorder> rects = tileSelection.GetTileBorders();
                     if (rects.Count != 0)
                     {
-                        im = image.Clone();
+                        layer2 = layer1.Clone();
 
                         Parallel.ForEach(rects, r =>
                         {
-                            im.DrawRectangleBorder(r.X * Zoom, r.Y * Zoom, r.Width * Zoom, r.Height * Zoom, SelectionColorR, SelectionColorG, SelectionColorB);
+                            layer2.DrawRectangleBorder(r.X * Zoom, r.Y * Zoom, r.Width * Zoom, r.Height * Zoom, SelectionColorR, SelectionColorG, SelectionColorB);
                         });
 
                     }
                     selectionChanged = false;
                 }
-                Changed = true;
+                changed = true;
             }
             moved = false;
 
-            return im.Pixels;
+            return changed;
         }
         /// <summary>
         /// Addings the at position.
@@ -216,7 +238,7 @@ namespace SMWControlLibCommons.Graphics
         {
             if (Target != null)
             {
-                tileSelection = Target.Select(x / Zoom, y / Zoom, width / Zoom, height / Zoom);
+                tileSelection = Target.SelectTiles(x / Zoom, y / Zoom, width / Zoom, height / Zoom);
                 selectionChanged = selectionChanged || tileSelection.IsEmpty();
             }
         }
@@ -229,9 +251,8 @@ namespace SMWControlLibCommons.Graphics
         {
             if (Target != null)
             {
-                int s = Side;
-                if (x + Target.Width > s) x = s - Target.Width;
-                if (y + Target.Height > s) y = s - Target.Height;
+                if (x + Target.Width > WidthWithZoom) x = WidthWithZoom - Target.Width;
+                if (y + Target.Height > HeightWithZoom) y = HeightWithZoom - Target.Height;
                 if (x < 0) x = 0;
                 if (y < 0) y = 0;
 
@@ -248,7 +269,7 @@ namespace SMWControlLibCommons.Graphics
                 bool b = Target.MoveTiles(x, y);
                 if (b)
                 {
-                    image.DrawRectangle(drx, dry, drw, drh, BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                    layer1.DrawRectangle(drx, dry, drw, drh, BackgroundColorR, BackgroundColorG, BackgroundColorB);
                 }
 
                 moved = moved || b;
@@ -304,6 +325,14 @@ namespace SMWControlLibCommons.Graphics
             int ydivz = y / Zoom;
             if (ydivz > tileSelection.Bottom) return -1;
             return ydivz - tileSelection.Top;
+        }
+        /// <summary>
+        /// Copies the to.
+        /// </summary>
+        /// <param name="b">The b.</param>
+        public unsafe void CopyTo(byte* b)
+        {
+            layer2.CopyTo(b);
         }
     }
 }

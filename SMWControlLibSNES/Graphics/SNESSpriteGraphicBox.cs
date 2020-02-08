@@ -115,9 +115,14 @@ namespace SMWControlLibSNES.Graphics
         {
             if (RealObject is IndexedGPUBitmapBuffer b)
             {
-                MemoryBuffer<byte> srcBuffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(bin.Length);
-                srcBuffer.CopyFrom(bin, 0, Index.Zero, bin.Length);
-                Load4BPP.Execute(new Index3(bin.Length / 32, 8, 8), b.Buffer, srcBuffer, offset, offset / 32);
+                int l = bin.Length - offset;
+                MemoryBuffer<byte> srcBuffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(l);
+                srcBuffer.CopyFrom(bin, offset, Index.Zero, l);
+                int blocks = l >> 5;
+                int bs = (RealObject.Width * RealObject.Height) >> 6;
+                if (blocks > bs) blocks = bs;
+                Load4BPP.Execute(new Index3(blocks, 8, 8), b.Buffer, srcBuffer, offset);
+                srcBuffer.Dispose();
             }
         }
     }

@@ -23,7 +23,7 @@ namespace SMWControlLibRendering.DirtyClasses
         /// </summary>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public DirtyBitmap(int width, int height) : base(BitmapBuffer.CreateInstance(new byte[width * height], width))
+        public DirtyBitmap(int width, int height) : base(BitmapBuffer.CreateInstance(width, height))
         {
 
         }

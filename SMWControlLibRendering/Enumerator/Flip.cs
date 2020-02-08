@@ -7,10 +7,10 @@ namespace SMWControlLibRendering.Enumerators
     /// </summary>
     public class Flip : FakeEnumerator
     {
-        public static Flip NotFlipped = new Flip(false, false, 0);
-        public static Flip HorizontalFlip = new Flip(true, false, 1);
-        public static Flip VerticalFlip = new Flip(false, true, 2);
-        public static Flip HorizontalVerticalFlip = new Flip(true, true, 3);
+        public static readonly Flip NotFlipped = new Flip(false, false, 0);
+        public static readonly Flip HorizontalFlip = new Flip(true, false, 1);
+        public static readonly Flip VerticalFlip = new Flip(false, true, 2);
+        public static readonly Flip HorizontalVerticalFlip = new Flip(true, true, 3);
         /// <summary>
         /// Gets a value indicating whether flip x.
         /// </summary>

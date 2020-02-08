@@ -13,7 +13,7 @@ namespace SMWControlLibSNES.Graphics.DirtyClasses
         /// </summary>
         /// <param name="size">The size.</param>
         /// <param name="index">The index.</param>
-        public DirtySNESSpriteTile(TileSize size, TileIndex index) : base(size, index)
+        public DirtySNESSpriteTile(TileSize size, TileIndex index) : base(new SNESSpriteTile(size, index))
         {
         }
     }

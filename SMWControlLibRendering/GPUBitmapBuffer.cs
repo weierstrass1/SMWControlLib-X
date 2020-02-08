@@ -10,25 +10,8 @@ namespace SMWControlLibRendering
     /// </summary>
     public class GPUBitmapBuffer : BitmapBuffer
     {
-        protected bool disposed = false;
-        protected bool requireCopyTo = true;
+        protected bool requireCopyTo;
         protected byte[] pixels;
-        /// <summary>
-        /// Gets or sets the pixels.
-        /// </summary>
-        public override byte[] Pixels
-        {
-            get
-            {
-                if (requireCopyTo)
-                {
-                    Buffer.CopyTo(pixels, Index.Zero, 0, Buffer.Extent);
-                    requireCopyTo = false;
-                }
-                return pixels;
-            }
-            protected set => pixels = value;
-        }
         /// <summary>
         /// Gets or sets the buffer.
         /// </summary>
@@ -38,7 +21,7 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="pixels">The pixels.</param>
         /// <param name="width">The width.</param>
-        public GPUBitmapBuffer(byte[] pixels, int width) : base(pixels, width)
+        public GPUBitmapBuffer(int width, int height) : base(width, height)
         {
         }
         /// <summary>
@@ -46,18 +29,18 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="pixels">The pixels.</param>
         /// <param name="width">The width.</param>
-        public override void Initialize(byte[] pixls, int width)
+        public override void Initialize(int width, int height)
         {
-            if (pixls == null) throw new ArgumentNullException(nameof(pixls));
             BytesPerColor = 3;
             if (Buffer != null)
             {
                 Buffer.Dispose();
             }
-
-            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(pixls.Length);
-            base.Initialize(pixls, width);
-            Buffer.CopyFrom(pixls, 0, Index.Zero, Buffer.Extent);
+            int l = width * height * BytesPerColor;
+            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(l);
+            pixels = new byte[l];
+            requireCopyTo = true;
+            base.Initialize(width, height);
         }
         /// <summary>
         /// Clones the.
@@ -65,7 +48,7 @@ namespace SMWControlLibRendering
         /// <returns>A BitmapBuffer.</returns>
         public override BitmapBuffer Clone()
         {
-            GPUBitmapBuffer clone = new GPUBitmapBuffer(new byte[Length], Width);
+            GPUBitmapBuffer clone = new GPUBitmapBuffer(Width, Height);
             clone.DrawBitmapBuffer(this, 0, 0);
             return clone;
         }
@@ -144,7 +127,7 @@ namespace SMWControlLibRendering
         /// <param name="gridColor">The grid color.</param>
         public override void DrawGrid(int zoom, int cellsize, int type, byte colorR, byte colorG, byte colorB)
         {
-            throw new NotImplementedException();
+            requireCopyTo = true;
         }
         /// <summary>
         /// Draws the line.
@@ -156,7 +139,7 @@ namespace SMWControlLibRendering
         /// <param name="lineColor">The line color.</param>
         public override void DrawLine(int x1, int y1, int x2, int y2, byte colorR, byte colorG, byte colorB)
         {
-            throw new NotImplementedException();
+            requireCopyTo = true;
         }
         /// <summary>
         /// Draws the rectangle.
@@ -179,7 +162,7 @@ namespace SMWControlLibRendering
         /// <param name="backgroundColor">The background color.</param>
         public override void FillWithColor(byte colorR, byte colorG, byte colorB)
         {
-            FillWithColorRGBKernel.Execute(Buffer.Extent, Buffer, colorR, colorG, colorB);
+            FillWithColorRGBKernel.Execute(Buffer.Length / BytesPerColor, Buffer, colorR, colorG, colorB);
             requireCopyTo = true;
         }
         /// <summary>
@@ -201,12 +184,16 @@ namespace SMWControlLibRendering
         /// <param name="zoom">The zoom.</param>
         public override void ZoomIn(int zoom)
         {
-            GPUBitmapBuffer b = new GPUBitmapBuffer(Pixels, Width);
+            GPUBitmapBuffer b = new GPUBitmapBuffer(Width, Height)
+            {
+                Buffer = Buffer
+            };
 
-            int l = Pixels.Length * zoom * zoom;
-            Initialize(new byte[l], Width * zoom);
+            Initialize(Width * zoom, Height * zoom);
 
             DrawBitmapBuffer(b, 0, 0, zoom);
+            b.Buffer.Dispose();
+            requireCopyTo = true;
         }
 
         /// <summary>
@@ -216,12 +203,34 @@ namespace SMWControlLibRendering
         /// <param name="backgroundColor">The background color.</param>
         public override void ZoomIn(int zoom, byte colorR, byte colorG, byte colorB)
         {
-            GPUBitmapBuffer b = new GPUBitmapBuffer(Pixels, Width);
+            GPUBitmapBuffer b = new GPUBitmapBuffer(Width, Height)
+            {
+                Buffer = Buffer
+            };
 
-            int l = Pixels.Length * zoom * zoom;
-            Initialize(new byte[l], Width * zoom);
+            Initialize(Width * zoom, Height * zoom);
 
             DrawBitmapBuffer(b, 0, 0, zoom, colorR, colorG, colorB);
+            b.Buffer.Dispose();
+            requireCopyTo = true;
+        }
+
+        /// <summary>
+        /// Copies the to.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        public override unsafe void CopyTo(byte* target)
+        {
+            if(requireCopyTo)
+            {
+                Buffer.CopyTo(pixels, 0, 0, Buffer.Extent);
+                HardwareAcceleratorManager.GPUAccelerator.Synchronize();
+                requireCopyTo = false;
+            }
+            fixed (byte* bp = pixels)
+            {
+                System.Buffer.MemoryCopy(bp, target, Length, Length);
+            }
         }
     }
 }

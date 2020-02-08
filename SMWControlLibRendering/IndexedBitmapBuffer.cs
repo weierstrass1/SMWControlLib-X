@@ -23,10 +23,18 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public IndexedBitmapBuffer(int width, int height)
+        public IndexedBitmapBuffer(int width, int height) : base(width, height)
         {
-            Width = width;
-            Height = height;
+        }
+        /// <summary>
+        /// Initializes the.
+        /// </summary>
+        /// <param name="args">The args.</param>
+        public override void Initialize(params object[] args)
+        {
+            base.Initialize(args);
+            Width = (int)args[0];
+            Height = (int)args[1];
         }
         /// <summary>
         /// Creates the bitmap buffer.

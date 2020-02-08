@@ -1,13 +1,12 @@
 ﻿using SMWControlLibRendering.Factory;
 using SMWControlLibUtils;
-using System;
 
 namespace SMWControlLibRendering
 {
     /// <summary>
     /// The bitmap buffer.
     /// </summary>
-    public abstract class BitmapBuffer: CanFactory<byte[], int>
+    public abstract class BitmapBuffer: CanFactory<int, int>
     {
         private static readonly BitmapBufferFactory factory = new BitmapBufferFactory();
         /// <summary>
@@ -16,9 +15,9 @@ namespace SMWControlLibRendering
         /// <param name="pixels">The pixels.</param>
         /// <param name="width">The width.</param>
         /// <returns>A BitmapBuffer.</returns>
-        public static BitmapBuffer CreateInstance(byte[] pixels, int width)
+        public static BitmapBuffer CreateInstance(int width, int height)
         {
-            return factory.GenerateObject(pixels, width);
+            return factory.GenerateObject(width, height);
         }
         /// <summary>
         /// Gets or sets the width.
@@ -29,13 +28,9 @@ namespace SMWControlLibRendering
         /// </summary>
         public int Height { get; protected set; }
         /// <summary>
-        /// Gets or sets the pixels.
-        /// </summary>
-        public abstract byte[] Pixels { get; protected set; }
-        /// <summary>
         /// Gets the length.
         /// </summary>
-        public int Length => Pixels.Length;
+        public int Length { get; protected set; }
         /// <summary>
         /// Gets or sets the bytes per color.
         /// </summary>
@@ -45,7 +40,7 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="pixels">The pixels.</param>
         /// <param name="width">The width.</param>
-        public BitmapBuffer(byte[] pixels, int width) : base(pixels, width)
+        public BitmapBuffer(int width, int height) : base(width, height)
         {
         }
         /// <summary>
@@ -53,28 +48,11 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="pixls">The pixels.</param>
         /// <param name="width">The width.</param>
-        public override void Initialize(byte[] pixls, int width)
+        public override void Initialize(int width, int height)
         {
-            if (pixls == null) throw new ArgumentNullException(nameof(pixls));
-            if (pixls != null && pixls.Length > 0 && pixls.Length / BytesPerColor % width == 0) 
-            {
-                Pixels = pixls;
-                Width = width;
-                Height = pixls.Length / width;
-            }
-            else
-            {
-
-                if (pixls.Length <= 0)
-                {
-                    throw new ArgumentException("Pixels length is 0.", nameof(pixls));
-                }
-
-                if (pixls.Length % width != 0)
-                {
-                    throw new Exception("Pixels length is not divisible by width.");
-                }
-            }
+            Width = width;
+            Height = height;
+            Length = width * height * BytesPerColor;
         }
         /// <summary>
         /// Draws the bitmap.
@@ -158,5 +136,10 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <returns>A BitmapBuffer.</returns>
         public abstract BitmapBuffer Clone();
+        /// <summary>
+        /// Copies the to.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        public abstract unsafe void CopyTo(byte* target);
     }
 }

@@ -12,11 +12,11 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile g f x box.
     /// </summary>
-    public abstract class GraphicBox<A, B, C> : IndexedBitmapBufferDisguise, ICanLoad    where A : DirtyTile
-                                                                                            where B : Tile
-                                                                                            where C : DirtyTileFactory, new()
+    public abstract class GraphicBox<TD, TT, TF> : IndexedBitmapBufferDisguise, ICanLoad    where TD : DirtyTile
+                                                                                            where TT : Tile
+                                                                                            where TF : DirtyTileFactory, new()
     {
-        protected C tileFactory = new C();
+        protected TF tileFactory = new TF();
         protected TileDirtyCollectionDisguise tiles = new TileDirtyCollectionDisguise();
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicBox"/> class.
@@ -33,11 +33,11 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="hIndex">The h index.</param>
         /// <param name="vIndex">The v index.</param>
         /// <returns>A SpriteTile.</returns>
-        public virtual B GetTile(TileSize size, TileIndex index)
+        public virtual TT GetTile(TileSize size, TileIndex index)
         {
             TileSizeIndexKey key = new TileSizeIndexKey(size, index);
-            return (B)tiles.RealObject.DirtyAction(key,
-                () => (A)tileFactory.GenerateObject(size, index),
+            return (TT)tiles.RealObject.DirtyAction(key,
+                () => (TD)tileFactory.GenerateObject(size, index),
                 (e) =>
                 {
                     e.Tile.RealObject.DrawIndexedBitmap(RealObject, 0, 0, index.X, index.Y);

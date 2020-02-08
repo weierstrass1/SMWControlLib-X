@@ -1,15 +1,18 @@
 ﻿using ILGPU;
 using SMWControlLibRendering;
-using SMWControlLibRendering.KernelStrategies;
+using ILGPU.Runtime;
+using System;
 
 namespace SMWControlLibSNES.KernelStrategies.GraphicBox
 {
     /// <summary>
     /// The load.
     /// </summary>
-    public class Load4BPP : KernelStrategy<Index3, ArrayView2D<byte>, ArrayView<byte>, int, int>
+    public static class Load4BPP
     {
-        private static readonly Load4BPP instance = new Load4BPP();
+        private static readonly Action<Index3, ArrayView2D<byte>, ArrayView<byte>, int> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index3, ArrayView2D<byte>, ArrayView<byte>, int>
+            (strategy);
         /// <summary>
         /// Executes the.
         /// </summary>
@@ -19,9 +22,9 @@ namespace SMWControlLibSNES.KernelStrategies.GraphicBox
         /// <param name="offset">The offset.</param>
         /// <param name="offsetdiv32">The offsetdiv32.</param>
         public static void Execute(Index3 index, ArrayView2D<byte> destBuffer,
-            ArrayView<byte> srcBuffer, int offset, int offsetdiv32)
+            ArrayView<byte> srcBuffer, int offset)
         {
-            instance.kernel(index, destBuffer, srcBuffer, offset, offsetdiv32);
+            kernel(index, destBuffer, srcBuffer, offset);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -32,25 +35,24 @@ namespace SMWControlLibSNES.KernelStrategies.GraphicBox
         /// <param name="srcBuffer">The src buffer.</param>
         /// <param name="offset">The offset.</param>
         /// <param name="offsetdiv32">The offsetdiv32.</param>
-        protected override void strategy(Index3 index, ArrayView2D<byte> destBuffer, 
-            ArrayView<byte> srcBuffer, int offset, int offsetdiv32)
+        private static void strategy(Index3 index, ArrayView2D<byte> destBuffer,
+            ArrayView<byte> srcBuffer, int offset)
         {
-            int block = index.X << 32;
-            int line = index.Y << 2;
-            int pixel = index.Z;
+            int block = index.X << 5;
+            int line = index.Y << 1;
+            int pixel = 7 - index.Z;
 
-            int offblock = offset + block;
-            int finalOffset = offblock + line;
+            int finalOffset = offset + block + line;
 
-            int b1 = (srcBuffer[finalOffset] >> pixel) & 0x1;
-            int b2 = (srcBuffer[finalOffset + 1] >> pixel) & 0x1;
-            int b3 = (srcBuffer[finalOffset + 16] >> pixel) & 0x1;
-            int b4 = (srcBuffer[finalOffset + 17] >> pixel) & 0x1;
+            int b1 = (srcBuffer[finalOffset] >> pixel) & 0x01;
+            int b2 = ((srcBuffer[finalOffset + 1] >> pixel) & 0x01) << 1;
+            int b3 = ((srcBuffer[finalOffset + 16] >> pixel) & 0x01) << 2;
+            int b4 = ((srcBuffer[finalOffset + 17] >> pixel) & 0x01) << 3;
 
-            int x = (((offsetdiv32 + index.X) % 16) << 3) + pixel;
-            int y = (offblock / 128) + index.Y;
+            int x = ((index.X & 0x0F) << 3) + index.Z;
+            int y = ((index.X >> 4) << 3) + index.Y;
 
-            destBuffer[x, y] = (byte)(b1 + (b2 << 1) + (b3 << 2) + (b4 << 3));
+            destBuffer[x, y] = (byte)(b1 | b2 | b3 | b4);
         }
     }
 }

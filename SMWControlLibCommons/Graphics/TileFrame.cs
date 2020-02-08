@@ -72,7 +72,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public ITileCollection Select(int x, int y, int width, int height)
+        public ITileCollection SelectTiles(int x, int y, int width, int height)
         {
             throw new System.NotImplementedException();
         }

@@ -1,13 +1,17 @@
 ﻿using ILGPU;
+using ILGPU.Runtime;
+using System;
 
 namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 {
     /// <summary>
     /// The draw bitmap buffer with zoom and b g.
     /// </summary>
-    public class DrawBitmapBufferWithZoomAndBGRGB555Kernel : KernelStrategy<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int, byte, byte, byte>
+    public static class DrawBitmapBufferWithZoomAndBGRGB555Kernel
     {
-        private static readonly DrawBitmapBufferWithZoomAndBGRGB555Kernel instance = new DrawBitmapBufferWithZoomAndBGRGB555Kernel();
+        private static readonly Action<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int, byte, byte, byte> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int, byte, byte, byte>
+            (strategy);
         /// <summary>
         /// Executes the.
         /// </summary>
@@ -22,7 +26,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         public static void Execute(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
             int dstWidth, int srcWidth, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
-            instance.kernel(index, destBuffer, srcBuffer, offset, dstWidth, srcWidth, zoom, backgroundColorR, backgroundColorG, backgroundColorB);
+            kernel(index, destBuffer, srcBuffer, offset, dstWidth, srcWidth, zoom, backgroundColorR, backgroundColorG, backgroundColorB);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -36,7 +40,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="srcWidth">The src width.</param>
         /// <param name="zoom">The zoom.</param>
         /// <param name="backgroundColor">The background color.</param>
-        protected override void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
+        private static void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
             int dstWidth, int srcWidth, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
             int indsrc = ((index.Y * srcWidth) + index.X) * 3;

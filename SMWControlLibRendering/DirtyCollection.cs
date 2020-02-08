@@ -9,17 +9,17 @@ namespace SMWControlLibRendering
     /// <summary>
     /// The dirty collection.
     /// </summary>
-    public abstract class DirtyCollection<K, E1, E2, T, U> : CanFactoryWithObjsParams
-                                                                where K: DualKey<E1,E2>
-                                                                where T: DirtyClass<U>
+    public abstract class DirtyCollection<TK, TE1, TE2, TD, TC> : CanFactoryWithObjsParams
+                                                                where TK : DualKey<TE1, TE2>
+                                                                where TD: DirtyClass<TC>
     {
-        protected ConcurrentDictionary<K, T> elements;
+        protected ConcurrentDictionary<TK, TD> elements;
         /// <summary>
         /// Initializes a new instance of the <see cref="DirtyCollection"/> class.
         /// </summary>
         /// <param name="param1">The param1.</param>
         /// <param name="param2">The param2.</param>
-        public DirtyCollection() : base()
+        public DirtyCollection(params object[] args) : base(args)
         {
         }
 
@@ -41,7 +41,7 @@ namespace SMWControlLibRendering
         /// <param name="param2">The param2.</param>
         public override void Initialize(params object[] args)
         {
-            elements = new ConcurrentDictionary<K, T>();
+            elements = new ConcurrentDictionary<TK, TD>();
         }
 
         /// <summary>
@@ -50,13 +50,13 @@ namespace SMWControlLibRendering
         /// <param name="key">The key.</param>
         /// <param name="create">The create.</param>
         /// <param name="update">The update.</param>
-        public T DirtyAction(K key, ActionWithReturnHanlder<T> create, Action<T> update)
+        public TD DirtyAction(TK key, ActionWithReturnHanlder<TD> create, Action<TD> update)
         {
             if (create == null) throw new ArgumentNullException(nameof(create));
-            T e;
+            TD e;
             if (!elements.ContainsKey(key))
             {
-                T newElement = create();
+                TD newElement = create();
                 _ = elements.TryAdd(key, newElement);
                 e = elements[key];
                 e.SetDirty(true);

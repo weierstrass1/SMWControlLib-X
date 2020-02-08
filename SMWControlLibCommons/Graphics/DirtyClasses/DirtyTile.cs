@@ -23,7 +23,7 @@ namespace SMWControlLibCommons.Graphics.DirtyClasses
         /// </summary>
         /// <param name="size">The size.</param>
         /// <param name="index">The index.</param>
-        public DirtyTile(TileSize size, TileIndex index) : base(new Tile(size, index))
+        public DirtyTile(Tile t) : base(t)
         {
         }
         /// <summary>
