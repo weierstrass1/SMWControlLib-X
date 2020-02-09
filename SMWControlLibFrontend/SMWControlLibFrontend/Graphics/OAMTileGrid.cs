@@ -19,12 +19,24 @@ namespace SMWControlLibFrontend.Graphics
 		public OAMTileGrid()
 		{
 			InitializeComponent();
+			CanFocus = true;
 			Paint += paint;
 			MouseDown += mouseDown;
 			MouseMove += mouseMove;
 			MouseUp += mouseUp;
+			MouseEnter += mouseEnter;
 			KeyDown += keyDown;
 			Invalidate();
+		}
+
+		/// <summary>
+		/// mice the enter.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The e.</param>
+		private void mouseEnter(object sender, MouseEventArgs e)
+		{
+			Focus();
 		}
 
 		/// <summary>
@@ -37,6 +49,7 @@ namespace SMWControlLibFrontend.Graphics
 			if(e.Key == Keys.Delete)
 			{
 				grid.Remove();
+				state = MouseState.Idle;
 				Invalidate();
 			}
 		}
@@ -77,6 +90,7 @@ namespace SMWControlLibFrontend.Graphics
 		/// <param name="e">The e.</param>
 		private void mouseMove(object sender, MouseEventArgs e)
 		{
+			Focus();
 			if (e.Buttons == MouseButtons.Primary)
 			{
 				if (state == MouseState.Selected)
@@ -155,7 +169,6 @@ namespace SMWControlLibFrontend.Graphics
 				}
 			}
 		}
-		readonly List<long> timesPaint = new List<long>();
 		/// <summary>
 		/// paints the.
 		/// </summary>
@@ -163,22 +176,17 @@ namespace SMWControlLibFrontend.Graphics
 		/// <param name="e">The e.</param>
 		private void paint(object sender, PaintEventArgs e)
 		{
-			Stopwatch watch = new Stopwatch();
-			watch.Start();
 			if (image.Width * image.Height != grid.Lenght)
 				image = new Bitmap(grid.WidthWithZoom, grid.HeightWithZoom, PixelFormat.Format24bppRgb);
-
-			BitmapData bd = image.Lock();
-			unsafe
+			using (BitmapData bd = image.Lock())
 			{
-				byte* bs = (byte*)bd.Data;
-
-				grid.CopyTo(bs);
+				unsafe
+				{
+					byte* bs = (byte*)bd.Data;
+					grid.CopyTo(bs);
+				}
 			}
-			bd.Dispose();
 			e.Graphics.DrawImage(image, 0, 0);
-			watch.Stop();
-			timesPaint.Add(watch.ElapsedMilliseconds);
 		}
 	}
 }

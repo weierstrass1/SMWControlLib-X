@@ -578,5 +578,20 @@ namespace SMWControlLibRendering
                 Buffer.MemoryCopy(bp, target, Length, Length);
             }
         }
+        /// <summary>
+        /// Copies the to.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="lenght">The lenght.</param>
+        public override unsafe void CopyTo(byte* target, int offset, int lenght)
+        {
+            long l = pixels.Length - offset;
+            l = Math.Min(lenght, l);
+            fixed (byte* bp = pixels)
+            {
+                Buffer.MemoryCopy(&bp[offset], &target[offset], l, l);
+            }
+        }
     }
 }

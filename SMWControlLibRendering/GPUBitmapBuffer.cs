@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using ILGPU;
 using ILGPU.Runtime;
 using SMWControlLibRendering.KernelStrategies.BitmapBufferKernels;
@@ -214,21 +215,27 @@ namespace SMWControlLibRendering
             b.Buffer.Dispose();
             requireCopyTo = true;
         }
-
         /// <summary>
         /// Copies the to.
         /// </summary>
         /// <param name="target">The target.</param>
-        public override unsafe void CopyTo(byte* target)
+        /// <param name="offset">The offset.</param>
+        /// <param name="lenght">The lenght.</param>
+        public override unsafe void CopyTo(byte* target, int offset, int lenght)
         {
+            int l = pixels.Length - offset;
+            l = Math.Min(lenght, l);
+
             if(requireCopyTo)
             {
-                Buffer.CopyTo(pixels, 0, 0, Buffer.Extent);
+
+                Buffer.CopyTo(pixels, new Index(offset), offset, new Index(l));
                 requireCopyTo = false;
             }
+
             fixed (byte* bp = pixels)
             {
-                System.Buffer.MemoryCopy(bp, target, Length, Length);
+                System.Buffer.MemoryCopy(&bp[offset], &target[offset], l, l);
             }
         }
     }

@@ -64,9 +64,9 @@ namespace SMWControlLibFrontend.Graphics
 		/// </summary>
 		void InitializeComponent()
 		{
-			grid = new SpriteTileGrid(255, 255, Zoom.X4, 0xB0, 0xC0, 0xD0)
+			grid = new SpriteTileGrid(255, 255, Zoom.X8, 0xB0, 0xC0, 0xD0)
 			{
-				CellSize = GridCellSize.Size16x16,
+				CellSize = GridCellSize.Size4x4,
 				SelectionColorR = 0xE0,
 				SelectionColorG = 0x80,
 				SelectionColorB = 0x40,

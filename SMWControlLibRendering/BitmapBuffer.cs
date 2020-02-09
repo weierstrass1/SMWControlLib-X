@@ -140,6 +140,16 @@ namespace SMWControlLibRendering
         /// Copies the to.
         /// </summary>
         /// <param name="target">The target.</param>
-        public abstract unsafe void CopyTo(byte* target);
+        public virtual unsafe void CopyTo(byte* target)
+        {
+            CopyTo(target, 0, Length);
+        }
+        /// <summary>
+        /// Copies the to.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="lenght">The lenght.</param>
+        public abstract unsafe void CopyTo(byte* target, int offset, int lenght);
     }
 }

@@ -323,10 +323,10 @@ namespace SMWControlLibCommons.Graphics
             {
                 tiles = tiles.Where((t) =>
                 {
-                    if (t.X + t.Width < x) return false;
-                    if (x + width < t.X) return false;
-                    if (t.Y + t.Height < y) return false;
-                    if (y + height < t.Y) return false;
+                    if (t.X + t.Width < x + 1) return false;
+                    if (x + width < t.X + 1) return false;
+                    if (t.Y + t.Height < y + 1) return false;
+                    if (y + height < t.Y + 1) return false;
 
                     return true;
                 }).ToList()

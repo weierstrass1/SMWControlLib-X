@@ -105,7 +105,7 @@ namespace SMWControlLibCommons.Graphics
         {
             TileMaskCollection sel = GetCollection();
 
-            if (width < 2 || height < 2)
+            if (width < 2 && height < 2)
                 return sel.FindByPosition(x, y);
             else
                 return sel.FindByArea(x, y, width, height);

@@ -4,6 +4,7 @@ using SMWControlLibCommons.Interfaces.Graphics;
 using SMWControlLibRendering;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace SMWControlLibCommons.Graphics
@@ -114,6 +115,8 @@ namespace SMWControlLibCommons.Graphics
         private ITileCollection<TileMask> tileSelection;
         private bool moved = false;
         private bool selectionChanged = false;
+        private int offset;
+        private int copyLenght;
         /// <summary>
         /// Initializes a new instance of the <see cref="TileGrid"/> class.
         /// </summary>
@@ -125,6 +128,8 @@ namespace SMWControlLibCommons.Graphics
             BackgroundColorG = bgG;
             BackgroundColorB = bgB;
             Zoom = z;
+            offset = 0;
+            copyLenght = Lenght * layer1.BytesPerColor;
         }
 
         /// <summary>
@@ -149,15 +154,53 @@ namespace SMWControlLibCommons.Graphics
             Target.AddTiles(sel);
             drawTileMaskCollection(sel);
             UpdateLayer2();
+            updateOffsetAndCopyLenght(sel.Left, sel.Top, sel.Right, sel.Bottom);
+        }
+        /// <summary>
+        /// updates the offset and copy lenght.
+        /// </summary>
+        /// <param name="l">The l.</param>
+        /// <param name="t">The t.</param>
+        /// <param name="r">The r.</param>
+        /// <param name="b">The b.</param>
+        private void updateOffsetAndCopyLenght(int l, int t, int r, int b)
+        {
+            if (l >= 0 && t >= 0 && r > l && b > t)
+            {
+                offset = Math.Min(offset, ((t * Zoom * WidthWithZoom) + (l * Zoom)) * layer1.BytesPerColor);
+                copyLenght = Math.Max(copyLenght, (((b * WidthWithZoom * Zoom) + (r * Zoom)) * layer1.BytesPerColor) - offset);
+            }
         }
         /// <summary>
         /// Removes the.
         /// </summary>
         public void Remove()
         {
-            if (Target != null)
+            if (Target != null && tileSelection != null)
             {
+                int x = tileSelection.Left;
+                int y = tileSelection.Top;
+                int w = tileSelection.Right - x;
+                int h = tileSelection.Bottom - y;
+
                 Target.RemoveTiles();
+
+                ITileCollection<TileMask> col = Target.TilesOnArea(x, y, w, h);
+
+                if (col.Left >= 0)
+                {
+                    x = Math.Min(x, col.Left);
+                    y = Math.Min(y, col.Top);
+                    w = Math.Max(w, col.Right - x);
+                    h = Math.Max(h, col.Bottom - y);
+                }
+
+                layer1.DrawRectangle(x * Zoom, y * Zoom, w * Zoom, h * Zoom, BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                if (col.Left >= 0) drawTileMaskCollection(col);
+                updateOffsetAndCopyLenght(x, y, x + w, h + y);
+                tileSelection = null;
+
+                UpdateLayer2();
             }
         }
         /// <summary>
@@ -171,7 +214,27 @@ namespace SMWControlLibCommons.Graphics
         {
             if (Target != null)
             {
+                int l = x;
+                int t = y;
+                int r = width + l;
+                int b = height + t;
+                if(tileSelection!=null)
+                {
+                    l = Math.Min(l, tileSelection.Left);
+                    t = Math.Min(t, tileSelection.Top);
+                    r = Math.Max(r, tileSelection.Right);
+                    b = Math.Max(b, tileSelection.Bottom);
+                }
+
                 tileSelection = (TileMaskCollection)Target.SelectTiles(x / Zoom, y / Zoom, width / Zoom, height / Zoom);
+                if (tileSelection != null && !tileSelection.IsEmpty())
+                {
+                    l = Math.Min(l, tileSelection.Left);
+                    t = Math.Min(t, tileSelection.Top);
+                    r = Math.Max(r, tileSelection.Right);
+                    b = Math.Max(b, tileSelection.Bottom);
+                    updateOffsetAndCopyLenght(l, t, r, b);
+                }
                 UpdateLayer2();
                 selectionChanged = selectionChanged || tileSelection.IsEmpty();
             }
@@ -218,6 +281,7 @@ namespace SMWControlLibCommons.Graphics
                         BackgroundColorR, BackgroundColorG, BackgroundColorB);
                     drawTileMaskCollection(col);
                     UpdateLayer2();
+                    updateOffsetAndCopyLenght(drx, dry, drr, drb);
                 }
 
                 moved = moved || b;
@@ -259,6 +323,7 @@ namespace SMWControlLibCommons.Graphics
         {
             if (tileSelection != null)
             {
+                updateOffsetAndCopyLenght(tileSelection.Left, tileSelection.Top, tileSelection.Right, tileSelection.Bottom);
                 tileSelection = null;
                 selectionChanged = true;
                 UpdateLayer2();
@@ -271,6 +336,7 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>An int.</returns>
         public int GetXOffset(int x)
         {
+            if (tileSelection == null) return -1;
             int xdivz = x / Zoom;
             if (xdivz > tileSelection.Right) return -1;
             return xdivz - tileSelection.Left;
@@ -282,6 +348,7 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>An int.</returns>
         public int GetYOffset(int y)
         {
+            if (tileSelection == null) return -1;
             int ydivz = y / Zoom;
             if (ydivz > tileSelection.Bottom) return -1;
             return ydivz - tileSelection.Top;
@@ -292,25 +359,31 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="b">The b.</param>
         public unsafe void CopyTo(byte* b)
         {
-            layer2.CopyTo(b);
+            if (copyLenght < 0) return;
+            layer2.CopyTo(b, offset, copyLenght);
+            offset = int.MaxValue;
+            copyLenght = int.MinValue;
         }
         /// <summary>
         /// Updates the layer2.
         /// </summary>
         private void UpdateLayer2()
         {
-            if (tileSelection != null && !tileSelection.IsEmpty())
+            if (layer2 == null)
             {
                 layer2 = layer1.Clone();
+            }
+            else
+            {
+                layer2.DrawBitmapBuffer(layer1, 0, 0);
+            }
+            if (tileSelection != null && !tileSelection.IsEmpty())
+            {
                 foreach (TileBorder b in tileSelection.GetTileBorders())
                 {
                     layer2.DrawRectangleBorder(b.X * Zoom, b.Y * Zoom, b.Width * Zoom, b.Height * Zoom,
                         SelectionColorR, SelectionColorG, SelectionColorB);
                 }
-            }
-            else
-            {
-                layer2 = layer1;
             }
         }
     }
