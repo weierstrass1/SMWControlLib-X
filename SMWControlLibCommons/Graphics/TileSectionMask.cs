@@ -9,7 +9,7 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile section mask.
     /// </summary>
-    public class TileSectionMask : IGridDrawable
+    public class TileSectionMask : IGridDrawable<TileMask>
     {
         private int index;
         /// <summary>
@@ -101,7 +101,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public ITileCollection SelectTiles(int x, int y, int width, int height)
+        public ITileCollection<TileMask> SelectTiles(int x, int y, int width, int height)
         {
             TileMaskCollection sel = GetCollection();
 
@@ -114,7 +114,7 @@ namespace SMWControlLibCommons.Graphics
         /// Adds the tiles.
         /// </summary>
         /// <param name="tiles">The tiles.</param>
-        public void AddTiles(ITileCollection tiles)
+        public void AddTiles(ITileCollection<TileMask> tiles)
         {
             
             GetCollection().AddCollection((TileMaskCollection)tiles);
@@ -167,7 +167,29 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>A bool.</returns>
         public bool IsEmpty()
         {
-            return Section.Lenght > 0;
+            return Section.Lenght <= 0;
+        }
+
+        /// <summary>
+        /// Gets the enumerable.
+        /// </summary>
+        /// <returns>A list of TileMasks.</returns>
+        public IEnumerable<TileMask> GetEnumerable()
+        {
+            return GetCollection().GetEnumerable();
+        }
+
+        /// <summary>
+        /// Tiles the on area.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <returns>An ITileCollection.</returns>
+        public ITileCollection<TileMask> TilesOnArea(int x, int y, int width, int height)
+        {
+            return GetCollection().TilesAtPosition(x, y, width, height);
         }
     }
 }

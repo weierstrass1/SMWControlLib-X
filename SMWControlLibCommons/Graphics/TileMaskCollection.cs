@@ -8,13 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SMWControlLibCommons.Interfaces.Graphics;
+using System.Collections;
 
 namespace SMWControlLibCommons.Graphics
 {
     /// <summary>
     /// The sprite tile mask collection.
     /// </summary>
-    public class TileMaskCollection : ITileCollection
+    public class TileMaskCollection : ITileCollection<TileMask>
     {
         private List<TileMask> tiles;
         /// <summary>
@@ -302,19 +303,37 @@ namespace SMWControlLibCommons.Graphics
         public TileMaskCollection FindByArea(int x, int y, int width, int height)
         {
             if (selection == null) selection = new TileMaskCollection();
-            selection.tiles = tiles.Where((t) =>
-            {
-                if (t.X + t.Width < x) return false;
-                if (x + width < t.X) return false;
-                if (t.Y + t.Height < y) return false;
-                if (y + height < t.Y) return false;
-
-                return true;
-            }).ToList();
+            selection.tiles = TilesAtPosition(x, y, width, height).tiles;
             selection.sorted = false;
             selection.UpdateContainer();
             OnSelectionChanged?.Invoke(this, selection);
             return selection;
+        }
+        /// <summary>
+        /// Tiles the at position.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <returns>A TileMaskCollection.</returns>
+        public TileMaskCollection TilesAtPosition(int x, int y, int width, int height)
+        {
+            TileMaskCollection find = new TileMaskCollection
+            {
+                tiles = tiles.Where((t) =>
+                {
+                    if (t.X + t.Width < x) return false;
+                    if (x + width < t.X) return false;
+                    if (t.Y + t.Height < y) return false;
+                    if (y + height < t.Y) return false;
+
+                    return true;
+                }).ToList()
+            };
+            find.Sort();
+            find.UpdateContainer();
+            return find;
         }
         /// <summary>
         /// Finds the by position.
@@ -512,7 +531,7 @@ namespace SMWControlLibCommons.Graphics
         /// Adds the tiles.
         /// </summary>
         /// <param name="tiles">The tiles.</param>
-        public void AddTiles(ITileCollection tiles)
+        public void AddTiles(ITileCollection<TileMask> tiles)
         {
             AddCollection((TileMaskCollection)tiles);
         }
@@ -564,7 +583,16 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>A bool.</returns>
         public bool IsEmpty()
         {
-            return tiles != null && tiles.Count > 0;
+            return tiles == null || tiles.Count <= 0;
+        }
+
+        /// <summary>
+        /// Gets the enumerable.
+        /// </summary>
+        /// <returns>A list of TS.</returns>
+        public IEnumerable<TileMask> GetEnumerable()
+        {
+            return tiles;
         }
     }
 }

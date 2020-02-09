@@ -48,9 +48,9 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 
             if ((colorR & 0x7) != 0 || (colorG & 0x7) != 0 || (colorB & 0x7) != 0)
             {
-                colorR = backgroundColorR;
+                colorR = backgroundColorB;
                 colorG = backgroundColorG;
-                colorB = backgroundColorB;
+                colorB = backgroundColorR;
             }
 
             int ind = ((index.Y * dstWidth) + index.X + offset) * 3;

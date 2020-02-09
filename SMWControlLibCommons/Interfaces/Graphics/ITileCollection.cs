@@ -1,9 +1,10 @@
 ﻿using SMWControlLibCommons.DataStructs;
+using SMWControlLibCommons.Graphics;
 using System.Collections.Generic;
 
 namespace SMWControlLibCommons.Interfaces.Graphics
 {
-    public interface ITileCollection
+    public interface ITileCollection<T>
     {
         /// <summary>
         /// Gets the left.
@@ -25,7 +26,7 @@ namespace SMWControlLibCommons.Interfaces.Graphics
         /// Adds the tiles.
         /// </summary>
         /// <param name="tiles">The tiles.</param>
-        void AddTiles(ITileCollection tiles);
+        void AddTiles(ITileCollection<T> tiles);
         /// <summary>
         /// Removes the tiles.
         /// </summary>
@@ -40,5 +41,10 @@ namespace SMWControlLibCommons.Interfaces.Graphics
         /// </summary>
         /// <returns>A bool.</returns>
         bool IsEmpty();
+        /// <summary>
+        /// Gets the enumerable.
+        /// </summary>
+        /// <returns>A list of TS.</returns>
+        IEnumerable<T> GetEnumerable();
     }
 }

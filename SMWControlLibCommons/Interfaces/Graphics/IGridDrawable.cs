@@ -1,9 +1,10 @@
 ﻿using SMWControlLibCommons.Enumerators.Graphics;
+using SMWControlLibCommons.Graphics;
 using SMWControlLibRendering;
 
 namespace SMWControlLibCommons.Interfaces.Graphics
 {
-    public interface IGridDrawable : ITileCollection
+    public interface IGridDrawable<T> : ITileCollection<T>
     {
         /// <summary>
         /// Gets or sets the x.
@@ -34,7 +35,16 @@ namespace SMWControlLibCommons.Interfaces.Graphics
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        ITileCollection SelectTiles(int x, int y, int width, int height);
+        ITileCollection<T> SelectTiles(int x, int y, int width, int height);
+        /// <summary>
+        /// Tiles the on area.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <returns>An ITileCollection.</returns>
+        ITileCollection<T> TilesOnArea(int x, int y, int width, int height);
         /// <summary>
         /// Moves the tiles.
         /// </summary>

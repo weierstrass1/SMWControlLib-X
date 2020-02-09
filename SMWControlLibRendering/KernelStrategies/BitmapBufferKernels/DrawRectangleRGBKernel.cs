@@ -36,9 +36,9 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         private static void strategy(Index2 index, ArrayView<byte> destBuffer, int offset, int width, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
             int ind = (offset + (index.Y * width) + index.X) * 3;
-            destBuffer[ind] = backgroundColorR;
+            destBuffer[ind] = backgroundColorB;
             destBuffer[ind + 1] = backgroundColorG;
-            destBuffer[ind + 2] = backgroundColorB;
+            destBuffer[ind + 2] = backgroundColorR;
         }
     }
 }

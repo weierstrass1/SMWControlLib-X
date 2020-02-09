@@ -48,27 +48,27 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
             if (index <= rWidth)
             {
                 int ind = (offset + index) * 3;
-                destBuffer[ind] = backgroundColorR;
+                destBuffer[ind] = backgroundColorB;
                 destBuffer[ind + 1] = backgroundColorG;
-                destBuffer[ind + 2] = backgroundColorB;
+                destBuffer[ind + 2] = backgroundColorR;
 
                 ind = (xoffset + index) * 3;
-                destBuffer[ind] = backgroundColorR;
+                destBuffer[ind] = backgroundColorB;
                 destBuffer[ind + 1] = backgroundColorG;
-                destBuffer[ind + 2] = backgroundColorB;
+                destBuffer[ind + 2] = backgroundColorR;
             }
             if (index <= rHeight)
             {
                 int indw = index * dstWidth;
                 int ind = (offset + indw) * 3;
-                destBuffer[ind] = backgroundColorR;
+                destBuffer[ind] = backgroundColorB;
                 destBuffer[ind + 1] = backgroundColorG;
-                destBuffer[ind + 2] = backgroundColorB;
+                destBuffer[ind + 2] = backgroundColorR;
 
                 ind = (yoffset + indw) * 3;
-                destBuffer[ind] = backgroundColorR;
+                destBuffer[ind] = backgroundColorB;
                 destBuffer[ind + 1] = backgroundColorG;
-                destBuffer[ind + 2] = backgroundColorB;
+                destBuffer[ind + 2] = backgroundColorR;
             }
         }
     }

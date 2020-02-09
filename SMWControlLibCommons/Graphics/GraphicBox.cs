@@ -40,7 +40,7 @@ namespace SMWControlLibCommons.Graphics
                 () => (TD)tileFactory.GenerateObject(size, index),
                 (e) =>
                 {
-                    e.Tile.RealObject.DrawIndexedBitmap(RealObject, 0, 0, index.X, index.Y);
+                    e.Tile.RealObject.DrawIndexedBitmap(RealObject, 0, 0, index.X * 8, index.Y * 8);
                 }).Tile;
         }
         /// <summary>

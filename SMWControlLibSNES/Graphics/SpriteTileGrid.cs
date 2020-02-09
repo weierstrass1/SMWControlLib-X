@@ -1,4 +1,5 @@
-﻿using SMWControlLibCommons.Graphics;
+﻿using SMWControlLibCommons.Enumerators.Graphics;
+using SMWControlLibCommons.Graphics;
 
 namespace SMWControlLibSNES.Graphics
 {
@@ -12,7 +13,7 @@ namespace SMWControlLibSNES.Graphics
         /// </summary>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public SpriteTileGrid(int width, int height) : base(width, height)
+        public SpriteTileGrid(int width, int height, Zoom zoom, byte bgR, byte bgG, byte bgB) : base(width, height, zoom, bgR, bgG, bgB)
         {
         }
     }

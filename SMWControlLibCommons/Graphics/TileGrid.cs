@@ -2,6 +2,7 @@
 using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Interfaces.Graphics;
 using SMWControlLibRendering;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -35,19 +36,19 @@ namespace SMWControlLibCommons.Graphics
         /// <summary>
         /// Gets or sets the target.
         /// </summary>
-        public IGridDrawable Target { get; set; }
+        public IGridDrawable<TileMask> Target { get; set; }
         /// <summary>
         /// Gets or sets the background color.
         /// </summary>
-        public byte BackgroundColorR { get; set; }
+        public byte BackgroundColorR { get; private set; }
         /// <summary>
         /// Gets or sets the background color g.
         /// </summary>
-        public byte BackgroundColorG { get; set; }
+        public byte BackgroundColorG { get; private set; }
         /// <summary>
         /// Gets or sets the background color b.
         /// </summary>
-        public byte BackgroundColorB { get; set; }
+        public byte BackgroundColorB { get; private set; }
         /// <summary>
         /// Gets or sets the grid color.
         /// </summary>
@@ -89,10 +90,16 @@ namespace SMWControlLibCommons.Graphics
             get => zoom;
             set
             {
-                zoom = value;
-                WidthWithZoom = Width * zoom;
-                HeightWithZoom = Height * zoom;
-                Lenght = WidthWithZoom * HeightWithZoom;
+                if (zoom != value)
+                {
+                    zoom = value;
+                    WidthWithZoom = Width * zoom;
+                    HeightWithZoom = Height * zoom;
+                    Lenght = WidthWithZoom * HeightWithZoom;
+                    layer1 = BitmapBuffer.CreateInstance(WidthWithZoom, HeightWithZoom);
+                    layer1.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                    UpdateLayer2();
+                }
             }
         }
         /// <summary>
@@ -104,96 +111,22 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         public GridType GridType { get; set; }
         private BitmapBuffer layer1, layer2;
-        private ITileCollection tileSelection;
+        private ITileCollection<TileMask> tileSelection;
         private bool moved = false;
         private bool selectionChanged = false;
-        private bool requireRefresh = true;
         /// <summary>
         /// Initializes a new instance of the <see cref="TileGrid"/> class.
         /// </summary>
-        public TileGrid(int width, int height)
+        public TileGrid(int width, int height, Zoom z, byte bgR, byte bgG, byte bgB)
         {
             Width = width;
             Height = height;
+            BackgroundColorR = bgR;
+            BackgroundColorG = bgG;
+            BackgroundColorB = bgB;
+            Zoom = z;
         }
 
-        /// <summary>
-        /// Gets the graphics.
-        /// </summary>
-        /// <returns>An array of uint.</returns>
-        public bool GetGraphics()
-        {
-            bool changed = false;
-            if (layer1 == null)
-            {
-                layer1 = BitmapBuffer.CreateInstance(WidthWithZoom, HeightWithZoom);
-                changed = true;
-            }
-            else if (layer1.Length != Lenght * layer1.BytesPerColor)  
-            {
-                layer1.Initialize(WidthWithZoom, HeightWithZoom);
-                changed = true;
-            }
-
-            if (requireRefresh || moved)
-            {
-                if (Target != null)
-                {
-                    BitmapBuffer t = Target.GetGraphics(Zoom);
-                    if (t != null)
-                        layer1.DrawBitmapBuffer(t, Target.Left * Zoom, Target.Top * Zoom, BackgroundColorR, BackgroundColorG, BackgroundColorB);
-                    else
-                        layer1.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
-                }
-                else
-                {
-                    layer1.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
-                }
-                changed = true;
-            }
-
-            if (DrawGrid && (requireRefresh || moved)) 
-            {
-                layer1.DrawGrid(Zoom, CellSize, GridType, GridColorR, GridColorG, GridColorB);
-                changed = true;
-            }
-
-            if (DrawGuidelines && (requireRefresh || moved))
-            {
-                int guideRectSize = 16 * Zoom;
-                int guideRectOffset = 112 * Zoom;
-                layer1.DrawRectangleBorder(guideRectOffset, guideRectOffset, guideRectSize, guideRectSize, SelectionColorR, SelectionColorG, SelectionColorB);
-                int guideLineOffset = 120 * Zoom;
-                layer1.DrawLine(guideLineOffset, 0, guideLineOffset, HeightWithZoom, SelectionColorR, SelectionColorG, SelectionColorB);
-                layer1.DrawLine(0, guideLineOffset, WidthWithZoom, guideLineOffset, SelectionColorR, SelectionColorG, SelectionColorB);
-                changed = true;
-            }
-            requireRefresh = false;
-
-            layer2 = layer1;
-            if (selectionChanged || moved)
-            {
-                if (tileSelection != null)
-                {
-                    List<TileBorder> rects = tileSelection.GetTileBorders();
-                    if (rects.Count != 0)
-                    {
-                        layer2 = layer1.Clone();
-
-                        Parallel.ForEach(rects, r =>
-                        {
-                            layer2.DrawRectangleBorder(r.X * Zoom, r.Y * Zoom, r.Width * Zoom, r.Height * Zoom, SelectionColorR, SelectionColorG, SelectionColorB);
-                        });
-
-                    }
-                    selectionChanged = false;
-                }
-                changed = true;
-            }
-            moved = false;
-
-            return changed;
-        }
         /// <summary>
         /// Addings the at position.
         /// </summary>
@@ -214,7 +147,8 @@ namespace SMWControlLibCommons.Graphics
             TileMaskCollection sel = selection.Clone();
             sel.MoveTo(x, y);
             Target.AddTiles(sel);
-            requireRefresh = true;
+            drawTileMaskCollection(sel);
+            UpdateLayer2();
         }
         /// <summary>
         /// Removes the.
@@ -224,7 +158,6 @@ namespace SMWControlLibCommons.Graphics
             if (Target != null)
             {
                 Target.RemoveTiles();
-                requireRefresh = true;
             }
         }
         /// <summary>
@@ -238,7 +171,8 @@ namespace SMWControlLibCommons.Graphics
         {
             if (Target != null)
             {
-                tileSelection = Target.SelectTiles(x / Zoom, y / Zoom, width / Zoom, height / Zoom);
+                tileSelection = (TileMaskCollection)Target.SelectTiles(x / Zoom, y / Zoom, width / Zoom, height / Zoom);
+                UpdateLayer2();
                 selectionChanged = selectionChanged || tileSelection.IsEmpty();
             }
         }
@@ -261,21 +195,46 @@ namespace SMWControlLibCommons.Graphics
                 y /= Zoom;
                 y -= y % CellSize;
 
-                int drx = Target.Left * Zoom;
-                int dry = Target.Top * Zoom;
-                int drw = Target.Width * Zoom;
-                int drh = Target.Height * Zoom;
+                int drx = Target.Left;
+                int dry = Target.Top;
+                int drr = drx + Target.Width;
+                int drb = dry + Target.Height;
 
                 bool b = Target.MoveTiles(x, y);
                 if (b)
                 {
-                    layer1.DrawRectangle(drx, dry, drw, drh, BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                    drx = Math.Min(drx, Target.Left);
+                    dry = Math.Min(dry, Target.Top);
+                    drr = Math.Max(drr, Target.Left + Target.Width);
+                    drb = Math.Max(drb, Target.Top + Target.Height);
+                    ITileCollection<TileMask> col = Target.TilesOnArea(drx, dry, drr, drb);
+
+                    drx = Math.Min(drx, col.Left);
+                    dry = Math.Min(dry, col.Top);
+                    drr = Math.Max(drr, col.Right);
+                    drb = Math.Max(drb, col.Bottom);
+
+                    layer1.DrawRectangle(drx * Zoom, dry * Zoom, (drr - drx) *Zoom, (drb - dry) * Zoom, 
+                        BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                    drawTileMaskCollection(col);
+                    UpdateLayer2();
                 }
 
                 moved = moved || b;
                 return b;
             }
             return false;
+        }
+        /// <summary>
+        /// draws the tile mask collection.
+        /// </summary>
+        /// <param name="col">The col.</param>
+        private void drawTileMaskCollection(ITileCollection<TileMask> col)
+        {
+            foreach (TileMask tm in col.GetEnumerable())
+            {
+                layer1.DrawBitmapBuffer(tm.GetGraphics(Zoom), tm.X * Zoom, tm.Y * Zoom);
+            }
         }
         /// <summary>
         /// Increases the z index.
@@ -302,6 +261,7 @@ namespace SMWControlLibCommons.Graphics
             {
                 tileSelection = null;
                 selectionChanged = true;
+                UpdateLayer2();
             }
         }
         /// <summary>
@@ -333,6 +293,25 @@ namespace SMWControlLibCommons.Graphics
         public unsafe void CopyTo(byte* b)
         {
             layer2.CopyTo(b);
+        }
+        /// <summary>
+        /// Updates the layer2.
+        /// </summary>
+        private void UpdateLayer2()
+        {
+            if (tileSelection != null && !tileSelection.IsEmpty())
+            {
+                layer2 = layer1.Clone();
+                foreach (TileBorder b in tileSelection.GetTileBorders())
+                {
+                    layer2.DrawRectangleBorder(b.X * Zoom, b.Y * Zoom, b.Width * Zoom, b.Height * Zoom,
+                        SelectionColorR, SelectionColorG, SelectionColorB);
+                }
+            }
+            else
+            {
+                layer2 = layer1;
+            }
         }
     }
 }

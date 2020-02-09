@@ -5,6 +5,7 @@ using SMWControlLibFrontend.Enumerators;
 using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Delegates;
 using SMWControlLibCommons.Interfaces.Graphics;
+using SMWControlLibCommons.Graphics;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -18,7 +19,7 @@ namespace SMWControlLibFrontend.Graphics
 		/// <summary>
 		/// Gets or sets the target.
 		/// </summary>
-		public IGridDrawable Target
+		public IGridDrawable<TileMask> Target
 		{
 			get => grid.Target;
 			set
@@ -63,13 +64,9 @@ namespace SMWControlLibFrontend.Graphics
 		/// </summary>
 		void InitializeComponent()
 		{
-			grid = new SpriteTileGrid(255, 255)
+			grid = new SpriteTileGrid(255, 255, Zoom.X4, 0xB0, 0xC0, 0xD0)
 			{
-				Zoom = Zoom.X8,
 				CellSize = GridCellSize.Size16x16,
-				BackgroundColorR = 0xB0,
-				BackgroundColorG = 0xC0,
-				BackgroundColorB = 0xD0,
 				SelectionColorR = 0xE0,
 				SelectionColorG = 0x80,
 				SelectionColorB = 0x40,

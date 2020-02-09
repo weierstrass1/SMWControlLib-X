@@ -44,10 +44,12 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
 
             int ind = ((y * indexedBitmapBuffer.Width) + x) * 3;
             int colind = indexedBitmapBuffer[index] * 3;
+            int invalidate = 0;
+            if (colind == 0) invalidate = 0x01;
 
-            destBitmap[ind + 2] = colors[colind];
-            destBitmap[ind + 1] = colors[colind + 1];
-            destBitmap[ind] = colors[colind + 2];
+            destBitmap[ind + 2] = (byte)(colors[colind] | invalidate);
+            destBitmap[ind + 1] = (byte)(colors[colind + 1] | invalidate);
+            destBitmap[ind] = (byte)(colors[colind + 2] | invalidate);
         }
     }
 }

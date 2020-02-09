@@ -46,9 +46,12 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
             if ((flip & 0x1) != 0)
                 x = indexedBitmapBuffer.Width - x - 1;
 
-            byte colorR = colors[colind];
-            byte colorG = colors[colind + 1];
-            byte colorB = colors[colind + 2];
+            int invalidate = 0;
+            if (colind == 0) invalidate = 0x01;
+
+            byte colorR = (byte)(colors[colind] | invalidate);
+            byte colorG = (byte)(colors[colind + 1] | invalidate);
+            byte colorB = (byte)(colors[colind + 2] | invalidate);
 
             int wz = indexedBitmapBuffer.Width * zoom;
             int offset = ((y * zoom * indexedBitmapBuffer.Width) + x) * zoom;

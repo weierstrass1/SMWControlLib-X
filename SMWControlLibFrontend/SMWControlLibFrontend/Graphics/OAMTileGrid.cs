@@ -3,6 +3,8 @@ using Eto.Forms;
 using SMWControlLibSNES.Graphics;
 using SMWControlLibFrontend.Enumerators;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -108,9 +110,9 @@ namespace SMWControlLibFrontend.Graphics
 				if (AddingTiles != null)
 				{
 					SpriteTileMaskCollection s = (SpriteTileMaskCollection)AddingTiles?.Invoke();
-
+					grid.ClearTileSelection();
+					state = MouseState.Idle;
 					grid.AddingAtPosition((int)e.Location.X, (int)e.Location.Y, s);
-
 					Invalidate();
 				}
 			}
@@ -123,7 +125,7 @@ namespace SMWControlLibFrontend.Graphics
 					grid.Select(select.X, select.Y, 1, 1);
 					Invalidate();
 				}
-				if (state == MouseState.Active) 
+				else if (state == MouseState.Active) 
 				{
 					int xoff = grid.GetXOffset((int)e.Location.X);
 					int yoff = grid.GetYOffset((int)e.Location.Y);
@@ -136,11 +138,24 @@ namespace SMWControlLibFrontend.Graphics
 					}
 					else
 					{
-						action = new Point(xoff * Zoom, yoff * Zoom);
+						action = new Point(xoff, yoff);
+					}
+				}
+				else
+				{
+					int xoff = grid.GetXOffset((int)e.Location.X);
+					int yoff = grid.GetYOffset((int)e.Location.Y);
+
+					if (xoff < 0 || yoff < 0)
+					{
+						grid.ClearTileSelection();
+						state = MouseState.Idle;
+						Invalidate();
 					}
 				}
 			}
 		}
+		readonly List<long> timesPaint = new List<long>();
 		/// <summary>
 		/// paints the.
 		/// </summary>
@@ -148,21 +163,22 @@ namespace SMWControlLibFrontend.Graphics
 		/// <param name="e">The e.</param>
 		private void paint(object sender, PaintEventArgs e)
 		{
-			if (grid.GetGraphics())
+			Stopwatch watch = new Stopwatch();
+			watch.Start();
+			if (image.Width * image.Height != grid.Lenght)
+				image = new Bitmap(grid.WidthWithZoom, grid.HeightWithZoom, PixelFormat.Format24bppRgb);
+
+			BitmapData bd = image.Lock();
+			unsafe
 			{
-				if (image.Width * image.Height != grid.Lenght)
-					image = new Bitmap(grid.WidthWithZoom, grid.HeightWithZoom, PixelFormat.Format24bppRgb);
+				byte* bs = (byte*)bd.Data;
 
-				BitmapData bd = image.Lock();
-				unsafe
-				{
-					byte* bs = (byte*)bd.Data;
-
-					grid.CopyTo(bs);
-				}
-				bd.Dispose();
+				grid.CopyTo(bs);
 			}
+			bd.Dispose();
 			e.Graphics.DrawImage(image, 0, 0);
+			watch.Stop();
+			timesPaint.Add(watch.ElapsedMilliseconds);
 		}
 	}
 }

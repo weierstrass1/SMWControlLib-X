@@ -224,7 +224,6 @@ namespace SMWControlLibRendering
             if(requireCopyTo)
             {
                 Buffer.CopyTo(pixels, 0, 0, Buffer.Extent);
-                HardwareAcceleratorManager.GPUAccelerator.Synchronize();
                 requireCopyTo = false;
             }
             fixed (byte* bp = pixels)
