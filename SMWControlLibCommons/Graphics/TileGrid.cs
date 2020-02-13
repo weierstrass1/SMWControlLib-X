@@ -357,10 +357,10 @@ namespace SMWControlLibCommons.Graphics
         /// Copies the to.
         /// </summary>
         /// <param name="b">The b.</param>
-        public unsafe void CopyTo(byte* b)
+        public unsafe void CopyTo(byte* b, int left, int right, int top, int bottom)
         {
-            if (copyLenght < 0) return;
-            layer2.CopyTo(b, offset, copyLenght);
+            //if (copyLenght < 0) return;
+            layer2.CopyTo(b, left, right, top, bottom, 0, 0, 0, 0);
             offset = int.MaxValue;
             copyLenght = int.MinValue;
         }

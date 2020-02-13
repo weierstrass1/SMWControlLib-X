@@ -3,8 +3,8 @@ using Eto.Forms;
 using SMWControlLibSNES.Graphics;
 using SMWControlLibFrontend.Enumerators;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -26,6 +26,7 @@ namespace SMWControlLibFrontend.Graphics
 			MouseUp += mouseUp;
 			MouseEnter += mouseEnter;
 			KeyDown += keyDown;
+			
 			Invalidate();
 		}
 
@@ -169,6 +170,7 @@ namespace SMWControlLibFrontend.Graphics
 				}
 			}
 		}
+		List<long> times = new List<long>();
 		/// <summary>
 		/// paints the.
 		/// </summary>
@@ -176,17 +178,25 @@ namespace SMWControlLibFrontend.Graphics
 		/// <param name="e">The e.</param>
 		private void paint(object sender, PaintEventArgs e)
 		{
-			if (image.Width * image.Height != grid.Lenght)
-				image = new Bitmap(grid.WidthWithZoom, grid.HeightWithZoom, PixelFormat.Format24bppRgb);
-			using (BitmapData bd = image.Lock())
+			if (VisibleRectangle != default)
 			{
-				unsafe
+				if (image.Width * image.Height != VisibleRectangle.Width * VisibleRectangle.Height)
+					image = new Bitmap(VisibleRectangle.Width, VisibleRectangle.Height, PixelFormat.Format24bppRgb);
+				Stopwatch watch = new Stopwatch();
+				watch.Start();
+				using (BitmapData bd = image.Lock())
 				{
-					byte* bs = (byte*)bd.Data;
-					grid.CopyTo(bs);
+					unsafe
+					{
+						byte* bs = (byte*)bd.Data;
+						grid.CopyTo(bs, VisibleRectangle.X, VisibleRectangle.Width + VisibleRectangle.X,
+							VisibleRectangle.Y, VisibleRectangle.Height + VisibleRectangle.Y);
+					}
 				}
+				watch.Stop();
+				times.Add(watch.ElapsedMilliseconds);
+				e.Graphics.DrawImage(image, VisibleRectangle.X, VisibleRectangle.Y);
 			}
-			e.Graphics.DrawImage(image, 0, 0);
 		}
 	}
 }

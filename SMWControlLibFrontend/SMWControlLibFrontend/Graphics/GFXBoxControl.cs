@@ -177,7 +177,7 @@ namespace SMWControlLibFrontend.Graphics
                 unsafe
                 {
                     byte* bs = (byte*)bd.Data;
-                    b.CopyTo(bs);
+                    b.CopyTo(bs, 0, Width, 0, Height, 0, 0, 0, 0);
                 }
                 bd.Dispose();
             }

@@ -87,6 +87,50 @@ namespace SMWControlLibRendering
         /// <param name="backgroundColor">The background color.</param>
         public abstract void DrawBitmapBuffer(BitmapBuffer src, int x, int y, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB);
         /// <summary>
+        /// Draws the bitmap buffer.
+        /// </summary>
+        /// <param name="src">The src.</param>
+        /// <param name="dstX">The dst x.</param>
+        /// <param name="dstY">The dst y.</param>
+        /// <param name="srcX">The src x.</param>
+        /// <param name="srcY">The src y.</param>
+        public abstract void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY);
+        /// <summary>
+        /// Draws the bitmap buffer.
+        /// </summary>
+        /// <param name="src">The src.</param>
+        /// <param name="dstX">The dst x.</param>
+        /// <param name="dstY">The dst y.</param>
+        /// <param name="srcX">The src x.</param>
+        /// <param name="srcY">The src y.</param>
+        /// <param name="zoom">The zoom.</param>
+        public abstract void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, int zoom);
+        /// <summary>
+        /// Draws the bitmap buffer.
+        /// </summary>
+        /// <param name="src">The src.</param>
+        /// <param name="dstX">The dst x.</param>
+        /// <param name="dstY">The dst y.</param>
+        /// <param name="srcX">The src x.</param>
+        /// <param name="srcY">The src y.</param>
+        /// <param name="backgroundColorR">The background color r.</param>
+        /// <param name="backgroundColorG">The background color g.</param>
+        /// <param name="backgroundColorB">The background color b.</param>
+        public abstract void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB);
+        /// <summary>
+        /// Draws the bitmap buffer.
+        /// </summary>
+        /// <param name="src">The src.</param>
+        /// <param name="dstX">The dst x.</param>
+        /// <param name="dstY">The dst y.</param>
+        /// <param name="srcX">The src x.</param>
+        /// <param name="srcY">The src y.</param>
+        /// <param name="zoom">The zoom.</param>
+        /// <param name="backgroundColorR">The background color r.</param>
+        /// <param name="backgroundColorG">The background color g.</param>
+        /// <param name="backgroundColorB">The background color b.</param>
+        public abstract void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB);
+        /// <summary>
         /// Draws the rectangle.
         /// </summary>
         /// <param name="x">The x.</param>
@@ -140,16 +184,16 @@ namespace SMWControlLibRendering
         /// Copies the to.
         /// </summary>
         /// <param name="target">The target.</param>
-        public virtual unsafe void CopyTo(byte* target)
-        {
-            CopyTo(target, 0, Length);
-        }
-        /// <summary>
-        /// Copies the to.
-        /// </summary>
-        /// <param name="target">The target.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="lenght">The lenght.</param>
-        public abstract unsafe void CopyTo(byte* target, int offset, int lenght);
+        /// <param name="subImageLeft">The sub image left.</param>
+        /// <param name="subImageRight">The sub image right.</param>
+        /// <param name="subImageTop">The sub image top.</param>
+        /// <param name="subImageBottom">The sub image bottom.</param>
+        /// <param name="dirtyLeft">The dirty left.</param>
+        /// <param name="dirtyRight">The dirty right.</param>
+        /// <param name="dirtyTop">The dirty top.</param>
+        /// <param name="dirtyBottom">The dirty bottom.</param>
+        public abstract unsafe void CopyTo(byte* target,
+            int subImageLeft, int subImageRight, int subImageTop, int subImageBottom,
+            int dirtyLeft, int dirtyRight, int dirtyTop, int dirtyBottom);
     }
 }

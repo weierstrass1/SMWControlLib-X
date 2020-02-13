@@ -14,6 +14,19 @@ namespace SMWControlLibFrontend.Graphics
 	/// </summary>
 	public partial class OAMTileGrid : Drawable
 	{
+		private Rectangle visibleRectangle;
+		/// <summary>
+		/// Gets or sets the visible rectangle.
+		/// </summary>
+		public Rectangle VisibleRectangle 
+		{
+			get => visibleRectangle;
+			set
+			{
+				visibleRectangle = value;
+				Invalidate();
+			}
+		}
 		private SpriteTileGrid grid;
 		private Bitmap image;
 		/// <summary>
@@ -64,7 +77,7 @@ namespace SMWControlLibFrontend.Graphics
 		/// </summary>
 		void InitializeComponent()
 		{
-			grid = new SpriteTileGrid(255, 255, Zoom.X8, 0xB0, 0xC0, 0xD0)
+			grid = new SpriteTileGrid(255, 255, Zoom.X16, 0xB0, 0xC0, 0xD0)
 			{
 				CellSize = GridCellSize.Size4x4,
 				SelectionColorR = 0xE0,

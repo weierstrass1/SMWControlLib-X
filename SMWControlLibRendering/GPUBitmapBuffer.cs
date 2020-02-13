@@ -18,6 +18,10 @@ namespace SMWControlLibRendering
         /// </summary>
         public MemoryBuffer<byte> Buffer { get; protected set; }
         /// <summary>
+        /// Gets or sets the sub buffer.
+        /// </summary>
+        protected GPUBitmapBuffer subBuffer { get; set; }
+        /// <summary>
         /// Initializes a new instance of the <see cref="GPUBitmapBuffer"/> class.
         /// </summary>
         /// <param name="pixels">The pixels.</param>
@@ -39,7 +43,6 @@ namespace SMWControlLibRendering
             }
             int l = width * height * BytesPerColor;
             Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(l);
-            pixels = new byte[l];
             requireCopyTo = true;
             base.Initialize(width, height);
         }
@@ -219,24 +222,126 @@ namespace SMWControlLibRendering
         /// Copies the to.
         /// </summary>
         /// <param name="target">The target.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="lenght">The lenght.</param>
-        public override unsafe void CopyTo(byte* target, int offset, int lenght)
+        /// <param name="subImageLeft">The sub image left.</param>
+        /// <param name="subImageRight">The sub image right.</param>
+        /// <param name="subImageTop">The sub image top.</param>
+        /// <param name="subImageBottom">The sub image bottom.</param>
+        /// <param name="dirtyLeft">The dirty left.</param>
+        /// <param name="dirtyRight">The dirty right.</param>
+        /// <param name="dirtyTop">The dirty top.</param>
+        /// <param name="dirtyBottom">The dirty bottom.</param>
+        public override unsafe void CopyTo(byte* target, int subImageLeft, int subImageRight, int subImageTop, int subImageBottom, int dirtyLeft, int dirtyRight, int dirtyTop, int dirtyBottom)
         {
-            int l = pixels.Length - offset;
-            l = Math.Min(lenght, l);
+            if (subImageLeft < 0) subImageLeft = 0;
+            if (subImageTop < 0) subImageTop = 0;
+            if (subImageLeft >= Width) subImageLeft = Width - 1;
+            if (subImageTop >= Height) subImageTop = Height - 1;
 
-            if(requireCopyTo)
+            if (subImageRight <= subImageLeft) subImageRight = subImageLeft + 1;
+            if (subImageBottom <= subImageTop) subImageBottom = subImageTop + 1;
+            if (subImageRight >= Width) subImageRight = Width - 1;
+            if (subImageBottom >= Height) subImageBottom = Height - 1;
+
+            int w = subImageRight - subImageLeft;
+            int h = subImageBottom - subImageTop;
+
+            if (subImageRight == Width - 1) w++;
+            if (subImageBottom == Height - 1) h++;
+
+            int l = w * h * BytesPerColor;
+
+            if (subBuffer == null)
             {
-
-                Buffer.CopyTo(pixels, new Index(offset), offset, new Index(l));
-                requireCopyTo = false;
+                subBuffer = (GPUBitmapBuffer)CreateInstance(w, h);
+                pixels = new byte[l];
+                requireCopyTo = true;
+            }
+            else if(subBuffer.Buffer.Extent != l)
+            {
+                subBuffer.Initialize(w, h);
+                pixels = new byte[l];
+                requireCopyTo = true;
             }
 
-            fixed (byte* bp = pixels)
+            //if(requireCopyTo)
+            //{
+            subBuffer.DrawBitmapBuffer(this, 0, 0, subImageLeft, subImageTop);
+            subBuffer.Buffer.CopyTo(pixels, 0, 0, subBuffer.Buffer.Extent);
+            requireCopyTo = false;
+            //}
+
+            fixed(byte* bs = pixels)
             {
-                System.Buffer.MemoryCopy(&bp[offset], &target[offset], l, l);
+                System.Buffer.MemoryCopy(bs, target, pixels.Length, pixels.Length);
             }
+        }
+
+        /// <summary>
+        /// Draws the bitmap buffer.
+        /// </summary>
+        /// <param name="src">The src.</param>
+        /// <param name="dstX">The dst x.</param>
+        /// <param name="dstY">The dst y.</param>
+        /// <param name="srcX">The src x.</param>
+        /// <param name="srcY">The src y.</param>
+        public override void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY)
+        {
+            if (src == null) throw new ArgumentNullException(nameof(src));
+
+            GPUBitmapBuffer b = (GPUBitmapBuffer)src;
+
+            int w = Math.Min(b.Width - srcX, Width - dstX);
+            int h = Math.Min(b.Height - srcY, Height - dstY);
+
+            DrawBitmapBufferRGB555WithOffsetKernel.Execute(new Index2(w, h), Buffer, b.Buffer, dstX, dstY, Width, srcX, srcY, src.Width);
+            requireCopyTo = true;
+        }
+
+        /// <summary>
+        /// Draws the bitmap buffer.
+        /// </summary>
+        /// <param name="src">The src.</param>
+        /// <param name="dstX">The dst x.</param>
+        /// <param name="dstY">The dst y.</param>
+        /// <param name="srcX">The src x.</param>
+        /// <param name="srcY">The src y.</param>
+        /// <param name="zoom">The zoom.</param>
+        public override void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, int zoom)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Draws the bitmap buffer.
+        /// </summary>
+        /// <param name="src">The src.</param>
+        /// <param name="dstX">The dst x.</param>
+        /// <param name="dstY">The dst y.</param>
+        /// <param name="srcX">The src x.</param>
+        /// <param name="srcY">The src y.</param>
+        /// <param name="backgroundColorR">The background color r.</param>
+        /// <param name="backgroundColorG">The background color g.</param>
+        /// <param name="backgroundColorB">The background color b.</param>
+        public override void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Draws the bitmap buffer.
+        /// </summary>
+        /// <param name="src">The src.</param>
+        /// <param name="dstX">The dst x.</param>
+        /// <param name="dstY">The dst y.</param>
+        /// <param name="srcX">The src x.</param>
+        /// <param name="srcY">The src y.</param>
+        /// <param name="zoom">The zoom.</param>
+        /// <param name="backgroundColorR">The background color r.</param>
+        /// <param name="backgroundColorG">The background color g.</param>
+        /// <param name="backgroundColorB">The background color b.</param>
+        public override void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        {
+            throw new NotImplementedException();
         }
     }
 }
