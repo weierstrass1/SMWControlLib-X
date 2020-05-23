@@ -9,8 +9,8 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
     /// </summary>
     public static class CreateBitmapBufferWithZoomByteRGB555Kernel
     {
-        private static readonly Action<Index2, ArrayView2D<byte>, ArrayView<byte>, ArrayView<byte>, int, int> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<byte>, ArrayView<byte>, ArrayView<byte>, int, int>
+        private static readonly Action<Index2, ArrayView2D<byte>, ArrayView3D<byte>, ArrayView<byte>, int, int> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<byte>, ArrayView3D<byte>, ArrayView<byte>, int, int>
             (strategy);
         /// <summary>
         /// Executes the.
@@ -21,7 +21,7 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
         /// <param name="colors">The colors.</param>
         /// <param name="zoom">The zoom.</param>
         /// <param name="flip">The flip.</param>
-        public static void Execute(Index2 index, ArrayView2D<byte> indexedBitmapBuffer, ArrayView<byte> destBitmap, ArrayView<byte> colors, int zoom, int flip)
+        public static void Execute(Index2 index, ArrayView2D<byte> indexedBitmapBuffer, ArrayView3D<byte> destBitmap, ArrayView<byte> colors, int zoom, int flip)
         {
             kernel(index, indexedBitmapBuffer, destBitmap, colors, zoom, flip);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
@@ -35,7 +35,7 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
         /// <param name="colors">The colors.</param>
         /// <param name="zoom">The zoom.</param>
         /// <param name="flip">The flip.</param>
-        private static void strategy(Index2 index, ArrayView2D<byte> indexedBitmapBuffer, ArrayView<byte> destBitmap, ArrayView<byte> colors, int zoom, int flip)
+        private static void strategy(Index2 index, ArrayView2D<byte> indexedBitmapBuffer, ArrayView3D<byte> destBitmap, ArrayView<byte> colors, int zoom, int flip)
         {
             int colind = indexedBitmapBuffer[index] * 3;
 
@@ -53,18 +53,16 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
             byte colorG = (byte)(colors[colind + 1] | invalidate);
             byte colorB = (byte)(colors[colind + 2] | invalidate);
 
-            int wz = indexedBitmapBuffer.Width * zoom;
-            int offset = ((y * zoom * indexedBitmapBuffer.Width) + x) * zoom;
-            int wzz = wz * zoom;
-            for (int j = 0; j < wzz; j += wz)
+            Index2 ind;
+            Index2 newInd = new Index2(x * zoom, y * zoom);
+            for (int j = 0; j < zoom; j++)
             {
-                int jo = offset + j;
                 for (int i = 0; i < zoom; i++)
                 {
-                    int ind = (jo + i) * 3;
-                    destBitmap[ind] = colorB;
-                    destBitmap[ind + 1] = colorG;
-                    destBitmap[ind + 2] = colorR;
+                    ind = newInd + new Index2(i, j);
+                    destBitmap[new Index3(0, ind)] = colorB;
+                    destBitmap[new Index3(1, ind)] = colorG;
+                    destBitmap[new Index3(2, ind)] = colorR;
                 }
             }
         }

@@ -41,7 +41,7 @@
     /// <summary>
     /// The object factory.
     /// </summary>
-    public abstract class Disguise<R, S, T> : Disguise<R, S>   where R : ObjectFactory<S, T>, new()
+    public abstract class Disguise<R, S, T> : Disguise<R, S> where R : ObjectFactory<S, T>, new()
                                                                 where S : CanFactory<T>
     {
         /// <summary>
@@ -74,7 +74,7 @@
     /// <summary>
     /// The object factory.
     /// </summary>
-    public abstract class Disguise<R, S, T, U> : Disguise<R, S> where R : ObjectFactory<S,T,U>, new()
+    public abstract class Disguise<R, S, T, U> : Disguise<R, S> where R : ObjectFactory<S, T, U>, new()
                                                                 where S : CanFactory<T, U>
     {
         /// <summary>
@@ -109,7 +109,7 @@
     /// <summary>
     /// The object factory.
     /// </summary>
-    public abstract class Disguise<R, S, T, U, V> : Disguise<R, S>  where R : ObjectFactory<S,T,U,V>, new()
+    public abstract class Disguise<R, S, T, U, V> : Disguise<R, S> where R : ObjectFactory<S, T, U, V>, new()
                                                                     where S : CanFactory<T, U, V>
     {
         /// <summary>
@@ -146,7 +146,7 @@
     /// <summary>
     /// The object factory.
     /// </summary>
-    public abstract class Disguise<R, S, T, U, V, W> : Disguise<R, S>   where R : ObjectFactory<S, T, U, V, W>, new()
+    public abstract class Disguise<R, S, T, U, V, W> : Disguise<R, S> where R : ObjectFactory<S, T, U, V, W>, new()
                                                                         where S : CanFactory<T, U, V, W>
     {
         /// <summary>
@@ -185,7 +185,7 @@
     /// <summary>
     /// The object factory.
     /// </summary>
-    public abstract class Disguise<R, S, T, U, V, W, X> : Disguise<R, S>    where R : ObjectFactory<S, T, U, V, W, X>, new()
+    public abstract class Disguise<R, S, T, U, V, W, X> : Disguise<R, S> where R : ObjectFactory<S, T, U, V, W, X>, new()
                                                                             where S : CanFactory<T, U, V, W, X>
     {
         /// <summary>
@@ -269,7 +269,7 @@
     /// <summary>
     /// The object factory.
     /// </summary>
-    public abstract class Disguise<R, S, T, U, V, W, X, Y, Z> : Disguise<R, S>  where R : ObjectFactory<S, T, U, V, W, X, Y, Z>, new()
+    public abstract class Disguise<R, S, T, U, V, W, X, Y, Z> : Disguise<R, S> where R : ObjectFactory<S, T, U, V, W, X, Y, Z>, new()
                                                                                 where S : CanFactory<T, U, V, W, X, Y, Z>
     {
         /// <summary>

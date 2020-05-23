@@ -1,8 +1,9 @@
 using Eto.Drawing;
 using Eto.Forms;
-using SMWControlLibSNES.Graphics;
 using SMWControlLibFrontend.Graphics;
 using SMWControlLibRendering;
+using SMWControlLibSNES.Graphics;
+using System;
 using System.ComponentModel;
 
 namespace SMWControlLibFrontend
@@ -15,6 +16,7 @@ namespace SMWControlLibFrontend
         private readonly GFXBoxControl gfx;
         private readonly OAMTileGrid grid;
         private readonly Scrollable scrolleablePanel;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
         /// </summary>
@@ -40,8 +42,9 @@ namespace SMWControlLibFrontend
 
             scrolleablePanel = new Scrollable
             {
-                Width = 800,
-                Height = 600
+                Width = 512,
+                Height = 512,
+                Border = BorderType.None
             };
             PixelLayout scrollLayout = new PixelLayout();
             scrollLayout.Add(grid, 0, 0);

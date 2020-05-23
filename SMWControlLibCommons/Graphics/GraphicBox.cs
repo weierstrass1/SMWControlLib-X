@@ -1,9 +1,9 @@
-﻿using SMWControlLibCommons.Enumerators.Graphics;
-using SMWControlLibCommons.Graphics.DirtyClasses;
-using SMWControlLibRendering.Disguise;
-using SMWControlLibCommons.Disguise;
-using SMWControlLibCommons.Keys.Graphics;
+﻿using SMWControlLibCommons.Disguise;
+using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Factory;
+using SMWControlLibCommons.Graphics.DirtyClasses;
+using SMWControlLibCommons.Keys.Graphics;
+using SMWControlLibRendering.Disguise;
 using SMWControlLibRendering.Interfaces;
 using System.IO;
 
@@ -12,7 +12,7 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile g f x box.
     /// </summary>
-    public abstract class GraphicBox<TD, TT, TF> : IndexedBitmapBufferDisguise, ICanLoad    where TD : DirtyTile
+    public abstract class GraphicBox<TD, TT, TF> : IndexedBitmapBufferDisguise, ICanLoad where TD : DirtyTile
                                                                                             where TT : Tile
                                                                                             where TF : DirtyTileFactory, new()
     {

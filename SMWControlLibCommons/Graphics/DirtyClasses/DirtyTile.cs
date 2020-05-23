@@ -1,5 +1,4 @@
-﻿using SMWControlLibCommons.Enumerators.Graphics;
-using SMWControlLibUtils;
+﻿using SMWControlLibUtils;
 
 namespace SMWControlLibCommons.Graphics.DirtyClasses
 {

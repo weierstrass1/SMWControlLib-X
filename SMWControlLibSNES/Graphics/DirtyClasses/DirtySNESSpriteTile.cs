@@ -1,5 +1,5 @@
-﻿using SMWControlLibCommons.Graphics.DirtyClasses;
-using SMWControlLibCommons.Enumerators.Graphics;
+﻿using SMWControlLibCommons.Enumerators.Graphics;
+using SMWControlLibCommons.Graphics.DirtyClasses;
 
 namespace SMWControlLibSNES.Graphics.DirtyClasses
 {

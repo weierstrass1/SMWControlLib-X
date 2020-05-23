@@ -1,10 +1,10 @@
 using Eto.Drawing;
 using Eto.Forms;
+using SMWControlLibCommons.Enumerators.Graphics;
+using SMWControlLibFrontend.Enumerators;
+using SMWControlLibRendering;
 using SMWControlLibSNES.Enumerators.Graphics;
 using SMWControlLibSNES.Graphics;
-using SMWControlLibFrontend.Enumerators;
-using SMWControlLibCommons.Enumerators.Graphics;
-using SMWControlLibRendering;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -14,6 +14,7 @@ namespace SMWControlLibFrontend.Graphics
     public partial class GFXBoxControl : Drawable
     {
         private SNESColorPalette palette;
+
         /// <summary>
         /// Gets or sets the g f x size.
         /// </summary>
@@ -34,6 +35,7 @@ namespace SMWControlLibFrontend.Graphics
         }
 
         private Zoom zoom = Zoom.X2;
+
         /// <summary>
         /// Gets or sets the zoom.
         /// </summary>
@@ -53,6 +55,7 @@ namespace SMWControlLibFrontend.Graphics
         /// Gets the selection.
         /// </summary>
         public SpriteTileMaskCollection Selection { get; private set; }
+
         private SpriteTileGFXBox gfxBox;
         private Rectangle selectionRectangle, lastRenderedSelection;
         private MouseState state = MouseState.Idle;
@@ -60,10 +63,11 @@ namespace SMWControlLibFrontend.Graphics
         private BitmapBuffer previewsBitmap;
         private PointF pointer;
         private Bitmap image;
+
         /// <summary>
         /// Initializes the component.
         /// </summary>
-        void InitializeComponent()
+        private void InitializeComponent()
         {
             gfxBox = new SpriteTileGFXBox(size);
             Width = size.Width * Zoom;

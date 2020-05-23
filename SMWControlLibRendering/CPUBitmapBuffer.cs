@@ -17,10 +17,12 @@ namespace SMWControlLibRendering
         public CPUBitmapBuffer(int width, int height) : base(width, height)
         {
         }
+
         /// <summary>
         /// Gets or sets the pixels.
         /// </summary>
         protected byte[] pixels;
+
         /// <summary>
         /// Clones the.
         /// </summary>
@@ -75,6 +77,7 @@ namespace SMWControlLibRendering
                 throw new ArgumentNotCPUBitmapBufferException(nameof(src));
             }
         }
+
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -135,6 +138,7 @@ namespace SMWControlLibRendering
                 throw new ArgumentNotCPUBitmapBufferException(nameof(src));
             }
         }
+
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -188,6 +192,7 @@ namespace SMWControlLibRendering
                 throw new ArgumentNotCPUBitmapBufferException(nameof(src));
             }
         }
+
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -254,6 +259,7 @@ namespace SMWControlLibRendering
                 throw new ArgumentNotCPUBitmapBufferException(nameof(src));
             }
         }
+
         /// <summary>
         /// Draws the grid.
         /// </summary>
@@ -283,7 +289,7 @@ namespace SMWControlLibRendering
                             pixels[ind + 2] = colorB;
                         });
                     });
-                    
+
                     _ = Parallel.For(1, Height, j =>
                     {
                         int jw = j * Width;
@@ -296,6 +302,7 @@ namespace SMWControlLibRendering
                         });
                     });
                     break;
+
                 case 1:
                     int wmz = Width - zoom;
                     _ = Parallel.For(1, verticalCount, j =>
@@ -317,7 +324,7 @@ namespace SMWControlLibRendering
                     _ = Parallel.For(0, Height - zoom, j =>
                     {
                         int drawer = (j / z2) % 2;
-                        if (drawer == 1 || j % z2 == 0) 
+                        if (drawer == 1 || j % z2 == 0)
                         {
                             int jw = (j + zoom) * Width;
                             _ = Parallel.For(1, lateralCount, i =>
@@ -330,6 +337,7 @@ namespace SMWControlLibRendering
                         }
                     });
                     break;
+
                 default:
                     int dist = Math.Min(4, z2);
                     if (dist == 1) dist = 2;
@@ -363,6 +371,7 @@ namespace SMWControlLibRendering
                     break;
             }
         }
+
         /// <summary>
         /// Draws the line.
         /// </summary>
@@ -404,7 +413,7 @@ namespace SMWControlLibRendering
             {
                 float props = dY / (float)dX;
 
-                if (Math.Abs(dX) >= Math.Abs(dY))   
+                if (Math.Abs(dX) >= Math.Abs(dY))
                 {
                     int minX = Math.Min(x2, x1);
                     int maxX = Math.Max(x2, x1);
@@ -432,6 +441,7 @@ namespace SMWControlLibRendering
                 }
             }
         }
+
         /// <summary>
         /// Draws the rectangle.
         /// </summary>
@@ -480,6 +490,7 @@ namespace SMWControlLibRendering
                 pixels[ind2 + 2] = colorB;
             });
         }
+
         /// <summary>
         /// Fills the color.
         /// </summary>
@@ -539,6 +550,7 @@ namespace SMWControlLibRendering
 
             DrawBitmapBuffer(b, 0, 0, zoom);
         }
+
         /// <summary>
         /// Zooms the in.
         /// </summary>
@@ -555,6 +567,7 @@ namespace SMWControlLibRendering
 
             DrawBitmapBuffer(b, 0, 0, zoom, colorR, colorG, colorB);
         }
+
         /// <summary>
         /// Initializes the.
         /// </summary>
@@ -566,6 +579,7 @@ namespace SMWControlLibRendering
             base.Initialize(width, height);
             pixels = new byte[Length];
         }
+
         /// <summary>
         /// Copies the to.
         /// </summary>

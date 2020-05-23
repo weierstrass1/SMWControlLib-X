@@ -9,8 +9,8 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
     /// </summary>
     public static class DrawBitmapBufferWithZoomAndBGRGB555Kernel
     {
-        private static readonly Action<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int, byte, byte, byte> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int, byte, byte, byte>
+        private static readonly Action<Index2, ArrayView3D<byte>, ArrayView3D<byte>, Index2, int, byte, byte, byte> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView3D<byte>, ArrayView3D<byte>, Index2, int, byte, byte, byte>
             (strategy);
         /// <summary>
         /// Executes the.
@@ -23,10 +23,10 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="srcWidth">The src width.</param>
         /// <param name="zoom">The zoom.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public static void Execute(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
-            int dstWidth, int srcWidth, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        public static void Execute(Index2 index, ArrayView3D<byte> destBuffer, ArrayView3D<byte> srcBuffer,
+            Index2 offset, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
-            kernel(index, destBuffer, srcBuffer, offset, dstWidth, srcWidth, zoom, backgroundColorR, backgroundColorG, backgroundColorB);
+            kernel(index, destBuffer, srcBuffer, offset, zoom, backgroundColorR, backgroundColorG, backgroundColorB);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -40,31 +40,30 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="srcWidth">The src width.</param>
         /// <param name="zoom">The zoom.</param>
         /// <param name="backgroundColor">The background color.</param>
-        private static void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
-            int dstWidth, int srcWidth, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        private static void strategy(Index2 index, ArrayView3D<byte> destBuffer, ArrayView3D<byte> srcBuffer,
+            Index2 offset, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
-            int indsrc = ((index.Y * srcWidth) + index.X) * 3;
-            byte colorR = srcBuffer[indsrc];
-            byte colorG = srcBuffer[indsrc + 1];
-            byte colorB = srcBuffer[indsrc + 2];
+            byte colorR = srcBuffer[new Index3(0, index)];
+            byte colorG = srcBuffer[new Index3(1, index)];
+            byte colorB = srcBuffer[new Index3(2, index)];
 
             if ((colorR & 0x7) != 0 || (colorG & 0x7) != 0 || (colorB & 0x7) != 0)
             {
-                colorR = backgroundColorR;
+                colorR = backgroundColorB;
                 colorG = backgroundColorG;
-                colorB = backgroundColorB;
+                colorB = backgroundColorR;
             }
 
-            int jw = offset;
+            Index2 ind = index + offset;
+            ind = new Index2(ind.X * zoom, ind.Y * zoom);
             for (int j = 0; j < zoom; j++)
             {
-                jw += dstWidth;
                 for (int i = 0; i < zoom; i++)
                 {
-                    int ind = (jw + i) * 3;
-                    destBuffer[ind] = colorR;
-                    destBuffer[ind + 1] = colorG;
-                    destBuffer[ind + 2] = colorB;
+                    Index2 curoff = ind + new Index2(i, j);
+                    destBuffer[new Index3(0, curoff)] = colorR;
+                    destBuffer[new Index3(1, curoff)] = colorG;
+                    destBuffer[new Index3(2, curoff)] = colorB;
                 }
             }
         }

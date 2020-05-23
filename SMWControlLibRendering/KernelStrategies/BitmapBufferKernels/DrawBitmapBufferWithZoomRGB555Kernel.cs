@@ -9,8 +9,8 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
     /// </summary>
     public static class DrawBitmapBufferWithZoomRGB555Kernel
     {
-        private static readonly Action<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int>
+        private static readonly Action<Index2, ArrayView3D<byte>, ArrayView3D<byte>, Index2, int> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView3D<byte>, ArrayView3D<byte>, Index2, int>
             (strategy);
         /// <summary>
         /// Executes the.
@@ -22,10 +22,10 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="dstWidth">The dst width.</param>
         /// <param name="srcWidth">The src width.</param>
         /// <param name="zoom">The zoom.</param>
-        public static void Execute(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
-            int dstWidth, int srcWidth, int zoom)
+        public static void Execute(Index2 index, ArrayView3D<byte> destBuffer, ArrayView3D<byte> srcBuffer,
+            Index2 offset, int zoom)
         {
-            kernel(index, destBuffer, srcBuffer, offset, dstWidth, srcWidth, zoom);
+            kernel(index, destBuffer, srcBuffer, offset, zoom);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -38,27 +38,27 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="dstWidth">The dst width.</param>
         /// <param name="srcWidth">The src width.</param>
         /// <param name="zoom">The zoom.</param>
-        private static void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
-            int dstWidth, int srcWidth, int zoom)
+        private static void strategy(Index2 index, ArrayView3D<byte> destBuffer, ArrayView3D<byte> srcBuffer,
+            Index2 offset, int zoom)
         {
-            int indsrc = ((index.Y * srcWidth) + index.X) * 3;
-            byte colorR = srcBuffer[indsrc];
-            byte colorG = srcBuffer[indsrc + 1];
-            byte colorB = srcBuffer[indsrc + 2];
+            byte colorR = srcBuffer[new Index3(0, index)];
+            byte colorG = srcBuffer[new Index3(1, index)];
+            byte colorB = srcBuffer[new Index3(2, index)];
 
-            if ((colorR & 0x7) != 0 || (colorG & 0x7) != 0 || (colorB & 0x7) != 0) 
+            if ((colorR & 0x7) != 0 || (colorG & 0x7) != 0 || (colorB & 0x7) != 0)
                 return;
 
-            int jw = offset;
+            Index2 ind = index + offset;
+            ind = new Index2(ind.X * zoom, ind.Y * zoom);
+            Index2 curOf;
             for (int j = 0; j < zoom; j++)
             {
-                jw += dstWidth;
                 for (int i = 0; i < zoom; i++)
                 {
-                    int ind = (jw + i) * 3;
-                    destBuffer[ind] = colorR;
-                    destBuffer[ind + 1] = colorG;
-                    destBuffer[ind + 2] = colorB;
+                    curOf = ind + new Index2(i, j);
+                    destBuffer[new Index3(0, curOf)] = colorR;
+                    destBuffer[new Index3(1, curOf)] = colorG;
+                    destBuffer[new Index3(2, curOf)] = colorB;
                 }
             }
         }

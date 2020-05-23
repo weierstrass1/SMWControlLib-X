@@ -9,8 +9,8 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
     /// </summary>
     public static class DrawBitmapBufferWithBGRGB555Kernel
     {
-        private static readonly Action<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, byte, byte, byte> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, byte, byte, byte>
+        private static readonly Action<Index2, ArrayView3D<byte>, ArrayView3D<byte>, Index2, byte, byte, byte> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView3D<byte>, ArrayView3D<byte>, Index2, byte, byte, byte>
             (strategy);
         /// <summary>
         /// Executes the.
@@ -22,10 +22,10 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="dstWidth">The dst width.</param>
         /// <param name="srcWidth">The src width.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public static void Execute(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
-            int dstWidth, int srcWidth, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        public static void Execute(Index2 index, ArrayView3D<byte> destBuffer, ArrayView3D<byte> srcBuffer,
+            Index2 offset, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
-            kernel(index, destBuffer, srcBuffer, offset, dstWidth, srcWidth, backgroundColorR, backgroundColorG, backgroundColorB);
+            kernel(index, destBuffer, srcBuffer, offset, backgroundColorR, backgroundColorG, backgroundColorB);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -38,13 +38,12 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="dstWidth">The dst width.</param>
         /// <param name="srcWidth">The src width.</param>
         /// <param name="backgroundColor">The background color.</param>
-        private static void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int offset,
-            int dstWidth, int srcWidth, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        private static void strategy(Index2 index, ArrayView3D<byte> destBuffer, ArrayView3D<byte> srcBuffer,
+            Index2 offset, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
-            int indsrc = ((index.Y * srcWidth) + index.X) * 3;
-            byte colorR = srcBuffer[indsrc];
-            byte colorG = srcBuffer[indsrc + 1];
-            byte colorB = srcBuffer[indsrc + 2];
+            byte colorR = srcBuffer[new Index3(0, index)];
+            byte colorG = srcBuffer[new Index3(1, index)];
+            byte colorB = srcBuffer[new Index3(2, index)];
 
             if ((colorR & 0x7) != 0 || (colorG & 0x7) != 0 || (colorB & 0x7) != 0)
             {
@@ -53,10 +52,10 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
                 colorB = backgroundColorR;
             }
 
-            int ind = ((index.Y * dstWidth) + index.X + offset) * 3;
-            destBuffer[ind] = colorR;
-            destBuffer[ind + 1] = colorG;
-            destBuffer[ind + 2] = colorB;
+            Index2 ind = index + offset;
+            destBuffer[new Index3(0, ind)] = colorR;
+            destBuffer[new Index3(1, ind)] = colorG;
+            destBuffer[new Index3(2, ind)] = colorB;
         }
     }
 }

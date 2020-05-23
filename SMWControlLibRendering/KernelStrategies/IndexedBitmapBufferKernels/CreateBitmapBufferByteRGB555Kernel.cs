@@ -9,8 +9,8 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
     /// </summary>
     public static class CreateBitmapBufferByteRGB555Kernel
     {
-        private static readonly Action<Index2, ArrayView2D<byte>, ArrayView<byte>, ArrayView<byte>, int> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<byte>, ArrayView<byte>, ArrayView<byte>, int>
+        private static readonly Action<Index2, ArrayView2D<byte>, ArrayView3D<byte>, ArrayView<byte>, int> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<byte>, ArrayView3D<byte>, ArrayView<byte>, int>
             (strategy);
         /// <summary>
         /// Executes the.
@@ -20,7 +20,7 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
         /// <param name="destBitmap">The dest bitmap.</param>
         /// <param name="colors">The colors.</param>
         /// <param name="flip">The flip.</param>
-        public static void Execute(Index2 index, ArrayView2D<byte> indexedBitmapBuffer, ArrayView<byte> destBitmap, ArrayView<byte> colors, int flip)
+        public static void Execute(Index2 index, ArrayView2D<byte> indexedBitmapBuffer, ArrayView3D<byte> destBitmap, ArrayView<byte> colors, int flip)
         {
             kernel(index, indexedBitmapBuffer, destBitmap, colors, flip);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
@@ -33,7 +33,7 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
         /// <param name="destBitmap">The dest bitmap.</param>
         /// <param name="colors">The colors.</param>
         /// <param name="flip">The flip.</param>
-        private static void strategy(Index2 index, ArrayView2D<byte> indexedBitmapBuffer, ArrayView<byte> destBitmap, ArrayView<byte> colors, int flip)
+        private static void strategy(Index2 index, ArrayView2D<byte> indexedBitmapBuffer, ArrayView3D<byte> destBitmap, ArrayView<byte> colors, int flip)
         {
             int y = index.Y;
             if ((flip & 0x2) != 0)
@@ -47,9 +47,9 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
             int invalidate = 0;
             if (colind == 0) invalidate = 0x01;
 
-            destBitmap[ind + 2] = (byte)(colors[colind] | invalidate);
-            destBitmap[ind + 1] = (byte)(colors[colind + 1] | invalidate);
-            destBitmap[ind] = (byte)(colors[colind + 2] | invalidate);
+            destBitmap[new Index3(0, index)] = (byte)(colors[colind] | invalidate);
+            destBitmap[new Index3(1, index)] = (byte)(colors[colind + 1] | invalidate);
+            destBitmap[new Index3(2, index)] = (byte)(colors[colind + 2] | invalidate);
         }
     }
 }

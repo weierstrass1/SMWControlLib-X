@@ -1,10 +1,10 @@
-﻿using SMWControlLibSNES.Enumerators.Graphics;
-using SMWControlLibSNES.Graphics.DirtyClasses;
-using SMWControlLibCommons.Graphics;
-using SMWControlLibSNES.Factory.Graphics;
+﻿using ILGPU;
 using ILGPU.Runtime;
+using SMWControlLibCommons.Graphics;
 using SMWControlLibRendering;
-using ILGPU;
+using SMWControlLibSNES.Enumerators.Graphics;
+using SMWControlLibSNES.Factory.Graphics;
+using SMWControlLibSNES.Graphics.DirtyClasses;
 using SMWControlLibSNES.KernelStrategies.GraphicBox;
 
 namespace SMWControlLibSNES.Graphics

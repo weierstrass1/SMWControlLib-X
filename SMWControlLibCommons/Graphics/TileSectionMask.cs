@@ -1,17 +1,18 @@
-﻿using SMWControlLibRendering;
-using SMWControlLibCommons.DataStructs;
+﻿using SMWControlLibCommons.DataStructs;
 using SMWControlLibCommons.Enumerators.Graphics;
-using System.Collections.Generic;
 using SMWControlLibCommons.Interfaces.Graphics;
+using SMWControlLibRendering;
+using System.Collections.Generic;
 
 namespace SMWControlLibCommons.Graphics
 {
     /// <summary>
     /// The sprite tile section mask.
     /// </summary>
-    public class TileSectionMask : IGridDrawable<TileMask>
+    public class TileSectionMask : IGridDrawable
     {
         private int index;
+
         /// <summary>
         /// Gets or sets the index.
         /// </summary>
@@ -27,46 +28,57 @@ namespace SMWControlLibCommons.Graphics
                     index = value;
             }
         }
+
         /// <summary>
         /// Gets or sets the x.
         /// </summary>
         public int X { get; set; }
+
         /// <summary>
         /// Gets or sets the y.
         /// </summary>
         public int Y { get; set; }
+
         /// <summary>
         /// Gets the left.
         /// </summary>
         public int Left => GetCollection().Left;
+
         /// <summary>
         /// Gets the top.
         /// </summary>
         public int Top => GetCollection().Top;
+
         /// <summary>
         /// Gets the right.
         /// </summary>
         public int Right => Left + Width;
+
         /// <summary>
         /// Gets the bottom.
         /// </summary>
         public int Bottom => Top + Height;
+
         /// <summary>
         /// Gets the width.
         /// </summary>
         public int Width => Section.Width;
+
         /// <summary>
         /// Gets the height.
         /// </summary>
         public int Height => Section.Height;
+
         /// <summary>
         /// Gets a value indicating whether require refresh.
         /// </summary>
         public bool RequireRefresh => Section[Index].RequireRefresh;
+
         /// <summary>
         /// Gets the section.
         /// </summary>
         public TileSection Section { get; private set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TileSectionMask"/> class.
         /// </summary>
@@ -77,6 +89,7 @@ namespace SMWControlLibCommons.Graphics
             X = -1;
             Y = -1;
         }
+
         /// <summary>
         /// Gets the collection.
         /// </summary>
@@ -85,6 +98,7 @@ namespace SMWControlLibCommons.Graphics
         {
             return Section[Index];
         }
+
         /// <summary>
         /// Gets the graphics.
         /// </summary>
@@ -94,6 +108,7 @@ namespace SMWControlLibCommons.Graphics
         {
             return Section.GetGraphics(Index, z);
         }
+
         /// <summary>
         /// Selects the.
         /// </summary>
@@ -101,7 +116,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public ITileCollection<TileMask> SelectTiles(int x, int y, int width, int height)
+        public ITileCollection SelectTiles(int x, int y, int width, int height)
         {
             TileMaskCollection sel = GetCollection();
 
@@ -110,17 +125,18 @@ namespace SMWControlLibCommons.Graphics
             else
                 return sel.FindByArea(x, y, width, height);
         }
+
         /// <summary>
         /// Adds the tiles.
         /// </summary>
         /// <param name="tiles">The tiles.</param>
-        public void AddTiles(ITileCollection<TileMask> tiles)
+        public void AddTiles(ITileCollection tiles)
         {
-            
             GetCollection().AddCollection((TileMaskCollection)tiles);
             X = Section.Left;
             Y = Section.Top;
         }
+
         /// <summary>
         /// Removes the tiles.
         /// </summary>
@@ -138,6 +154,7 @@ namespace SMWControlLibCommons.Graphics
         {
             return GetCollection().MoveSelection(x, y);
         }
+
         /// <summary>
         /// Increases the z index.
         /// </summary>
@@ -145,6 +162,7 @@ namespace SMWControlLibCommons.Graphics
         {
             return GetCollection().IncreaseSelectionZIndex();
         }
+
         /// <summary>
         /// Decreases the z index.
         /// </summary>
@@ -161,6 +179,7 @@ namespace SMWControlLibCommons.Graphics
         {
             return GetCollection().GetTileBorders();
         }
+
         /// <summary>
         /// Are the empty.
         /// </summary>
@@ -174,7 +193,7 @@ namespace SMWControlLibCommons.Graphics
         /// Gets the enumerable.
         /// </summary>
         /// <returns>A list of TileMasks.</returns>
-        public IEnumerable<TileMask> GetEnumerable()
+        public IEnumerable<ITile> GetEnumerable()
         {
             return GetCollection().GetEnumerable();
         }
@@ -187,7 +206,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <returns>An ITileCollection.</returns>
-        public ITileCollection<TileMask> TilesOnArea(int x, int y, int width, int height)
+        public ITileCollection TilesOnArea(int x, int y, int width, int height)
         {
             return GetCollection().TilesAtPosition(x, y, width, height);
         }

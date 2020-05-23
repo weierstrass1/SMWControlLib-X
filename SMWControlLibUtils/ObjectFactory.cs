@@ -3,7 +3,7 @@
     /// <summary>
     /// The object factory.
     /// </summary>
-    public abstract class ObjectFactory <S> where S: CanFactory
+    public abstract class ObjectFactory<S> where S : CanFactory
     {
     }
     /// <summary>
@@ -20,7 +20,7 @@
     /// <summary>
     /// The object factory.
     /// </summary>
-    public abstract class ObjectFactory<S, T> : ObjectFactory<S> where S: CanFactory<T>
+    public abstract class ObjectFactory<S, T> : ObjectFactory<S> where S : CanFactory<T>
     {
         /// <summary>
         /// Generates the object.

@@ -13,7 +13,7 @@ namespace SMWControlLibRendering.Disguise
         /// </summary>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public IndexedBitmapBufferDisguise(int width, int height) : base (width, height)
+        public IndexedBitmapBufferDisguise(int width, int height) : base(width, height)
         {
 
         }

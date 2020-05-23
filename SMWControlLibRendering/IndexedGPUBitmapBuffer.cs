@@ -127,7 +127,7 @@ namespace SMWControlLibRendering
         public override void DrawIndexedBitmap(IndexedBitmapBuffer src, int dstX, int dstY, int srcX, int srcY)
         {
             if (src == null) throw new ArgumentNullException(nameof(src));
-            if(src is IndexedGPUBitmapBuffer b)
+            if (src is IndexedGPUBitmapBuffer b)
             {
                 if (dstX < 0) dstX = 0;
                 if (dstY < 0) dstY = 0;

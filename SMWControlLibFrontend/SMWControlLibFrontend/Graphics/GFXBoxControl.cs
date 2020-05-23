@@ -1,11 +1,11 @@
 using Eto.Drawing;
 using Eto.Forms;
+using SMWControlLibFrontend.Enumerators;
+using SMWControlLibRendering;
+using SMWControlLibRendering.Enumerators;
 using SMWControlLibSNES.Enumerators.Graphics;
 using SMWControlLibSNES.Graphics;
-using SMWControlLibFrontend.Enumerators;
-using SMWControlLibRendering.Enumerators;
 using System;
-using SMWControlLibRendering;
 
 namespace SMWControlLibFrontend.Graphics
 {
@@ -103,7 +103,6 @@ namespace SMWControlLibFrontend.Graphics
                 selectionRectangle.Left = selectionRectangle.Right = x - x % Zoom8;
                 selectionRectangle.Top = selectionRectangle.Bottom = y - y % Zoom8;
                 updateRect(e);
-
             }
         }
 
@@ -183,7 +182,5 @@ namespace SMWControlLibFrontend.Graphics
             }
             Invalidate();
         }
-
-
     }
 }

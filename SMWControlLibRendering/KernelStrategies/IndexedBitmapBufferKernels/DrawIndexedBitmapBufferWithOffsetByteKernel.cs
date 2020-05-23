@@ -10,7 +10,7 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
     public static class DrawIndexedBitmapBufferWithOffsetByteKernel
     {
         private static readonly Action<Index2, ArrayView2D<byte>, ArrayView2D<byte>, int, int, int, int> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<byte>, ArrayView2D<byte>, int, int, int , int>
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<byte>, ArrayView2D<byte>, int, int, int, int>
             (strategy);
         /// <summary>
         /// Executes the.

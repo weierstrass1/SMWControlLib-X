@@ -1,5 +1,6 @@
 ﻿using SMWControlLibCommons.DataStructs;
 using SMWControlLibCommons.Enumerators.Graphics;
+using SMWControlLibCommons.Interfaces.Graphics;
 using SMWControlLibRendering;
 using SMWControlLibRendering.DirtyClasses;
 using System;
@@ -7,56 +8,69 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SMWControlLibCommons.Interfaces.Graphics;
-using System.Collections;
 
 namespace SMWControlLibCommons.Graphics
 {
     /// <summary>
     /// The sprite tile mask collection.
     /// </summary>
-    public class TileMaskCollection : ITileCollection<TileMask>
+    public class TileMaskCollection : ITileCollection
     {
         private List<TileMask> tiles;
+
         /// <summary>
         /// Gets the count.
         /// </summary>
         public int Count => tiles.Count;
+
         public event Action<TileMaskCollection, TileMaskCollection> OnCollectionAdded, OnSelectionChanged, OnSelectionZIndexChanged;
+
         public event Action<TileMaskCollection> OnSelectionClear;
+
         public event Action<TileMaskCollection, TileMask> OnTileAdded;
+
         public event Action<TileMaskCollection, int, int> OnMoveTo;
+
         /// <summary>
         /// Gets a value indicating whether require refresh.
         /// </summary>
         public bool RequireRefresh { get; private set; }
+
         private bool sorted = true;
         private TileMaskCollection selection;
+
         /// <summary>
         /// Gets the left.
         /// </summary>
         public int Left { get; private set; }
+
         /// <summary>
         /// Gets the top.
         /// </summary>
         public int Top { get; private set; }
+
         /// <summary>
         /// Gets the right.
         /// </summary>
         public int Right { get; private set; }
+
         /// <summary>
         /// Gets the bottom.
         /// </summary>
         public int Bottom { get; private set; }
+
         public ConcurrentDictionary<Zoom, DirtyBitmap> bitmaps;
+
         /// <summary>
         /// Gets the width.
         /// </summary>
         public int Width => Right - Left;
+
         /// <summary>
         /// Gets the height.
         /// </summary>
         public int Height => Bottom - Top;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TileMaskCollection"/> class.
         /// </summary>
@@ -70,6 +84,7 @@ namespace SMWControlLibCommons.Graphics
             Bottom = -1;
             RequireRefresh = true;
         }
+
         /// <summary>
         /// Gets the graphics.
         /// </summary>
@@ -77,7 +92,7 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>An array of uint.</returns>
         public BitmapBuffer GetGraphics(Zoom z)
         {
-            if (Width == 0 || Height == 0) 
+            if (Width == 0 || Height == 0)
                 return null;
 
             if (RequireRefresh)
@@ -111,6 +126,7 @@ namespace SMWControlLibCommons.Graphics
 
             return bitmaps[z].Bitmap;
         }
+
         /// <summary>
         /// Decreases the selection z index.
         /// </summary>
@@ -152,6 +168,7 @@ namespace SMWControlLibCommons.Graphics
             }
             return false;
         }
+
         /// <summary>
         /// Increases the selection z index.
         /// </summary>
@@ -194,6 +211,7 @@ namespace SMWControlLibCommons.Graphics
             }
             return false;
         }
+
         /// <summary>
         /// Moves the selection.
         /// </summary>
@@ -209,6 +227,7 @@ namespace SMWControlLibCommons.Graphics
             OnSelectionChanged?.Invoke(this, selection);
             return b;
         }
+
         /// <summary>
         /// Updates the container.
         /// </summary>
@@ -219,6 +238,7 @@ namespace SMWControlLibCommons.Graphics
             UpdateTop();
             UpdateBottom();
         }
+
         /// <summary>
         /// Updates the left.
         /// </summary>
@@ -227,6 +247,7 @@ namespace SMWControlLibCommons.Graphics
             if (tiles.Count > 0)
                 Left = tiles.Min(ti => ti.X);
         }
+
         /// <summary>
         /// Updates the right.
         /// </summary>
@@ -235,6 +256,7 @@ namespace SMWControlLibCommons.Graphics
             if (tiles.Count > 0)
                 Right = tiles.Max(ti => ti.X + ti.Width);
         }
+
         /// <summary>
         /// Updates the top.
         /// </summary>
@@ -243,6 +265,7 @@ namespace SMWControlLibCommons.Graphics
             if (tiles.Count > 0)
                 Top = tiles.Min(ti => ti.Y);
         }
+
         /// <summary>
         /// Updates the bottom.
         /// </summary>
@@ -251,6 +274,7 @@ namespace SMWControlLibCommons.Graphics
             if (tiles.Count > 0)
                 Bottom = tiles.Max(ti => ti.Y + ti.Height);
         }
+
         /// <summary>
         /// Clears the selection.
         /// </summary>
@@ -293,6 +317,7 @@ namespace SMWControlLibCommons.Graphics
             OnMoveTo?.Invoke(this, x, y);
             return true;
         }
+
         /// <summary>
         /// Finds the by area.
         /// </summary>
@@ -309,6 +334,7 @@ namespace SMWControlLibCommons.Graphics
             OnSelectionChanged?.Invoke(this, selection);
             return selection;
         }
+
         /// <summary>
         /// Tiles the at position.
         /// </summary>
@@ -335,6 +361,7 @@ namespace SMWControlLibCommons.Graphics
             find.UpdateContainer();
             return find;
         }
+
         /// <summary>
         /// Finds the by position.
         /// </summary>
@@ -359,6 +386,7 @@ namespace SMWControlLibCommons.Graphics
             OnSelectionChanged?.Invoke(this, selection);
             return selection;
         }
+
         /// <summary>
         /// Removes the selection.
         /// </summary>
@@ -378,6 +406,7 @@ namespace SMWControlLibCommons.Graphics
                 ClearSelection();
             }
         }
+
         /// <summary>
         /// Adds the collection.
         /// </summary>
@@ -396,6 +425,7 @@ namespace SMWControlLibCommons.Graphics
             RequireRefresh = true;
             OnCollectionAdded?.Invoke(this, col);
         }
+
         /// <summary>
         /// Adds the.
         /// </summary>
@@ -422,6 +452,7 @@ namespace SMWControlLibCommons.Graphics
             RequireRefresh = true;
             OnTileAdded?.Invoke(this, tile);
         }
+
         /// <summary>
         /// Sorts the.
         /// </summary>
@@ -434,6 +465,7 @@ namespace SMWControlLibCommons.Graphics
                 RequireRefresh = true;
             }
         }
+
         public TileMask this[int index]
         {
             get
@@ -441,6 +473,7 @@ namespace SMWControlLibCommons.Graphics
                 return tiles[index];
             }
         }
+
         /// <summary>
         /// Fusions the.
         /// </summary>
@@ -477,6 +510,7 @@ namespace SMWControlLibCommons.Graphics
 
             return objs[0];
         }
+
         /// <summary>
         /// Fusions the.
         /// </summary>
@@ -531,7 +565,7 @@ namespace SMWControlLibCommons.Graphics
         /// Adds the tiles.
         /// </summary>
         /// <param name="tiles">The tiles.</param>
-        public void AddTiles(ITileCollection<TileMask> tiles)
+        public void AddTiles(ITileCollection tiles)
         {
             AddCollection((TileMaskCollection)tiles);
         }
@@ -566,7 +600,7 @@ namespace SMWControlLibCommons.Graphics
         {
             List<TileBorder> ret = new List<TileBorder>();
 
-            if (tiles != null && tiles.Count > 0) 
+            if (tiles != null && tiles.Count > 0)
             {
                 foreach (TileMask t in tiles)
                 {
@@ -590,7 +624,7 @@ namespace SMWControlLibCommons.Graphics
         /// Gets the enumerable.
         /// </summary>
         /// <returns>A list of TS.</returns>
-        public IEnumerable<TileMask> GetEnumerable()
+        public IEnumerable<ITile> GetEnumerable()
         {
             return tiles;
         }

@@ -7,7 +7,7 @@ namespace SMWControlLibRendering
     /// <summary>
     /// The indexed bitmap buffer.
     /// </summary>
-    public abstract class IndexedBitmapBuffer :   DirtyCollection<ZoomFlipColorPaletteKey, uint, FlipColorPaletteKey, 
+    public abstract class IndexedBitmapBuffer : DirtyCollection<ZoomFlipColorPaletteKey, uint, FlipColorPaletteKey,
                                                         DirtyBitmap, BitmapBuffer>
     {
         /// <summary>

@@ -11,7 +11,7 @@ namespace SMWControlLibRendering
     /// </summary>
     public abstract class DirtyCollection<TK, TE1, TE2, TD, TC> : CanFactoryWithObjsParams
                                                                 where TK : DualKey<TE1, TE2>
-                                                                where TD: DirtyClass<TC>
+                                                                where TD : DirtyClass<TC>
     {
         protected ConcurrentDictionary<TK, TD> elements;
         /// <summary>

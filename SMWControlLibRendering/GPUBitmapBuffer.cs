@@ -1,8 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using ILGPU;
+﻿using ILGPU;
 using ILGPU.Runtime;
 using SMWControlLibRendering.KernelStrategies.BitmapBufferKernels;
+using System;
 
 namespace SMWControlLibRendering
 {
@@ -13,14 +12,17 @@ namespace SMWControlLibRendering
     {
         protected bool requireCopyTo;
         protected byte[] pixels;
+
         /// <summary>
         /// Gets or sets the buffer.
         /// </summary>
-        public MemoryBuffer<byte> Buffer { get; protected set; }
+        public MemoryBuffer3D<byte> Buffer { get; protected set; }
+
         /// <summary>
         /// Gets or sets the sub buffer.
         /// </summary>
         protected GPUBitmapBuffer subBuffer { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GPUBitmapBuffer"/> class.
         /// </summary>
@@ -29,6 +31,7 @@ namespace SMWControlLibRendering
         public GPUBitmapBuffer(int width, int height) : base(width, height)
         {
         }
+
         /// <summary>
         /// Sets the pixels.
         /// </summary>
@@ -41,11 +44,12 @@ namespace SMWControlLibRendering
             {
                 Buffer.Dispose();
             }
-            int l = width * height * BytesPerColor;
-            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(l);
+
+            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(BytesPerColor, width, height);
             requireCopyTo = true;
             base.Initialize(width, height);
         }
+
         /// <summary>
         /// Clones the.
         /// </summary>
@@ -56,6 +60,7 @@ namespace SMWControlLibRendering
             clone.DrawBitmapBuffer(this, 0, 0);
             return clone;
         }
+
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -67,10 +72,11 @@ namespace SMWControlLibRendering
             if (src == null) throw new ArgumentNullException(nameof(src));
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
-            DrawBitmapBufferRGB555Kernel.Execute(new Index2(src.Width,src.Height), 
-                Buffer, source.Buffer, x + (y * Width), Width, src.Width);
+            DrawBitmapBufferRGB555Kernel.Execute(new Index2(src.Width, src.Height),
+                Buffer, source.Buffer, new Index2(x, y));
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -84,9 +90,10 @@ namespace SMWControlLibRendering
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
             DrawBitmapBufferWithZoomRGB555Kernel.Execute(new Index2(src.Width, src.Height),
-                Buffer, source.Buffer, x + (y * Width), Width, src.Width, zoom);
+                Buffer, source.Buffer, new Index2(x, y), zoom);
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -100,10 +107,11 @@ namespace SMWControlLibRendering
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
             DrawBitmapBufferWithBGRGB555Kernel.Execute(new Index2(src.Width, src.Height),
-                Buffer, source.Buffer, x + (y * Width), Width, src.Width,
+                Buffer, source.Buffer, new Index2(x, y),
                 backgroundColorR, backgroundColorG, backgroundColorB);
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Draws the bitmap.
         /// </summary>
@@ -118,10 +126,11 @@ namespace SMWControlLibRendering
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
             DrawBitmapBufferWithZoomAndBGRGB555Kernel.Execute(new Index2(src.Width, src.Height),
-                Buffer, source.Buffer, x + (y * Width), Width, src.Width, zoom,
+                Buffer, source.Buffer, new Index2(x, y), zoom,
                 backgroundColorR, backgroundColorG, backgroundColorB);
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Draws the grid.
         /// </summary>
@@ -133,6 +142,7 @@ namespace SMWControlLibRendering
         {
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Draws the line.
         /// </summary>
@@ -145,6 +155,7 @@ namespace SMWControlLibRendering
         {
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Draws the rectangle.
         /// </summary>
@@ -156,19 +167,21 @@ namespace SMWControlLibRendering
         public override void DrawRectangleBorder(int x, int y, int width, int height, byte colorR, byte colorG, byte colorB)
         {
             int offset = (y * Width) + x;
-            DrawRectangleBorderRGBKernel.Execute(new Index(Math.Max(width, height)), Buffer, offset, Width,
-                offset + (width - 1) * Width, offset + height - 1, width, height, colorR, colorG, colorB);
+            DrawRectangleBorderRGBKernel.Execute(new Index(Math.Max(width, height)), Buffer,
+                new Index2(x, y), width, height, colorR, colorG, colorB);
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Fills the color.
         /// </summary>
         /// <param name="backgroundColor">The background color.</param>
         public override void FillWithColor(byte colorR, byte colorG, byte colorB)
         {
-            FillWithColorRGBKernel.Execute(Buffer.Length / BytesPerColor, Buffer, colorR, colorG, colorB);
+            FillWithColorRGBKernel.Execute(new Index2(Width, Height), Buffer, colorR, colorG, colorB);
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Fills the color.
         /// </summary>
@@ -179,9 +192,10 @@ namespace SMWControlLibRendering
         /// <param name="backgroundColor">The background color.</param>
         public override void DrawRectangle(int x, int y, int width, int height, byte colorR, byte colorG, byte colorB)
         {
-            DrawRectangleRGBKernel.Execute(new Index2(width, height), Buffer, (y * Width) + x, Width, colorR, colorG, colorB);
+            DrawRectangleRGBKernel.Execute(new Index2(width, height), Buffer, new Index2(x, y), colorR, colorG, colorB);
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Zooms the in.
         /// </summary>
@@ -218,6 +232,7 @@ namespace SMWControlLibRendering
             b.Buffer.Dispose();
             requireCopyTo = true;
         }
+
         /// <summary>
         /// Copies the to.
         /// </summary>
@@ -237,16 +252,13 @@ namespace SMWControlLibRendering
             if (subImageLeft >= Width) subImageLeft = Width - 1;
             if (subImageTop >= Height) subImageTop = Height - 1;
 
-            if (subImageRight <= subImageLeft) subImageRight = subImageLeft + 1;
-            if (subImageBottom <= subImageTop) subImageBottom = subImageTop + 1;
             if (subImageRight >= Width) subImageRight = Width - 1;
             if (subImageBottom >= Height) subImageBottom = Height - 1;
+            if (subImageRight <= subImageLeft) subImageRight = subImageLeft;
+            if (subImageBottom <= subImageTop) subImageBottom = subImageTop;
 
-            int w = subImageRight - subImageLeft;
-            int h = subImageBottom - subImageTop;
-
-            if (subImageRight == Width - 1) w++;
-            if (subImageBottom == Height - 1) h++;
+            int w = 1 + subImageRight - subImageLeft;
+            int h = 1 + subImageBottom - subImageTop;
 
             int l = w * h * BytesPerColor;
 
@@ -256,7 +268,7 @@ namespace SMWControlLibRendering
                 pixels = new byte[l];
                 requireCopyTo = true;
             }
-            else if(subBuffer.Buffer.Extent != l)
+            else if (subBuffer.Buffer.Width != BytesPerColor || subBuffer.Buffer.Height != w || subBuffer.Buffer.Depth != h) 
             {
                 subBuffer.Initialize(w, h);
                 pixels = new byte[l];
@@ -266,13 +278,13 @@ namespace SMWControlLibRendering
             //if(requireCopyTo)
             //{
             subBuffer.DrawBitmapBuffer(this, 0, 0, subImageLeft, subImageTop);
-            subBuffer.Buffer.CopyTo(pixels, 0, 0, subBuffer.Buffer.Extent);
+            subBuffer.Buffer.CopyTo(pixels, Index3.Zero, 0, subBuffer.Buffer.Extent);
             requireCopyTo = false;
             //}
 
-            fixed(byte* bs = pixels)
+            fixed (byte* bs = pixels)
             {
-                System.Buffer.MemoryCopy(bs, target, pixels.Length, pixels.Length);
+                System.Buffer.MemoryCopy(bs, target, l, l);
             }
         }
 
@@ -293,7 +305,7 @@ namespace SMWControlLibRendering
             int w = Math.Min(b.Width - srcX, Width - dstX);
             int h = Math.Min(b.Height - srcY, Height - dstY);
 
-            DrawBitmapBufferRGB555WithOffsetKernel.Execute(new Index2(w, h), Buffer, b.Buffer, dstX, dstY, Width, srcX, srcY, src.Width);
+            DrawBitmapBufferRGB555WithOffsetKernel.Execute(new Index2(w, h), Buffer, b.Buffer, new Index2(dstX, dstY), new Index2(srcX, srcY));
             requireCopyTo = true;
         }
 

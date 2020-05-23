@@ -22,7 +22,7 @@
         /// Initializes a new instance of the <see cref="DirtyClass"/> class.
         /// </summary>
         /// <param name="Ob">The ob.</param>
-        public DirtyClass(T Ob) : base (Ob)
+        public DirtyClass(T Ob) : base(Ob)
         {
         }
 

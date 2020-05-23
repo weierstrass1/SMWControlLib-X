@@ -9,8 +9,8 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
     /// </summary>
     public static class DrawRectangleRGBKernel
     {
-        private static readonly Action<Index2, ArrayView<byte>, int, int, byte, byte, byte> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView<byte>, int, int, byte, byte, byte>
+        private static readonly Action<Index2, ArrayView3D<byte>, Index2, byte, byte, byte> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView3D<byte>, Index2, byte, byte, byte>
             (strategy);
         /// <summary>
         /// Executes the.
@@ -20,9 +20,9 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="offset">The offset.</param>
         /// <param name="width">The width.</param>
         /// <param name="backgroundColor">The background color.</param>
-        public static void Execute(Index2 index, ArrayView<byte> destBuffer, int offset, int width, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        public static void Execute(Index2 index, ArrayView3D<byte> destBuffer, Index2 offset, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
-            kernel(index, destBuffer, offset, width, backgroundColorR, backgroundColorG, backgroundColorB);
+            kernel(index, destBuffer, offset, backgroundColorR, backgroundColorG, backgroundColorB);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -33,12 +33,12 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="offset">The offset.</param>
         /// <param name="width">The width.</param>
         /// <param name="backgroundColor">The background color.</param>
-        private static void strategy(Index2 index, ArrayView<byte> destBuffer, int offset, int width, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        private static void strategy(Index2 index, ArrayView3D<byte> destBuffer, Index2 offset, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
         {
-            int ind = (offset + (index.Y * width) + index.X) * 3;
-            destBuffer[ind] = backgroundColorB;
-            destBuffer[ind + 1] = backgroundColorG;
-            destBuffer[ind + 2] = backgroundColorR;
+            Index2 ind = index + offset;
+            destBuffer[new Index3(0, ind)] = backgroundColorB;
+            destBuffer[new Index3(1, ind)] = backgroundColorG;
+            destBuffer[new Index3(2, ind)] = backgroundColorR;
         }
     }
 }

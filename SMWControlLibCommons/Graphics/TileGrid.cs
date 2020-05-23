@@ -3,9 +3,6 @@ using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Interfaces.Graphics;
 using SMWControlLibRendering;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace SMWControlLibCommons.Graphics
 {
@@ -18,71 +15,89 @@ namespace SMWControlLibCommons.Graphics
         /// Gets or sets the lenght.
         /// </summary>
         public int Lenght { get; protected set; }
+
         /// <summary>
         /// Gets or sets the width.
         /// </summary>
         public int WidthWithZoom { get; protected set; }
+
         /// <summary>
         /// Gets or sets the height.
         /// </summary>
         public int HeightWithZoom { get; protected set; }
+
         /// <summary>
         /// Gets or sets the width.
         /// </summary>
         public int Width { get; protected set; }
+
         /// <summary>
         /// Gets or sets the height.
         /// </summary>
         public int Height { get; protected set; }
+
         /// <summary>
         /// Gets or sets the target.
         /// </summary>
-        public IGridDrawable<TileMask> Target { get; set; }
+        public IGridDrawable Target { get; set; }
+
         /// <summary>
         /// Gets or sets the background color.
         /// </summary>
         public byte BackgroundColorR { get; private set; }
+
         /// <summary>
         /// Gets or sets the background color g.
         /// </summary>
         public byte BackgroundColorG { get; private set; }
+
         /// <summary>
         /// Gets or sets the background color b.
         /// </summary>
         public byte BackgroundColorB { get; private set; }
+
         /// <summary>
         /// Gets or sets the grid color.
         /// </summary>
         public byte GridColorR { get; set; }
+
         /// <summary>
         /// Gets or sets the grid color g.
         /// </summary>
         public byte GridColorG { get; set; }
+
         /// <summary>
         /// Gets or sets the grid color b.
         /// </summary>
         public byte GridColorB { get; set; }
+
         /// <summary>
         /// Gets or sets the grid color.
         /// </summary>
         public byte SelectionColorR { get; set; }
+
         /// <summary>
         /// Gets or sets the selection color g.
         /// </summary>
         public byte SelectionColorG { get; set; }
+
         /// <summary>
         /// Gets or sets the selection color b.
         /// </summary>
         public byte SelectionColorB { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether draw grid.
         /// </summary>
         public bool DrawGrid { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether draw guidelines.
         /// </summary>
         public bool DrawGuidelines { get; set; }
+
         private Zoom zoom;
+
         /// <summary>
         /// Gets or sets the zoom.
         /// </summary>
@@ -103,20 +118,24 @@ namespace SMWControlLibCommons.Graphics
                 }
             }
         }
+
         /// <summary>
         /// Gets or sets the cell size.
         /// </summary>
         public GridCellSize CellSize { get; set; }
+
         /// <summary>
         /// Gets or sets the grid type.
         /// </summary>
         public GridType GridType { get; set; }
-        private BitmapBuffer layer1, layer2;
-        private ITileCollection<TileMask> tileSelection;
-        private bool moved = false;
-        private bool selectionChanged = false;
-        private int offset;
-        private int copyLenght;
+
+        protected BitmapBuffer layer1, layer2;
+        protected ITileCollection tileSelection;
+        protected bool moved = false;
+        protected bool selectionChanged = false;
+        protected int offset;
+        protected int copyLenght;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TileGrid"/> class.
         /// </summary>
@@ -138,7 +157,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="selection">The selection.</param>
-        public void AddingAtPosition(int x, int y, TileMaskCollection selection)
+        public virtual void AddingAtPosition(int x, int y, TileMaskCollection selection)
         {
             if (Target == null || selection == null || selection.Count <= 0)
             {
@@ -156,6 +175,7 @@ namespace SMWControlLibCommons.Graphics
             UpdateLayer2();
             updateOffsetAndCopyLenght(sel.Left, sel.Top, sel.Right, sel.Bottom);
         }
+
         /// <summary>
         /// updates the offset and copy lenght.
         /// </summary>
@@ -163,7 +183,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="t">The t.</param>
         /// <param name="r">The r.</param>
         /// <param name="b">The b.</param>
-        private void updateOffsetAndCopyLenght(int l, int t, int r, int b)
+        protected virtual void updateOffsetAndCopyLenght(int l, int t, int r, int b)
         {
             if (l >= 0 && t >= 0 && r > l && b > t)
             {
@@ -171,10 +191,11 @@ namespace SMWControlLibCommons.Graphics
                 copyLenght = Math.Max(copyLenght, (((b * WidthWithZoom * Zoom) + (r * Zoom)) * layer1.BytesPerColor) - offset);
             }
         }
+
         /// <summary>
         /// Removes the.
         /// </summary>
-        public void Remove()
+        public virtual void Remove()
         {
             if (Target != null && tileSelection != null)
             {
@@ -185,7 +206,7 @@ namespace SMWControlLibCommons.Graphics
 
                 Target.RemoveTiles();
 
-                ITileCollection<TileMask> col = Target.TilesOnArea(x, y, w, h);
+                ITileCollection col = Target.TilesOnArea(x, y, w, h);
 
                 if (col.Left >= 0)
                 {
@@ -203,6 +224,7 @@ namespace SMWControlLibCommons.Graphics
                 UpdateLayer2();
             }
         }
+
         /// <summary>
         /// Selects the.
         /// </summary>
@@ -210,7 +232,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="y">The y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public void Select(int x, int y, int width, int height)
+        public virtual void SelectTiles(int x, int y, int width, int height)
         {
             if (Target != null)
             {
@@ -218,7 +240,7 @@ namespace SMWControlLibCommons.Graphics
                 int t = y;
                 int r = width + l;
                 int b = height + t;
-                if(tileSelection!=null)
+                if (tileSelection != null)
                 {
                     l = Math.Min(l, tileSelection.Left);
                     t = Math.Min(t, tileSelection.Top);
@@ -239,12 +261,13 @@ namespace SMWControlLibCommons.Graphics
                 selectionChanged = selectionChanged || tileSelection.IsEmpty();
             }
         }
+
         /// <summary>
         /// Moves the to.
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        public bool MoveTo(int x, int y)
+        public virtual bool MoveTo(int x, int y)
         {
             if (Target != null)
             {
@@ -270,14 +293,14 @@ namespace SMWControlLibCommons.Graphics
                     dry = Math.Min(dry, Target.Top);
                     drr = Math.Max(drr, Target.Left + Target.Width);
                     drb = Math.Max(drb, Target.Top + Target.Height);
-                    ITileCollection<TileMask> col = Target.TilesOnArea(drx, dry, drr, drb);
+                    ITileCollection col = Target.TilesOnArea(drx, dry, drr, drb);
 
                     drx = Math.Min(drx, col.Left);
                     dry = Math.Min(dry, col.Top);
                     drr = Math.Max(drr, col.Right);
                     drb = Math.Max(drb, col.Bottom);
 
-                    layer1.DrawRectangle(drx * Zoom, dry * Zoom, (drr - drx) *Zoom, (drb - dry) * Zoom, 
+                    layer1.DrawRectangle(drx * Zoom, dry * Zoom, (drr - drx) * Zoom, (drb - dry) * Zoom,
                         BackgroundColorR, BackgroundColorG, BackgroundColorB);
                     drawTileMaskCollection(col);
                     UpdateLayer2();
@@ -289,37 +312,46 @@ namespace SMWControlLibCommons.Graphics
             }
             return false;
         }
+
         /// <summary>
         /// draws the tile mask collection.
         /// </summary>
         /// <param name="col">The col.</param>
-        private void drawTileMaskCollection(ITileCollection<TileMask> col)
+        protected virtual void drawTileMaskCollection(ITileCollection col)
         {
+            if(col == null)
+            {
+                throw new ArgumentNullException(nameof(col));
+            }
+
             foreach (TileMask tm in col.GetEnumerable())
             {
                 layer1.DrawBitmapBuffer(tm.GetGraphics(Zoom), tm.X * Zoom, tm.Y * Zoom);
             }
         }
+
         /// <summary>
         /// Increases the z index.
         /// </summary>
-        public void IncreaseZIndex()
+        public virtual void IncreaseZIndex()
         {
             if (Target != null)
                 selectionChanged = selectionChanged || Target.IncreaseZIndex();
         }
+
         /// <summary>
         /// Decreases the z index.
         /// </summary>
-        public void DecreaseZIndex()
+        public virtual void DecreaseZIndex()
         {
             if (Target != null)
                 selectionChanged = selectionChanged || Target.DecreaseZIndex();
         }
+
         /// <summary>
         /// Clears the tile selection.
         /// </summary>
-        public void ClearTileSelection()
+        public virtual void ClearTileSelection()
         {
             if (tileSelection != null)
             {
@@ -329,45 +361,49 @@ namespace SMWControlLibCommons.Graphics
                 UpdateLayer2();
             }
         }
+
         /// <summary>
         /// Gets the x offset.
         /// </summary>
         /// <param name="x">The x.</param>
         /// <returns>An int.</returns>
-        public int GetXOffset(int x)
+        public virtual int GetXOffset(int x)
         {
             if (tileSelection == null) return -1;
             int xdivz = x / Zoom;
             if (xdivz > tileSelection.Right) return -1;
             return xdivz - tileSelection.Left;
         }
+
         /// <summary>
         /// Gets the x offset.
         /// </summary>
         /// <param name="x">The x.</param>
         /// <returns>An int.</returns>
-        public int GetYOffset(int y)
+        public virtual int GetYOffset(int y)
         {
             if (tileSelection == null) return -1;
             int ydivz = y / Zoom;
             if (ydivz > tileSelection.Bottom) return -1;
             return ydivz - tileSelection.Top;
         }
+
         /// <summary>
         /// Copies the to.
         /// </summary>
         /// <param name="b">The b.</param>
-        public unsafe void CopyTo(byte* b, int left, int right, int top, int bottom)
+        public virtual unsafe void CopyTo(byte* b, int left, int right, int top, int bottom)
         {
             //if (copyLenght < 0) return;
             layer2.CopyTo(b, left, right, top, bottom, 0, 0, 0, 0);
             offset = int.MaxValue;
             copyLenght = int.MinValue;
         }
+
         /// <summary>
         /// Updates the layer2.
         /// </summary>
-        private void UpdateLayer2()
+        protected virtual void UpdateLayer2()
         {
             if (layer2 == null)
             {

@@ -9,8 +9,8 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
     /// </summary>
     public static class DrawBitmapBufferRGB555WithOffsetKernel
     {
-        private static readonly Action<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int, int, int> kernel = 
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView<byte>, ArrayView<byte>, int, int, int, int, int, int>
+        private static readonly Action<Index2, ArrayView3D<byte>, ArrayView3D<byte>, Index2, Index2> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView3D<byte>, ArrayView3D<byte>, Index2, Index2>
             (strategy);
         /// <summary>
         /// Executes the.
@@ -21,9 +21,9 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="offset">The offset.</param>
         /// <param name="dstWidth">The dst width.</param>
         /// <param name="srcWidth">The src width.</param>
-        public static void Execute(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer, int dstX, int dstY, int dstWidth, int srcX, int srcY, int srcWidth)
+        public static void Execute(Index2 index, ArrayView3D<byte> destBuffer, ArrayView3D<byte> srcBuffer, Index2 dstOffset, Index2 srcOffset)
         {
-            kernel(index, destBuffer, srcBuffer, dstX, dstY, dstWidth, srcX, srcY, srcWidth);
+            kernel(index, destBuffer, srcBuffer, dstOffset, srcOffset);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
         /// <summary>
@@ -35,13 +35,13 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
         /// <param name="offset">The offset.</param>
         /// <param name="dstWidth">The dst width.</param>
         /// <param name="srcWidth">The src width.</param>
-        private static void strategy(Index2 index, ArrayView<byte> destBuffer, ArrayView<byte> srcBuffer,int dstX, int dstY, int dstWidth, int srcX, int srcY, int srcWidth)
+        private static void strategy(Index2 index, ArrayView3D<byte> destBuffer, ArrayView3D<byte> srcBuffer, Index2 dstOffset, Index2 srcOffset)
         {
-            int dstInd = (((dstY + index.Y) * dstWidth) + dstX + index.X) * 3;
-            int srcInd = (((srcY + index.Y) * srcWidth) + srcX + index.X) * 3;
-            destBuffer[dstInd] = srcBuffer[srcInd];
-            destBuffer[dstInd + 1] = srcBuffer[srcInd + 1];
-            destBuffer[dstInd + 2] = srcBuffer[srcInd + 2];
+            Index2 dstInd = index + dstOffset;
+            Index2 srcInd = index + srcOffset;
+            destBuffer[new Index3(0, dstInd)] = srcBuffer[new Index3(0, srcInd)];
+            destBuffer[new Index3(1, dstInd)] = srcBuffer[new Index3(1, srcInd)];
+            destBuffer[new Index3(2, dstInd)] = srcBuffer[new Index3(2, srcInd)];
         }
     }
 }

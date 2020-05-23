@@ -1,7 +1,7 @@
-﻿using SMWControlLibRendering;
-using SMWControlLibCommons.Enumerators.Graphics;
-using SMWControlLibCommons.Keys.Graphics;
+﻿using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Graphics.DirtyClasses;
+using SMWControlLibCommons.Keys.Graphics;
+using SMWControlLibRendering;
 
 namespace SMWControlLibCommons.Graphics
 {

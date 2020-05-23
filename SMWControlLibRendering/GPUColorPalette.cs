@@ -41,7 +41,7 @@ namespace SMWControlLibRendering
         public override byte[] GetColor(int index)
         {
             byte[] color = new byte[BytesPerColor];
-            Buffer.CopyTo(color, new Index(index*3), 0, new Index(BytesPerColor));
+            Buffer.CopyTo(color, new Index(index * 3), 0, new Index(BytesPerColor));
             return color;
         }
         /// <summary>

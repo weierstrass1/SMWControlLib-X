@@ -14,25 +14,28 @@ namespace SMWControlLibRendering
         /// Gets the context.
         /// </summary>
         private static Context context { get; set; }
+
         private static Accelerator gpuAccelerator;
+
         /// <summary>
         /// Gets the g p u accelerator.
         /// </summary>
         public static Accelerator GPUAccelerator
-        { 
+        {
             get
             {
                 getGPUAccelerator();
-                return gpuAccelerator; 
-            } 
+                return gpuAccelerator;
+            }
         }
+
         /// <summary>
         /// gets the g p u accelerator.
         /// </summary>
         /// <returns>An Accelerator.</returns>
         private static void getGPUAccelerator()
         {
-            if (gpuAccelerator != null) 
+            if (gpuAccelerator != null)
                 return;
 
             if (CudaAccelerator.CudaAccelerators.Length > 0)
@@ -52,6 +55,7 @@ namespace SMWControlLibRendering
                 }
             }
         }
+
         /// <summary>
         /// Are the available.
         /// </summary>
@@ -62,6 +66,7 @@ namespace SMWControlLibRendering
                 getGPUAccelerator();
             return gpuAccelerator != null;
         }
+
         /// <summary>
         /// Disposes the.
         /// </summary>

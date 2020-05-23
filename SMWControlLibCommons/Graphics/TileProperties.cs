@@ -1,5 +1,5 @@
-﻿using SMWControlLibRendering.Enumerators;
-using SMWControlLibRendering;
+﻿using SMWControlLibRendering;
+using SMWControlLibRendering.Enumerators;
 
 namespace SMWControlLibCommons.Graphics
 {

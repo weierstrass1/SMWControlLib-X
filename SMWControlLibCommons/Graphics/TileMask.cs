@@ -1,5 +1,6 @@
 ﻿using SMWControlLibCommons.DataStructs;
 using SMWControlLibCommons.Enumerators.Graphics;
+using SMWControlLibCommons.Interfaces.Graphics;
 using SMWControlLibRendering;
 using System;
 using System.Collections;
@@ -9,34 +10,42 @@ namespace SMWControlLibCommons.Graphics
     /// <summary>
     /// The sprite tile mask.
     /// </summary>
-    public class TileMask : IComparer
+    public class TileMask : IComparer, ITile
     {
         /// <summary>
         /// Gets the tile.
         /// </summary>
         public Tile Tile { get; private set; }
+
         /// <summary>
         /// Gets the properties.
         /// </summary>
         public TileProperties Properties { get; private set; }
+
         private int x;
+
         /// <summary>
         /// Gets or sets the x.
         /// </summary>
         public int X { get => x; set { x = value; Border.X = x; } }
+
         private int y;
+
         /// <summary>
         /// Gets or sets the y.
         /// </summary>
         public int Y { get => y; set { y = value; Border.Y = y; } }
+
         /// <summary>
         /// Gets or sets the z.
         /// </summary>
         public uint Z { get; set; }
+
         /// <summary>
         /// Gets the border.
         /// </summary>
         public TileBorder Border { get; private set; }
+
         /// <summary>
         /// Gets the width.
         /// </summary>
@@ -47,6 +56,7 @@ namespace SMWControlLibCommons.Graphics
                 return Tile.Size.Width;
             }
         }
+
         /// <summary>
         /// Gets the height.
         /// </summary>
@@ -57,6 +67,7 @@ namespace SMWControlLibCommons.Graphics
                 return Tile.Size.Height;
             }
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TileMask"/> class.
         /// </summary>
@@ -73,6 +84,7 @@ namespace SMWControlLibCommons.Graphics
             Z = 0;
             Properties = props;
         }
+
         /// <summary>
         /// Gets the graphics.
         /// </summary>
@@ -82,6 +94,7 @@ namespace SMWControlLibCommons.Graphics
         {
             return Tile.RealObject.CreateBitmapBuffer(Properties.Flip, Properties.Palette, z);
         }
+
         /// <summary>
         /// Compares the.
         /// </summary>
@@ -98,6 +111,7 @@ namespace SMWControlLibCommons.Graphics
             if (x.Z > y.Z) return 1;
             return 0;
         }
+
         /// <summary>
         /// Clones the.
         /// </summary>
@@ -106,6 +120,5 @@ namespace SMWControlLibCommons.Graphics
         {
             return new TileMask(X, Y, Tile, Properties);
         }
-        
     }
 }

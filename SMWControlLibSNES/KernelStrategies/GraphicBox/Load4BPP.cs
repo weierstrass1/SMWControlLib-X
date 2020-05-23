@@ -1,6 +1,6 @@
 ﻿using ILGPU;
-using SMWControlLibRendering;
 using ILGPU.Runtime;
+using SMWControlLibRendering;
 using System;
 
 namespace SMWControlLibSNES.KernelStrategies.GraphicBox
