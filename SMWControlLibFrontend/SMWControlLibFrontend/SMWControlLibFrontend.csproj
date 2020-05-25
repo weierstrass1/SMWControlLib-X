@@ -20,6 +20,7 @@
 	
   <ItemGroup>
     <ProjectReference Include="..\..\SMWControlLibSNES\SMWControlLibSNES.csproj" />
+    <ProjectReference Include="..\..\SMWControlLibUnity\SMWControlLibUnity.csproj" />
   </ItemGroup>
   
 </Project>

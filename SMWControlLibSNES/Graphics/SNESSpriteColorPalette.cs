@@ -1,4 +1,5 @@
 ﻿using SMWControlLibRendering.Enumerators.Graphics;
+using SMWControlLibSNES.Enumerators.Graphics;
 
 namespace SMWControlLibSNES.Graphics
 {
@@ -12,7 +13,7 @@ namespace SMWControlLibSNES.Graphics
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="bitplanes">The bitplanes.</param>
-        public SNESSpriteColorPalette(ColorPaletteIndex index, int size) : base(index, size)
+        public SNESSpriteColorPalette(SpriteColorPaletteIndex index, int size) : base(index, size)
         {
         }
     }

@@ -1,4 +1,5 @@
-﻿using SMWControlLibRendering.Disguise;
+﻿using SMWControlLibRendering;
+using SMWControlLibRendering.Disguise;
 using SMWControlLibRendering.Enumerators.Graphics;
 
 namespace SMWControlLibSNES.Graphics

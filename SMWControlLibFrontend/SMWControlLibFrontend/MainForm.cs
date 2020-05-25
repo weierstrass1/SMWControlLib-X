@@ -1,8 +1,11 @@
 using Eto.Drawing;
 using Eto.Forms;
+using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibFrontend.Graphics;
 using SMWControlLibRendering;
 using SMWControlLibSNES.Graphics;
+using SMWControlLibUnity.Enumerators.Graphics;
+using SMWControlLibUnity.Graphics;
 using System;
 using System.ComponentModel;
 
@@ -34,6 +37,10 @@ namespace SMWControlLibFrontend
             {
                 AddingTiles = () => gfx.Selection
             };
+
+            UnityGraphicBox gr = new UnityGraphicBox(new UnityTileSize(16, 16));
+            gr.Load("image.png", 0);
+
 
             SpriteTileSection s = new SpriteTileSection();
             s.Add();
