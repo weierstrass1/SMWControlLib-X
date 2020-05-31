@@ -1,5 +1,6 @@
 ﻿using SMWControlLibRendering;
 using SMWControlLibRendering.Disguise;
+using SMWControlLibRendering.Enumerator;
 using SMWControlLibRendering.Enumerators.Graphics;
 
 namespace SMWControlLibSNES.Graphics
@@ -14,7 +15,7 @@ namespace SMWControlLibSNES.Graphics
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="size">The size.</param>
-        public SNESColorPalette(ColorPaletteIndex index, int size) : base(index, size)
+        public SNESColorPalette(ColorPaletteIndex index, int size) : base(index, size, BytesPerPixel.RGB555)
         {
         }
     }

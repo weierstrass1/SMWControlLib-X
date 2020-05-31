@@ -7,8 +7,8 @@
     {
         protected int hashCode;
         protected bool notCalculated;
-        public T element1;
-        public U element2;
+        public T element1 { get; private set; }
+        public U element2 { get; private set; }
         /// <summary>
         /// Initializes a new instance of the <see cref="DualKey"/> class.
         /// </summary>

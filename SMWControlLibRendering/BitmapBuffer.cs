@@ -1,223 +1,109 @@
-﻿using SMWControlLibRendering.Factory;
+﻿using SMWControlLibRendering.Enumerator;
+using SMWControlLibRendering.Factory;
 using SMWControlLibUtils;
+using System;
 
 namespace SMWControlLibRendering
 {
-    /// <summary>
-    /// The bitmap buffer.
-    /// </summary>
-    public abstract class BitmapBuffer : CanFactory<int, int>
+    public abstract class BitmapBuffer : CanFactory<int, int, BytesPerPixel>, IDisposable
     {
+        protected bool requireCopyTo;
         private static readonly BitmapBufferFactory factory = new BitmapBufferFactory();
-
-        /// <summary>
-        /// Creates the instance.
-        /// </summary>
-        /// <param name="pixels">The pixels.</param>
-        /// <param name="width">The width.</param>
-        /// <returns>A BitmapBuffer.</returns>
-        public static BitmapBuffer CreateInstance(int width, int height)
+        public static BitmapBuffer CreateInstance(int width, int height, BytesPerPixel bpp)
         {
-            return factory.GenerateObject(width, height);
+            return factory.GenerateObject(width, height, bpp);
         }
-
-        /// <summary>
-        /// Gets or sets the width.
-        /// </summary>
         public int Width { get; protected set; }
-
-        /// <summary>
-        /// Gets or sets the height.
-        /// </summary>
         public int Height { get; protected set; }
-
-        /// <summary>
-        /// Gets the length.
-        /// </summary>
         public int Length { get; protected set; }
-
-        /// <summary>
-        /// Gets or sets the bytes per color.
-        /// </summary>
-        public int BytesPerColor { get; protected set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BitmapBuffer"/> class.
-        /// </summary>
-        /// <param name="pixels">The pixels.</param>
-        /// <param name="width">The width.</param>
-        public BitmapBuffer(int width, int height) : base(width, height)
+        public BytesPerPixel BytesPerColor { get; protected set; }
+        public BitmapBuffer(int width, int height, BytesPerPixel bpp) : base(width, height, bpp)
         {
         }
-
-        /// <summary>
-        /// Sets the pixels.
-        /// </summary>
-        /// <param name="pixls">The pixels.</param>
-        /// <param name="width">The width.</param>
-        public override void Initialize(int width, int height)
+        public override void Initialize(int width, int height, BytesPerPixel bpp)
         {
+            BytesPerColor = bpp;
             Width = width;
             Height = height;
             Length = width * height * BytesPerColor;
+            requireCopyTo = true;
         }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src)
+        {
+            DrawBitmapBuffer(src, 0, 0, 0, 0, 1, null);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, int zoom)
+        {
+            DrawBitmapBuffer(src, 0, 0, 0, 0, zoom, null);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, byte[] backgroundColor)
+        {
+            DrawBitmapBuffer(src, 0, 0, 0, 0, 1, backgroundColor);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, int zoom, byte[] backgroundColor)
+        {
+            DrawBitmapBuffer(src, 0, 0, 0, 0, zoom, backgroundColor);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, int dstXOffset, int dstYOffset)
+        {
+            DrawBitmapBuffer(src, dstXOffset, dstYOffset, 0, 0, 1, null);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, int dstXOffset, int dstYOffset, int zoom)
+        {
+            DrawBitmapBuffer(src, dstXOffset, dstYOffset, 0, 0, zoom, null);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, int dstXOffset, int dstYOffset, byte[] backgroundColor)
+        {
+            DrawBitmapBuffer(src, dstXOffset, dstYOffset, 0, 0, 1, backgroundColor);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, int dstXOffset, int dstYOffset, int zoom, byte[] backgroundColor)
+        {
+            DrawBitmapBuffer(src, dstXOffset, dstYOffset, 0, 0, zoom, backgroundColor);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, int dstXOffset, int dstYOffset, int srcXOffset, int srcYOffset)
+        {
+            DrawBitmapBuffer(src, dstXOffset, dstYOffset, srcXOffset, srcYOffset, 1, null);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, int dstXOffset, int dstYOffset, int srcXOffset, int srcYOffset, byte[] backgroundColor)
+        {
+            DrawBitmapBuffer(src, dstXOffset, dstYOffset, srcXOffset, srcYOffset, 1, backgroundColor);
+        }
+        public virtual void DrawBitmapBuffer(BitmapBuffer src, int dstXOffset, int dstYOffset, int srcXOffset, int srcYOffset, int zoom)
+        {
+            DrawBitmapBuffer(src, dstXOffset, dstYOffset, srcXOffset, srcYOffset, zoom, null);
+        }
+        public abstract void DrawBitmapBuffer(BitmapBuffer src, int dstXOffset, int dstYOffset, int srcXOffset, int srcYOffset, int zoom, byte[] backgroundColor);
+        public abstract void DrawRectangleBorder(int x, int y, int width, int height, byte[] color);
+        public abstract void DrawLine(int x1, int y1, int x2, int y2, byte[] color);
+        public abstract void DrawGrid(int zoom, int cellsize, int type, byte[] color);
+        public abstract void FillWithColor(byte[] color);
+        public abstract void DrawRectangle(int x, int y, int width, int height, byte[] color);
+        public virtual void ZoomIn(int zoom)
+        {
+            ZoomIn(zoom, null);
+        }
+        public virtual void ZoomIn(int zoom, byte[] color)
+        {
+            BitmapBuffer b = Clone();
 
-        /// <summary>
-        /// Draws the bitmap.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        public abstract void DrawBitmapBuffer(BitmapBuffer src, int x, int y);
+            Initialize(Width * zoom, Height * zoom, BytesPerColor);
 
-        /// <summary>
-        /// Draws the bitmap.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="zoom">The zoom.</param>
-        public abstract void DrawBitmapBuffer(BitmapBuffer src, int x, int y, int zoom);
-
-        /// <summary>
-        /// Draws the bitmap.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        public abstract void DrawBitmapBuffer(BitmapBuffer src, int x, int y, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB);
-
-        /// <summary>
-        /// Draws the bitmap.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="zoom">The zoom.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        public abstract void DrawBitmapBuffer(BitmapBuffer src, int x, int y, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB);
-
-        /// <summary>
-        /// Draws the bitmap buffer.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="dstX">The dst x.</param>
-        /// <param name="dstY">The dst y.</param>
-        /// <param name="srcX">The src x.</param>
-        /// <param name="srcY">The src y.</param>
-        public abstract void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY);
-
-        /// <summary>
-        /// Draws the bitmap buffer.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="dstX">The dst x.</param>
-        /// <param name="dstY">The dst y.</param>
-        /// <param name="srcX">The src x.</param>
-        /// <param name="srcY">The src y.</param>
-        /// <param name="zoom">The zoom.</param>
-        public abstract void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, int zoom);
-
-        /// <summary>
-        /// Draws the bitmap buffer.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="dstX">The dst x.</param>
-        /// <param name="dstY">The dst y.</param>
-        /// <param name="srcX">The src x.</param>
-        /// <param name="srcY">The src y.</param>
-        /// <param name="backgroundColorR">The background color r.</param>
-        /// <param name="backgroundColorG">The background color g.</param>
-        /// <param name="backgroundColorB">The background color b.</param>
-        public abstract void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB);
-
-        /// <summary>
-        /// Draws the bitmap buffer.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="dstX">The dst x.</param>
-        /// <param name="dstY">The dst y.</param>
-        /// <param name="srcX">The src x.</param>
-        /// <param name="srcY">The src y.</param>
-        /// <param name="zoom">The zoom.</param>
-        /// <param name="backgroundColorR">The background color r.</param>
-        /// <param name="backgroundColorG">The background color g.</param>
-        /// <param name="backgroundColorB">The background color b.</param>
-        public abstract void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB);
-
-        /// <summary>
-        /// Draws the rectangle.
-        /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        public abstract void DrawRectangleBorder(int x, int y, int width, int height, byte colorR, byte colorG, byte colorB);
-
-        /// <summary>
-        /// Draws the line.
-        /// </summary>
-        /// <param name="x1">The x1.</param>
-        /// <param name="y1">The y1.</param>
-        /// <param name="x2">The x2.</param>
-        /// <param name="y2">The y2.</param>
-        public abstract void DrawLine(int x1, int y1, int x2, int y2, byte colorR, byte colorG, byte colorB);
-
-        /// <summary>
-        /// Draws the grid.
-        /// </summary>
-        /// <param name="zoom">The zoom.</param>
-        /// <param name="cellsize">The cellsize.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="gridColor">The grid color.</param>
-        public abstract void DrawGrid(int zoom, int cellsize, int type, byte colorR, byte colorG, byte colorB);
-
-        /// <summary>
-        /// Fills the color.
-        /// </summary>
-        /// <param name="backgroundColor">The background color.</param>
-        public abstract void FillWithColor(byte backgroundColorR, byte backgroundColorG, byte backgroundColorB);
-
-        /// <summary>
-        /// Fills the color.
-        /// </summary>
-        /// <param name="backgroundColor">The background color.</param>
-        public abstract void DrawRectangle(int x, int y, int width, int height, byte colorR, byte colorG, byte colorB);
-
-        /// <summary>
-        /// Zooms the in.
-        /// </summary>
-        /// <param name="zoom">The zoom.</param>
-        public abstract void ZoomIn(int zoom);
-
-        /// <summary>
-        /// Zooms the in.
-        /// </summary>
-        /// <param name="zoom">The zoom.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        public abstract void ZoomIn(int zoom, byte colorR, byte colorG, byte colorB);
-
-        /// <summary>
-        /// Clones the.
-        /// </summary>
-        /// <returns>A BitmapBuffer.</returns>
-        public abstract BitmapBuffer Clone();
-
-        /// <summary>
-        /// Copies the to.
-        /// </summary>
-        /// <param name="target">The target.</param>
-        /// <param name="subImageLeft">The sub image left.</param>
-        /// <param name="subImageRight">The sub image right.</param>
-        /// <param name="subImageTop">The sub image top.</param>
-        /// <param name="subImageBottom">The sub image bottom.</param>
-        /// <param name="dirtyLeft">The dirty left.</param>
-        /// <param name="dirtyRight">The dirty right.</param>
-        /// <param name="dirtyTop">The dirty top.</param>
-        /// <param name="dirtyBottom">The dirty bottom.</param>
+            DrawBitmapBuffer(b, 0, 0, zoom, color);
+            requireCopyTo = true;
+            b.Dispose();
+        }
+        public BitmapBuffer Clone()
+        {
+            BitmapBuffer clone = CreateInstance(Width, Height, BytesPerColor);
+            clone.DrawBitmapBuffer(this, 0, 0);
+            return clone;
+        }
         public abstract unsafe void CopyTo(byte* target,
             int subImageLeft, int subImageRight, int subImageTop, int subImageBottom,
             int dirtyLeft, int dirtyRight, int dirtyTop, int dirtyBottom);
+        public virtual void Dispose()
+        {
+
+        }
     }
 }

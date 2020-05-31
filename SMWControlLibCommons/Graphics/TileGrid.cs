@@ -2,6 +2,7 @@
 using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Interfaces.Graphics;
 using SMWControlLibRendering;
+using SMWControlLibRendering.Enumerator;
 using System;
 
 namespace SMWControlLibCommons.Graphics
@@ -11,6 +12,7 @@ namespace SMWControlLibCommons.Graphics
     /// </summary>
     public class TileGrid
     {
+        public BytesPerPixel BytesPerColor { get; protected set; }
         /// <summary>
         /// Gets or sets the lenght.
         /// </summary>
@@ -40,51 +42,9 @@ namespace SMWControlLibCommons.Graphics
         /// Gets or sets the target.
         /// </summary>
         public IGridDrawable Target { get; set; }
-
-        /// <summary>
-        /// Gets or sets the background color.
-        /// </summary>
-        public byte BackgroundColorR { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the background color g.
-        /// </summary>
-        public byte BackgroundColorG { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the background color b.
-        /// </summary>
-        public byte BackgroundColorB { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the grid color.
-        /// </summary>
-        public byte GridColorR { get; set; }
-
-        /// <summary>
-        /// Gets or sets the grid color g.
-        /// </summary>
-        public byte GridColorG { get; set; }
-
-        /// <summary>
-        /// Gets or sets the grid color b.
-        /// </summary>
-        public byte GridColorB { get; set; }
-
-        /// <summary>
-        /// Gets or sets the grid color.
-        /// </summary>
-        public byte SelectionColorR { get; set; }
-
-        /// <summary>
-        /// Gets or sets the selection color g.
-        /// </summary>
-        public byte SelectionColorG { get; set; }
-
-        /// <summary>
-        /// Gets or sets the selection color b.
-        /// </summary>
-        public byte SelectionColorB { get; set; }
+        public byte[] BackgroundColor { get; private set; }
+        public byte[] GridColor { get; private set; }
+        public byte[] SelectionColor { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether draw grid.
@@ -112,8 +72,8 @@ namespace SMWControlLibCommons.Graphics
                     WidthWithZoom = Width * zoom;
                     HeightWithZoom = Height * zoom;
                     Lenght = WidthWithZoom * HeightWithZoom;
-                    layer1 = BitmapBuffer.CreateInstance(WidthWithZoom, HeightWithZoom);
-                    layer1.FillWithColor(BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                    layer1 = BitmapBuffer.CreateInstance(WidthWithZoom, HeightWithZoom, BytesPerColor);
+                    layer1.FillWithColor(BackgroundColor);
                     UpdateLayer2();
                 }
             }
@@ -139,13 +99,14 @@ namespace SMWControlLibCommons.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="TileGrid"/> class.
         /// </summary>
-        public TileGrid(int width, int height, Zoom z, byte bgR, byte bgG, byte bgB)
+        public TileGrid(int width, int height, Zoom z, BytesPerPixel bpp, params byte[] color)
         {
             Width = width;
             Height = height;
-            BackgroundColorR = bgR;
-            BackgroundColorG = bgG;
-            BackgroundColorB = bgB;
+            BytesPerColor = bpp;
+            BackgroundColor = color;
+            SelectionColor = new byte[bpp];
+            GridColor = new byte[bpp];
             Zoom = z;
             offset = 0;
             copyLenght = Lenght * layer1.BytesPerColor;
@@ -216,7 +177,7 @@ namespace SMWControlLibCommons.Graphics
                     h = Math.Max(h, col.Bottom - y);
                 }
 
-                layer1.DrawRectangle(x * Zoom, y * Zoom, w * Zoom, h * Zoom, BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                layer1.DrawRectangle(x * Zoom, y * Zoom, w * Zoom, h * Zoom, BackgroundColor);
                 if (col.Left >= 0) drawTileMaskCollection(col);
                 updateOffsetAndCopyLenght(x, y, x + w, h + y);
                 tileSelection = null;
@@ -301,7 +262,7 @@ namespace SMWControlLibCommons.Graphics
                     drb = Math.Max(drb, col.Bottom);
 
                     layer1.DrawRectangle(drx * Zoom, dry * Zoom, (drr - drx) * Zoom, (drb - dry) * Zoom,
-                        BackgroundColorR, BackgroundColorG, BackgroundColorB);
+                        BackgroundColor);
                     drawTileMaskCollection(col);
                     UpdateLayer2();
                     updateOffsetAndCopyLenght(drx, dry, drr, drb);
@@ -418,7 +379,7 @@ namespace SMWControlLibCommons.Graphics
                 foreach (TileBorder b in tileSelection.GetTileBorders())
                 {
                     layer2.DrawRectangleBorder(b.X * Zoom, b.Y * Zoom, b.Width * Zoom, b.Height * Zoom,
-                        SelectionColorR, SelectionColorG, SelectionColorB);
+                        SelectionColor);
                 }
             }
         }

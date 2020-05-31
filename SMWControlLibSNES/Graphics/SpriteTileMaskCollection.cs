@@ -1,4 +1,5 @@
 ﻿using SMWControlLibCommons.Graphics;
+using SMWControlLibRendering.Enumerator;
 
 namespace SMWControlLibSNES.Graphics
 {
@@ -7,5 +8,8 @@ namespace SMWControlLibSNES.Graphics
     /// </summary>
     public class SpriteTileMaskCollection : TileMaskCollection
     {
+        public SpriteTileMaskCollection() : base(BytesPerPixel.RGB555)
+        {
+        }
     }
 }

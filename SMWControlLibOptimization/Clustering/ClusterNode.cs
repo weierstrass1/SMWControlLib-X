@@ -14,6 +14,16 @@ namespace SMWControlLibOptimization.Clustering
         {
             MaxClusterSize = maxSize;
         }
+        public abstract float BreakDraw(T cont);
+        public virtual float BreakDraw(ClusterNode<T> cont)
+        {
+            return BreakDraw(cont.Content);
+        }
+        public abstract bool Contains(T cont);
+        public virtual bool Contains(ClusterNode<T> cont)
+        {
+            return Contains(cont.Content);
+        }
         public abstract ClusterNode<T> Merge(T cont);
         public virtual ClusterNode<T> Merge(ClusterNode<T> cont)
         {

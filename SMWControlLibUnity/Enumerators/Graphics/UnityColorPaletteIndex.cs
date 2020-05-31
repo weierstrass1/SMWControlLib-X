@@ -11,5 +11,10 @@ namespace SMWControlLibUnity.Enumerators.Graphics
         {
 
         }
+
+        public UnityColorPaletteIndex() : base()
+        {
+
+        }
     }
 }

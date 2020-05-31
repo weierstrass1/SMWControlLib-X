@@ -1,12 +1,17 @@
 ﻿using SMWControlLibUtils;
+using System;
 
 namespace SMWControlLibRendering.Enumerators.Graphics
 {
     /// <summary>
     /// The color palette index.
     /// </summary>
-    public class ColorPaletteIndex : FakeEnumerator
+    public abstract class ColorPaletteIndex : FakeEnumerator
     {
+        protected ColorPaletteIndex() : base(0)
+        {
+
+        }
         /// <summary>
         /// Gets or sets the offset.
         /// </summary>
@@ -19,6 +24,27 @@ namespace SMWControlLibRendering.Enumerators.Graphics
         protected ColorPaletteIndex(int value, int offset) : base(value)
         {
             Offset = offset;
+        }
+        public static T Generate<T>(int value, int offset) where T : ColorPaletteIndex, new()
+        {
+            T t = new T();
+            t.Value = value;
+            t.Offset = offset;
+            return t;
+        }
+        public override int GetHashCode()
+        {
+            return Value;
+        }
+        public override bool Equals(object obj)
+        {
+            if (GetType() != obj.GetType()) return false;
+            ColorPaletteIndex p = (ColorPaletteIndex)obj;
+            return Value == p.Value && Offset == p.Offset;
+        }
+        public override string ToString()
+        {
+            return "Index: " + Value + ", Offset: " + Offset;
         }
     }
 }

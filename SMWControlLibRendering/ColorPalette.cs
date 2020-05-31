@@ -1,7 +1,9 @@
-﻿using SMWControlLibRendering.Enumerators.Graphics;
+﻿using SMWControlLibRendering.Enumerator;
+using SMWControlLibRendering.Enumerators.Graphics;
 using SMWControlLibRendering.Interfaces;
 using SMWControlLibUtils;
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 
 namespace SMWControlLibRendering
@@ -14,7 +16,7 @@ namespace SMWControlLibRendering
         /// <summary>
         /// Gets or sets the bytes per color.
         /// </summary>
-        public int BytesPerColor { get; protected set; }
+        public BytesPerPixel BytesPerColor { get; protected set; }
         /// <summary>
         /// Gets or sets the index.
         /// </summary>
@@ -30,7 +32,7 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="size">The size.</param>
-        public ColorPalette(ColorPaletteIndex index, int size) : base(index, size)
+        public ColorPalette(ColorPaletteIndex index, int size, BytesPerPixel bpp) : base(index, size, bpp)
         {
         }
         /// <summary>
@@ -101,9 +103,21 @@ namespace SMWControlLibRendering
         /// <param name="args">The args.</param>
         public override void Initialize(params object[] args)
         {
-            Index = (ColorPaletteIndex)args[0];
-            Length = (int)args[1];
-            OnPaletteChange?.Invoke();
+            if (args != null)
+            {
+                Index = (ColorPaletteIndex)args[0];
+                Length = (int)args[1];
+                BytesPerColor = (BytesPerPixel)args[2];
+                OnPaletteChange?.Invoke();
+            }
+        }
+        public abstract ConcurrentDictionary<Int32, int> ToColorDictionary();
+
+        public static int ReverseBytes(int c)
+        {
+            int res = (int)(((c >> 24) & 0x000000FF) | ((c >> 8) & 0x0000FF00) |
+                ((c << 8) & 0x00FF0000) | ((c << 24) & 0xFF000000));
+            return res;
         }
     }
 }

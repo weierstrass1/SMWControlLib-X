@@ -5,7 +5,7 @@ namespace SMWControlLibCommons.DataStructs
     /// <summary>
     /// The exchangeable dynamic list.
     /// </summary>
-    public abstract class ExchangeableDynamicList<T> where T : class, new()
+    public abstract class ExchangeableDynamicList<T> where T : class
     {
         protected T[] elements;
         /// <summary>
@@ -55,7 +55,7 @@ namespace SMWControlLibCommons.DataStructs
         /// <summary>
         /// Adds the.
         /// </summary>
-        public virtual void Add()
+        public virtual void Add(T newElement)
         {
             if (elements.Length <= Lenght)
             {
@@ -63,7 +63,7 @@ namespace SMWControlLibCommons.DataStructs
                 elements.CopyTo(newFrames, 0);
                 elements = newFrames;
             }
-            elements[Lenght] = new T();
+            elements[Lenght] = newElement;
             Lenght++;
             OnFrameAdded?.Invoke(this, Lenght - 1);
         }

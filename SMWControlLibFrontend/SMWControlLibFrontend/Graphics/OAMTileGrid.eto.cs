@@ -79,9 +79,6 @@ namespace SMWControlLibFrontend.Graphics
             grid = new SpriteTileGrid(240, 240, Zoom.X2, 0xB0, 0xC0, 0xD0)
             {
                 CellSize = GridCellSize.Size4x4,
-                SelectionColorR = 0xE0,
-                SelectionColorG = 0x80,
-                SelectionColorB = 0x40,
                 GridType = GridType.DottedLine,
                 DrawGrid = false,
                 DrawGuidelines = false

@@ -1,40 +1,35 @@
-﻿using SMWControlLibUtils;
+﻿using SMWControlLibRendering.Enumerator;
+using SMWControlLibUtils;
+using System;
 
 namespace SMWControlLibRendering.DirtyClasses
 {
-    /// <summary>
-    /// The dirty bitmap.
-    /// </summary>
-    public class DirtyBitmap : DirtyClass<BitmapBuffer>
+    public class DirtyBitmap : DirtyClass<BitmapBuffer>, IDisposable
     {
-        /// <summary>
-        /// Gets or sets the bitmap.
-        /// </summary>
-        public BitmapBuffer Bitmap { get => Object; set => Object = value; }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DirtyBitmap"/> class.
-        /// </summary>
+        public BitmapBuffer Bitmap { get => Object; 
+            set 
+            {
+                Object.Dispose();
+                Object = value; 
+            } 
+        }
         public DirtyBitmap() : base(null)
         {
 
         }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DirtyBitmap"/> class.
-        /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        public DirtyBitmap(int width, int height) : base(BitmapBuffer.CreateInstance(width, height))
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "This object Manage Dispose.")]
+        public DirtyBitmap(int width, int height, BytesPerPixel bpp) : base(BitmapBuffer.CreateInstance(width, height, bpp))
         {
 
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DirtyBitmap"/> class.
-        /// </summary>
-        /// <param name="bitmap">The bitmap.</param>
         public DirtyBitmap(BitmapBuffer bitmap) : base(bitmap)
         {
 
+        }
+        public void Dispose()
+        {
+            Bitmap.Dispose();
         }
     }
 }

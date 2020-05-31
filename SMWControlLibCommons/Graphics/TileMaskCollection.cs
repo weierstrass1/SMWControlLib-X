@@ -3,6 +3,8 @@ using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Interfaces.Graphics;
 using SMWControlLibRendering;
 using SMWControlLibRendering.DirtyClasses;
+using SMWControlLibRendering.Enumerator;
+using SMWControlLibUtils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -70,14 +72,16 @@ namespace SMWControlLibCommons.Graphics
         /// Gets the height.
         /// </summary>
         public int Height => Bottom - Top;
+        public BytesPerPixel BytesPerColor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TileMaskCollection"/> class.
         /// </summary>
-        public TileMaskCollection()
+        public TileMaskCollection(BytesPerPixel bytesPerColor)
         {
             tiles = new List<TileMask>();
             bitmaps = new ConcurrentDictionary<Zoom, DirtyBitmap>();
+            BytesPerColor = bytesPerColor;
             Left = -1;
             Top = -1;
             Right = -1;
@@ -108,14 +112,14 @@ namespace SMWControlLibCommons.Graphics
 
             if (!bitmaps.ContainsKey(z))
             {
-                bitmaps.TryAdd(z, new DirtyBitmap(BitmapBuffer.CreateInstance(Width * z, Height * z)));
+                bitmaps.TryAdd(z, new DirtyBitmap(BitmapBuffer.CreateInstance(Width * z, Height * z, BytesPerColor)));
             }
 
             DirtyBitmap d = bitmaps[z];
             if (d.IsDirty)
             {
                 if (d.Bitmap.Length < lenght)
-                    d.Bitmap = BitmapBuffer.CreateInstance(Width * z, Height * z);
+                    d.Bitmap = BitmapBuffer.CreateInstance(Width * z, Height * z, BytesPerColor);
 
                 foreach (TileMask t in tiles)
                 {
@@ -219,7 +223,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="newY">The new y.</param>
         public bool MoveSelection(int newX, int newY)
         {
-            if (selection == null) selection = new TileMaskCollection();
+            if (selection == null) selection = new TileMaskCollection(BytesPerColor);
             if (selection.Left == newX && selection.Top == newY) return false;
             bool b = selection.MoveTo(newX, newY);
             UpdateContainer();
@@ -280,7 +284,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         public void ClearSelection()
         {
-            if (selection == null) selection = new TileMaskCollection();
+            if (selection == null) selection = new TileMaskCollection(BytesPerColor);
             selection.tiles.Clear();
             selection.Left = -1;
             selection.Top = -1;
@@ -327,7 +331,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="height">The height.</param>
         public TileMaskCollection FindByArea(int x, int y, int width, int height)
         {
-            if (selection == null) selection = new TileMaskCollection();
+            if (selection == null) selection = new TileMaskCollection(BytesPerColor);
             selection.tiles = TilesAtPosition(x, y, width, height).tiles;
             selection.sorted = false;
             selection.UpdateContainer();
@@ -345,7 +349,7 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>A TileMaskCollection.</returns>
         public TileMaskCollection TilesAtPosition(int x, int y, int width, int height)
         {
-            TileMaskCollection find = new TileMaskCollection
+            TileMaskCollection find = new TileMaskCollection(BytesPerColor)
             {
                 tiles = tiles.Where((t) =>
                 {
@@ -392,7 +396,7 @@ namespace SMWControlLibCommons.Graphics
         /// </summary>
         public void RemoveSelection()
         {
-            if (selection == null) selection = new TileMaskCollection();
+            if (selection == null) selection = new TileMaskCollection(BytesPerColor);
             if (selection.Left > 0)
             {
                 foreach (TileMask t in selection.tiles)
@@ -527,7 +531,7 @@ namespace SMWControlLibCommons.Graphics
             var vals1 = c1.tiles;
             var vals2 = c2.tiles;
 
-            TileMaskCollection ret = new TileMaskCollection();
+            TileMaskCollection ret = new TileMaskCollection(c1.BytesPerColor);
 
             int total = vals1.Count + vals2.Count;
             var enum1 = vals1.GetEnumerator();
@@ -584,7 +588,7 @@ namespace SMWControlLibCommons.Graphics
         /// <returns>A SpriteTileMaskCollection.</returns>
         public TileMaskCollection Clone()
         {
-            TileMaskCollection col = new TileMaskCollection();
+            TileMaskCollection col = new TileMaskCollection(BytesPerColor);
             foreach (TileMask t in tiles)
             {
                 col.Add(t.Clone());

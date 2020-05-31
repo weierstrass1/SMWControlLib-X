@@ -1,4 +1,5 @@
-﻿using SMWControlLibRendering.Enumerators.Graphics;
+﻿using SMWControlLibRendering.Enumerator;
+using SMWControlLibRendering.Enumerators.Graphics;
 using SMWControlLibUtils;
 
 namespace SMWControlLibRendering.Factory
@@ -16,7 +17,7 @@ namespace SMWControlLibRendering.Factory
         public override ColorPalette GenerateObject(params object[] args)
         {
             if (HardwareAcceleratorManager.IsGPUAvailable())
-                return new GPUColorPalette((ColorPaletteIndex)args[0], (int)args[1]);
+                return new GPUColorPalette((ColorPaletteIndex)args[0], (int)args[1], (BytesPerPixel)args[2]);
             return null;
         }
     }

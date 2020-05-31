@@ -3,6 +3,7 @@ using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Interfaces.Graphics;
 using SMWControlLibCommons.Keys;
 using SMWControlLibRendering;
+using SMWControlLibRendering.Enumerator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -64,6 +65,7 @@ namespace SMWControlLibCommons.Graphics
         /// Gets or sets the cell size.
         /// </summary>
         public GridCellSize CellSize { get; protected set; }
+        public BytesPerPixel BytesPerColor { get; protected set; }
 
         private readonly Dictionary<PositionKey, List<TileMask>> tiles;
         public TileMaskCollection selection;
@@ -71,8 +73,9 @@ namespace SMWControlLibCommons.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="Layer"/> class.
         /// </summary>
-        public Layer()
+        public Layer(BytesPerPixel bytesPerColor)
         {
+            BytesPerColor = bytesPerColor;
             tiles = new Dictionary<PositionKey, List<TileMask>>();
         }
 
@@ -237,7 +240,7 @@ namespace SMWControlLibCommons.Graphics
                 PositionKey pk = new PositionKey(px, py);
                 if (tiles.ContainsKey(pk))
                 {
-                    TileMaskCollection ret = new TileMaskCollection();
+                    TileMaskCollection ret = new TileMaskCollection(BytesPerColor);
                     foreach (TileMask selT in tiles[pk])
                     {
                         ret.Add(selT);
@@ -259,7 +262,7 @@ namespace SMWControlLibCommons.Graphics
                 return true;
             });
 
-            TileMaskCollection t = new TileMaskCollection();
+            TileMaskCollection t = new TileMaskCollection(BytesPerColor);
             foreach (KeyValuePair<PositionKey, List<TileMask>> kvp in filtered)
             {
                 foreach (TileMask selT in kvp.Value)

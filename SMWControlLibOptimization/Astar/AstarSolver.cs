@@ -8,11 +8,11 @@ namespace SMWControlLibOptimization.Astar
 {
     public class AstarSolver<T>
     {
+        int added = 0, total = 0;
         public virtual AstarNode<T> Solve(AstarNode<T> Root, params object[] args)
         {
             IntervalHeap<AstarNode<T>> ih = new IntervalHeap<AstarNode<T>>();
             ih.Add(Root);
-            List<AstarNode<T>> close = new List<AstarNode<T>>();
             AstarNode<T> curNode;
             bool add;
 
@@ -20,7 +20,6 @@ namespace SMWControlLibOptimization.Astar
             {
                 curNode = ih.DeleteMin();
                 curNode.Expand(args);
-                close.Add(curNode);
 
                 if (curNode.Completed(args)) 
                     return curNode;
@@ -29,32 +28,12 @@ namespace SMWControlLibOptimization.Astar
                 {
                     foreach(var node in curNode.Children)
                     {
-                        add = true;
-                        foreach(var n in close)
-                        {
-                            if (n.Equals(node)) 
-                            {
-                                add = false;
-                                break;
-                            }
-                        }
-
-                        if (add)
-                        {
-                            foreach (var n in ih)
-                            {
-                                if (n.Equals(node))
-                                {
-                                    add = false;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if(add)
+                        if (node.CanAdd())
                         {
                             ih.Add(node);
+                            added++;
                         }
+                        total++;
                     }
                 }
             }

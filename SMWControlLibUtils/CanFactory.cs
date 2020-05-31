@@ -10,7 +10,7 @@
     /// <summary>
     /// The can factory without params.
     /// </summary>
-    public abstract class CanFactoryWithoutParams : CanFactory
+    public abstract class CanFactoryWithoutParams : CanFactory, IMustInitialize
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CanFactoryWithoutParams"/> class.
@@ -28,7 +28,7 @@
     /// <summary>
     /// The can factory.
     /// </summary>
-    public abstract class CanFactory<T> : CanFactory
+    public abstract class CanFactory<T> : CanFactory, IMustInitialize<T>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CanFactory"/> class.
@@ -47,7 +47,7 @@
     /// <summary>
     /// The can factory.
     /// </summary>
-    public abstract class CanFactory<T, U> : CanFactory
+    public abstract class CanFactory<T, U> : CanFactory, IMustInitialize<T, U>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CanFactory"/> class.
@@ -68,7 +68,7 @@
     /// <summary>
     /// The can factory.
     /// </summary>
-    public abstract class CanFactory<T, U, V> : CanFactory
+    public abstract class CanFactory<T, U, V> : CanFactory, IMustInitialize<T, U, V>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CanFactory"/> class.
@@ -91,7 +91,7 @@
     /// <summary>
     /// The can factory.
     /// </summary>
-    public abstract class CanFactory<T, U, V, W> : CanFactory
+    public abstract class CanFactory<T, U, V, W> : CanFactory, IMustInitialize<T, U, V, W>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CanFactory"/> class.
@@ -116,7 +116,7 @@
     /// <summary>
     /// The can factory.
     /// </summary>
-    public abstract class CanFactory<T, U, V, W, X> : CanFactory
+    public abstract class CanFactory<T, U, V, W, X> : CanFactory, IMustInitialize<T, U, V, W, X>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CanFactory"/> class.
@@ -143,7 +143,7 @@
     /// <summary>
     /// The can factory.
     /// </summary>
-    public abstract class CanFactory<T, U, V, W, X, Y> : CanFactory
+    public abstract class CanFactory<T, U, V, W, X, Y> : CanFactory, IMustInitialize<T, U, V, W, X, Y>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CanFactory"/> class.
@@ -171,7 +171,7 @@
     /// <summary>
     /// The can factory.
     /// </summary>
-    public abstract class CanFactory<T, U, V, W, X, Y, Z> : CanFactory
+    public abstract class CanFactory<T, U, V, W, X, Y, Z> : CanFactory, IMustInitialize<T, U, V, W, X, Y, Z>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CanFactory"/> class.
@@ -202,7 +202,7 @@
     /// <summary>
     /// The can factory with objs params.
     /// </summary>
-    public abstract class CanFactoryWithObjsParams : CanFactory
+    public abstract class CanFactoryWithObjsParams : CanFactory, IMustInitializeWithObjsParams
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CanFactoryWithObjsParams"/> class.

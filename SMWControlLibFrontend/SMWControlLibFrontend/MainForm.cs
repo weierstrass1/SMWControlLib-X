@@ -1,8 +1,10 @@
 using Eto.Drawing;
 using Eto.Forms;
 using SMWControlLibCommons.Enumerators.Graphics;
+using SMWControlLibCommons.Graphics;
 using SMWControlLibFrontend.Graphics;
 using SMWControlLibRendering;
+using SMWControlLibRendering.Enumerator;
 using SMWControlLibSNES.Graphics;
 using SMWControlLibUnity.Enumerators.Graphics;
 using SMWControlLibUnity.Graphics;
@@ -43,7 +45,7 @@ namespace SMWControlLibFrontend
 
 
             SpriteTileSection s = new SpriteTileSection();
-            s.Add();
+            s.Add(new TileMaskCollection(BytesPerPixel.RGB555));
             SpriteTileSectionMask m = new SpriteTileSectionMask(s);
             grid.Target = m;
 

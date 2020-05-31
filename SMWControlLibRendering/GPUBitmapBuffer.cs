@@ -1,5 +1,6 @@
 ﻿using ILGPU;
 using ILGPU.Runtime;
+using SMWControlLibRendering.Enumerator;
 using SMWControlLibRendering.KernelStrategies.BitmapBufferKernels;
 using System;
 
@@ -10,241 +11,67 @@ namespace SMWControlLibRendering
     /// </summary>
     public class GPUBitmapBuffer : BitmapBuffer
     {
-        protected bool requireCopyTo;
         protected byte[] pixels;
-
-        /// <summary>
-        /// Gets or sets the buffer.
-        /// </summary>
         public MemoryBuffer3D<byte> Buffer { get; protected set; }
-
-        /// <summary>
-        /// Gets or sets the sub buffer.
-        /// </summary>
         protected GPUBitmapBuffer subBuffer { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GPUBitmapBuffer"/> class.
-        /// </summary>
-        /// <param name="pixels">The pixels.</param>
-        /// <param name="width">The width.</param>
-        public GPUBitmapBuffer(int width, int height) : base(width, height)
+        public GPUBitmapBuffer(int width, int height, BytesPerPixel bpp) : base(width, height, bpp)
         {
         }
-
-        /// <summary>
-        /// Sets the pixels.
-        /// </summary>
-        /// <param name="pixels">The pixels.</param>
-        /// <param name="width">The width.</param>
-        public override void Initialize(int width, int height)
+        public override void Initialize(int width, int height, BytesPerPixel bpp)
         {
-            BytesPerColor = 3;
             if (Buffer != null)
             {
                 Buffer.Dispose();
             }
 
-            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(BytesPerColor, width, height);
+            Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(bpp, width, height);
             requireCopyTo = true;
-            base.Initialize(width, height);
+            base.Initialize(width, height, bpp);
         }
-
-        /// <summary>
-        /// Clones the.
-        /// </summary>
-        /// <returns>A BitmapBuffer.</returns>
-        public override BitmapBuffer Clone()
-        {
-            GPUBitmapBuffer clone = new GPUBitmapBuffer(Width, Height);
-            clone.DrawBitmapBuffer(this, 0, 0);
-            return clone;
-        }
-
-        /// <summary>
-        /// Draws the bitmap.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        public override void DrawBitmapBuffer(BitmapBuffer src, int x, int y)
+        public override void DrawBitmapBuffer(BitmapBuffer src, int dstXOffset, int dstYOffset, int srcXOffset, int srcYOffset, int zoom, byte[] backgroundColor)
         {
             if (src == null) throw new ArgumentNullException(nameof(src));
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
-            DrawBitmapBufferRGB555Kernel.Execute(new Index2(src.Width, src.Height),
-                Buffer, source.Buffer, new Index2(x, y));
+            DrawBitmapBufferKernel.Execute(new Index2(src.Width, src.Height),
+                Buffer, source.Buffer, new Index2(dstXOffset, dstYOffset), new Index2(srcXOffset, srcYOffset), 
+                BytesPerColor.BitClearer, zoom, backgroundColor);
             requireCopyTo = true;
-        }
 
-        /// <summary>
-        /// Draws the bitmap.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="zoom">The zoom.</param>
-        public override void DrawBitmapBuffer(BitmapBuffer src, int x, int y, int zoom)
+            if (dstXOffset == 0 && dstYOffset == 0)
+            {
+                int a = 0;
+            }
+        }
+        public override void DrawGrid(int zoom, int cellsize, int type, byte[] color)
         {
-            if (src == null) throw new ArgumentNullException(nameof(src));
-            GPUBitmapBuffer source = (GPUBitmapBuffer)src;
-
-            DrawBitmapBufferWithZoomRGB555Kernel.Execute(new Index2(src.Width, src.Height),
-                Buffer, source.Buffer, new Index2(x, y), zoom);
-            requireCopyTo = true;
+            throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// Draws the bitmap.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        public override void DrawBitmapBuffer(BitmapBuffer src, int x, int y, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
+        public override void DrawLine(int x1, int y1, int x2, int y2, byte[] color)
         {
-            if (src == null) throw new ArgumentNullException(nameof(src));
-            GPUBitmapBuffer source = (GPUBitmapBuffer)src;
-
-            DrawBitmapBufferWithBGRGB555Kernel.Execute(new Index2(src.Width, src.Height),
-                Buffer, source.Buffer, new Index2(x, y),
-                backgroundColorR, backgroundColorG, backgroundColorB);
-            requireCopyTo = true;
+            throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// Draws the bitmap.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="zoom">The zoom.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        public override void DrawBitmapBuffer(BitmapBuffer src, int x, int y, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
-        {
-            if (src == null) throw new ArgumentNullException(nameof(src));
-            GPUBitmapBuffer source = (GPUBitmapBuffer)src;
-
-            DrawBitmapBufferWithZoomAndBGRGB555Kernel.Execute(new Index2(src.Width, src.Height),
-                Buffer, source.Buffer, new Index2(x, y), zoom,
-                backgroundColorR, backgroundColorG, backgroundColorB);
-            requireCopyTo = true;
-        }
-
-        /// <summary>
-        /// Draws the grid.
-        /// </summary>
-        /// <param name="zoom">The zoom.</param>
-        /// <param name="cellsize">The cellsize.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="gridColor">The grid color.</param>
-        public override void DrawGrid(int zoom, int cellsize, int type, byte colorR, byte colorG, byte colorB)
-        {
-            requireCopyTo = true;
-        }
-
-        /// <summary>
-        /// Draws the line.
-        /// </summary>
-        /// <param name="x1">The x1.</param>
-        /// <param name="y1">The y1.</param>
-        /// <param name="x2">The x2.</param>
-        /// <param name="y2">The y2.</param>
-        /// <param name="lineColor">The line color.</param>
-        public override void DrawLine(int x1, int y1, int x2, int y2, byte colorR, byte colorG, byte colorB)
-        {
-            requireCopyTo = true;
-        }
-
-        /// <summary>
-        /// Draws the rectangle.
-        /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="rectangleColor">The rectangle color.</param>
-        public override void DrawRectangleBorder(int x, int y, int width, int height, byte colorR, byte colorG, byte colorB)
+        public override void DrawRectangleBorder(int x, int y, int width, int height, byte[] color)
         {
             int offset = (y * Width) + x;
-            DrawRectangleBorderRGBKernel.Execute(new Index(Math.Max(width, height)), Buffer,
-                new Index2(x, y), width, height, colorR, colorG, colorB);
+            DrawRectangleBorderKernel.Execute(new Index(Math.Max(width, height)), Buffer,
+                new Index2(x, y), width, height, color);
             requireCopyTo = true;
         }
-
-        /// <summary>
-        /// Fills the color.
-        /// </summary>
-        /// <param name="backgroundColor">The background color.</param>
-        public override void FillWithColor(byte colorR, byte colorG, byte colorB)
+        public override void FillWithColor(byte[] color)
         {
-            FillWithColorRGBKernel.Execute(new Index2(Width, Height), Buffer, colorR, colorG, colorB);
+            FillWithColorKernel.Execute(new Index3(BytesPerColor, Width, Height), Buffer, color);
             requireCopyTo = true;
         }
-
-        /// <summary>
-        /// Fills the color.
-        /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        public override void DrawRectangle(int x, int y, int width, int height, byte colorR, byte colorG, byte colorB)
+        public override void DrawRectangle(int x, int y, int width, int height, byte[] color)
         {
-            DrawRectangleRGBKernel.Execute(new Index2(width, height), Buffer, new Index2(x, y), colorR, colorG, colorB);
+            DrawRectangleKernel.Execute(new Index2(width, height), Buffer, new Index2(x, y), color);
             requireCopyTo = true;
         }
-
-        /// <summary>
-        /// Zooms the in.
-        /// </summary>
-        /// <param name="zoom">The zoom.</param>
-        public override void ZoomIn(int zoom)
+        public override void Dispose()
         {
-            GPUBitmapBuffer b = new GPUBitmapBuffer(Width, Height)
-            {
-                Buffer = Buffer
-            };
-
-            Initialize(Width * zoom, Height * zoom);
-
-            DrawBitmapBuffer(b, 0, 0, zoom);
-            b.Buffer.Dispose();
-            requireCopyTo = true;
+            Buffer.Dispose();
         }
-
-        /// <summary>
-        /// Zooms the in.
-        /// </summary>
-        /// <param name="zoom">The zoom.</param>
-        /// <param name="backgroundColor">The background color.</param>
-        public override void ZoomIn(int zoom, byte colorR, byte colorG, byte colorB)
-        {
-            GPUBitmapBuffer b = new GPUBitmapBuffer(Width, Height)
-            {
-                Buffer = Buffer
-            };
-
-            Initialize(Width * zoom, Height * zoom);
-
-            DrawBitmapBuffer(b, 0, 0, zoom, colorR, colorG, colorB);
-            b.Buffer.Dispose();
-            requireCopyTo = true;
-        }
-
-        /// <summary>
-        /// Copies the to.
-        /// </summary>
-        /// <param name="target">The target.</param>
-        /// <param name="subImageLeft">The sub image left.</param>
-        /// <param name="subImageRight">The sub image right.</param>
-        /// <param name="subImageTop">The sub image top.</param>
-        /// <param name="subImageBottom">The sub image bottom.</param>
-        /// <param name="dirtyLeft">The dirty left.</param>
-        /// <param name="dirtyRight">The dirty right.</param>
-        /// <param name="dirtyTop">The dirty top.</param>
-        /// <param name="dirtyBottom">The dirty bottom.</param>
         public override unsafe void CopyTo(byte* target, int subImageLeft, int subImageRight, int subImageTop, int subImageBottom, int dirtyLeft, int dirtyRight, int dirtyTop, int dirtyBottom)
         {
             if (subImageLeft < 0) subImageLeft = 0;
@@ -264,20 +91,21 @@ namespace SMWControlLibRendering
 
             if (subBuffer == null)
             {
-                subBuffer = (GPUBitmapBuffer)CreateInstance(w, h);
+                subBuffer = (GPUBitmapBuffer)CreateInstance(w, h, BytesPerColor);
                 pixels = new byte[l];
                 requireCopyTo = true;
             }
             else if (subBuffer.Buffer.Width != BytesPerColor || subBuffer.Buffer.Height != w || subBuffer.Buffer.Depth != h) 
             {
-                subBuffer.Initialize(w, h);
+                subBuffer.Initialize(w, h, BytesPerColor);
                 pixels = new byte[l];
                 requireCopyTo = true;
             }
 
             //if(requireCopyTo)
             //{
-            subBuffer.DrawBitmapBuffer(this, 0, 0, subImageLeft, subImageTop);
+            DrawSubBufferKernel.Execute(Buffer, subBuffer.Buffer, new Index2(subImageLeft, subImageTop));
+            subBuffer.requireCopyTo = false;
             subBuffer.Buffer.CopyTo(pixels, Index3.Zero, 0, subBuffer.Buffer.Extent);
             requireCopyTo = false;
             //}
@@ -286,74 +114,6 @@ namespace SMWControlLibRendering
             {
                 System.Buffer.MemoryCopy(bs, target, l, l);
             }
-        }
-
-        /// <summary>
-        /// Draws the bitmap buffer.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="dstX">The dst x.</param>
-        /// <param name="dstY">The dst y.</param>
-        /// <param name="srcX">The src x.</param>
-        /// <param name="srcY">The src y.</param>
-        public override void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY)
-        {
-            if (src == null) throw new ArgumentNullException(nameof(src));
-
-            GPUBitmapBuffer b = (GPUBitmapBuffer)src;
-
-            int w = Math.Min(b.Width - srcX, Width - dstX);
-            int h = Math.Min(b.Height - srcY, Height - dstY);
-
-            DrawBitmapBufferRGB555WithOffsetKernel.Execute(new Index2(w, h), Buffer, b.Buffer, new Index2(dstX, dstY), new Index2(srcX, srcY));
-            requireCopyTo = true;
-        }
-
-        /// <summary>
-        /// Draws the bitmap buffer.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="dstX">The dst x.</param>
-        /// <param name="dstY">The dst y.</param>
-        /// <param name="srcX">The src x.</param>
-        /// <param name="srcY">The src y.</param>
-        /// <param name="zoom">The zoom.</param>
-        public override void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, int zoom)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Draws the bitmap buffer.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="dstX">The dst x.</param>
-        /// <param name="dstY">The dst y.</param>
-        /// <param name="srcX">The src x.</param>
-        /// <param name="srcY">The src y.</param>
-        /// <param name="backgroundColorR">The background color r.</param>
-        /// <param name="backgroundColorG">The background color g.</param>
-        /// <param name="backgroundColorB">The background color b.</param>
-        public override void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Draws the bitmap buffer.
-        /// </summary>
-        /// <param name="src">The src.</param>
-        /// <param name="dstX">The dst x.</param>
-        /// <param name="dstY">The dst y.</param>
-        /// <param name="srcX">The src x.</param>
-        /// <param name="srcY">The src y.</param>
-        /// <param name="zoom">The zoom.</param>
-        /// <param name="backgroundColorR">The background color r.</param>
-        /// <param name="backgroundColorG">The background color g.</param>
-        /// <param name="backgroundColorB">The background color b.</param>
-        public override void DrawBitmapBuffer(BitmapBuffer src, int dstX, int dstY, int srcX, int srcY, int zoom, byte backgroundColorR, byte backgroundColorG, byte backgroundColorB)
-        {
-            throw new NotImplementedException();
         }
     }
 }

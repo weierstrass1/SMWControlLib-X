@@ -16,6 +16,9 @@ using System.Linq;
 using SMWControlLibOptimization.PaletteOptimizer;
 using SMWControlLibRendering;
 using SMWControlLibRendering.Enumerators.Graphics;
+using SMWControlLibOptimization.TileOptimizer;
+using SMWControlLibRendering.Enumerators;
+using System.IO;
 
 namespace SMWControlLibUnity.Graphics
 {
@@ -28,125 +31,42 @@ namespace SMWControlLibUnity.Graphics
             tileSize = tsz;
         }
 
-        public override void Load(string path, int offset)
+        public unsafe override void Load(string path, int offset)
         {
             Bitmap bp = new Bitmap(path);
-            Int32[] Bits = new Int32[bp.Width * bp.Height];
-            GCHandle BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
-            Bitmap bp2 = new Bitmap(bp.Width, bp.Height, bp.Width * 4, PixelFormat.Format32bppArgb,
-                BitsHandle.AddrOfPinnedObject());
+            Int32[,] Bits = PaletteProcessor.BitmapToIntArray(bp);
+            //PaletteProcessor.RoundColor5BitsPerChannel(Bits);
+            UnityColorPalette[] pals = PaletteProcessor.ExtractPalettesFromBitmap<UnityColorPalette, UnityColorPaletteIndex>(Bits, tileSize.Width, tileSize.Height, 19);
+            var tiles = TileProcessor.GetTiles<UnityColorPalette, IndexedBitmapBufferDisguise>(pals, Bits, tileSize.Width, tileSize.Height);
 
-            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bp2))
+            int w = bp.Width;
+            int h = bp.Height;
+            
+            Parallel.ForEach(tiles, kvp =>
             {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                g.DrawImage(bp, 0, 0);
-            }
-
-            int wb = bp.Width / tileSize.Width;
-            int hb = bp.Height / tileSize.Height;
-
-            ConcurrentDictionary<Int32, int>[,] pals = new ConcurrentDictionary<Int32, int>[wb, hb];
-
-            Parallel.For(0, wb, i =>
-            {
-                Parallel.For(0, hb, j =>
+                BitmapBuffer bf = BitmapBuffer.CreateInstance(w, h, pals[0].RealObject.BytesPerColor);
+                BitmapBuffer bpb;
+                Int32[] retbp = new Int32[w * h];
+                GCHandle BitsHandle = GCHandle.Alloc(retbp, GCHandleType.Pinned);
+                Bitmap finishedBP = new Bitmap(w, h, w * 4, PixelFormat.Format32bppArgb, BitsHandle.AddrOfPinnedObject());
+                byte[] ret = new byte[retbp.Length * 4];
+                
+                foreach (var t in kvp.Value)
                 {
-                    pals[i, j] = new ConcurrentDictionary<int, int>();
-                });
+                    bpb = t.Item3.RealObject.CreateBitmapBuffer(Flip.NotFlipped, pals[kvp.Key].RealObject);
+                    bf.DrawBitmapBuffer(bpb, t.Item1 * tileSize.Width, t.Item2 * tileSize.Height);
+                }
+                unsafe
+                {
+                    fixed(byte* bs = ret)
+                    {
+                        bf.CopyTo(bs, 0, w - 1, 0, h - 1, 0, 0, 0, 0);
+                    }
+                }
+                Buffer.BlockCopy(ret, 0, retbp, 0, ret.Length);
+                finishedBP.Save(Path.GetFileNameWithoutExtension(path) + kvp.Key.Value + ".png", 
+                    ImageFormat.Png);
             });
-
-            int width = bp.Width;
-            int height = bp.Height;
-            Int32 val;
-
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    int index = i + (j * width);
-                    int x = i / tileSize.Width;
-                    int y = j / tileSize.Height;
-                    val = (Int32)((Bits[index] & 0xF8F8F8F8) | ((Bits[index] & 0x04040404) << 1));
-
-                    if (val != 0 && !pals[x, y].TryAdd(val, 1))
-                    {
-                        pals[x, y][val]++;
-                    }
-                }
-            }
-
-            List<ConcurrentDictionary<Int32, int>> resumedPals = new List<ConcurrentDictionary<int, int>>();
-            ConcurrentDictionary<Int32, int> p1, p2;
-            bool found = false;
-            int it = 0;
-
-            for (int i = 0; i < wb; i++)
-            {
-                for (int j = 0; j < hb; j++)
-                {
-                    found = false;
-                    it = 0;
-                    p1 = pals[i, j];
-                    foreach (var t in resumedPals)
-                    {
-                        p2 = t;
-                        int eee = PaletteProcessor.CountEquals(p1, p2);
-
-                        if (eee == Math.Min(p1.Count, p2.Count))
-                        {
-                            found = true;
-
-                            if (Math.Min(p1.Count, p2.Count) == p2.Count && p1.Count > p2.Count) 
-                            {
-                                resumedPals[it] = p1;
-                            }
-                            break;
-                        }
-                        it++;
-                    }
-                    if (!found)
-                    {
-                        resumedPals.Add(p1);
-                    }
-                }
-            }
-
-            resumedPals.Sort((t1, t2) =>
-            {
-                if (t1.Count > t2.Count) return 1;
-                else if (t1.Count < t2.Count) return -1;
-                return 0;
-            });
-
-            resumedPals = PaletteProcessor.OptimizePalettes(resumedPals,15);
-            Palettes = new UnityColorPalette[resumedPals.Count + 1];
-            byte[] cols;
-            it = 0;
-            int ind = 0;
-            foreach (var p in resumedPals)
-            {
-                Palettes[it] = new UnityColorPalette(new UnityColorPaletteIndex(16, 16 * (it + 1)), 16);
-
-                cols = new byte[16 * 4];
-
-                cols[0] = 0;
-                cols[1] = 0;
-                cols[2] = 0;
-                cols[3] = 0;
-                ind = 4;
-                foreach (var kvp in p)
-                {
-                    cols[ind] = (byte)((kvp.Key >> 24) & 0x000000FF);
-                    cols[ind + 1] = (byte)((kvp.Key >> 16) & 0x000000FF);
-                    cols[ind + 2] = (byte)((kvp.Key >> 8) & 0x000000FF);
-                    cols[ind + 3] = (byte)(kvp.Key & 0x000000FF);
-                    ind += 4;
-                }
-
-                Palettes[it].RealObject.Load(cols);
-
-                it++;
-            }
         }
 
         public override void Load(byte[] bin, int offset)

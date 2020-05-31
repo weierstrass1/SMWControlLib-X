@@ -5,6 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SMWControlLibCommons\SMWControlLibCommons.csproj" />
+    <ProjectReference Include="..\SMWControlLibRendering\SMWControlLibRendering.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="C5">
       <HintPath>C:\Users\pndia\Documents\GitHub\SMWControlib\backend\bin\Debug\C5.dll</HintPath>
       <Private>true</Private>

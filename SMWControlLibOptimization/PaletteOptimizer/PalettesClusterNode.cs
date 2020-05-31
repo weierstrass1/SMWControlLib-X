@@ -17,13 +17,10 @@ namespace SMWControlLibOptimization.PaletteOptimizer
         {
             Content = new ConcurrentDictionary<int, int>();
         }
+
         public override int Distance(ConcurrentDictionary<int, int> cont)
         {
-            int diff = PaletteProcessor.CountDiffs(Content, cont);
-
-            if (diff + Math.Max(cont.Count, Content.Count) > MaxClusterSize) return 100000;
-
-            return diff;
+            return -PaletteProcessor.CountEquals(Content, cont);
         }
 
         public override ClusterNode<ConcurrentDictionary<int, int>> Merge(ConcurrentDictionary<int, int> cont)
@@ -35,7 +32,14 @@ namespace SMWControlLibOptimization.PaletteOptimizer
             }
             foreach (var c in Content)
             {
-                ret.Content.TryAdd(c.Key, c.Value);
+                if(ret.Content.ContainsKey(c.Key))
+                {
+                    ret.Content[c.Key] += c.Value;
+                }
+                else
+                {
+                    ret.Content.TryAdd(c.Key, c.Value);
+                }
             }
             return ret;
         }
@@ -48,6 +52,16 @@ namespace SMWControlLibOptimization.PaletteOptimizer
         public override int MergeSize(ConcurrentDictionary<int, int> cont)
         {
             return Math.Max(cont.Count, Content.Count) + PaletteProcessor.CountDiffs(cont, Content);
+        }
+
+        public override bool Contains(ConcurrentDictionary<int, int> cont)
+        {
+            return Content.Count >= cont.Count && PaletteProcessor.CountDiffs(Content, cont) == 0;
+        }
+
+        public override float BreakDraw(ConcurrentDictionary<int, int> cont)
+        {
+            return -(PaletteProcessor.CountDiffs(Content, cont) + Math.Abs(Content.Count - cont.Count));
         }
     }
 }

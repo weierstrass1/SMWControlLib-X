@@ -1,19 +1,12 @@
-﻿using SMWControlLibRendering.Factory;
+﻿using SMWControlLibRendering.Enumerator;
+using SMWControlLibRendering.Factory;
 using SMWControlLibUtils;
 
 namespace SMWControlLibRendering.Disguise
 {
-    /// <summary>
-    /// The bitmap buffer disguise.
-    /// </summary>
-    public class BitmapBufferDisguise : Disguise<BitmapBufferFactory, BitmapBuffer, int, int>
+    public class BitmapBufferDisguise : Disguise<BitmapBufferFactory, BitmapBuffer, int, int, BytesPerPixel>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BitmapBufferDisguise"/> class.
-        /// </summary>
-        /// <param name="param1">The param1.</param>
-        /// <param name="param2">The param2.</param>
-        public BitmapBufferDisguise(int param1, int param2) : base(param1, param2)
+        public BitmapBufferDisguise(int param1, int param2, BytesPerPixel param3) : base(param1, param2, param3)
         {
         }
     }

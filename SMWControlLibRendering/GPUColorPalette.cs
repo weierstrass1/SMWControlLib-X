@@ -1,7 +1,10 @@
 ﻿using ILGPU;
 using ILGPU.Runtime;
+using SMWControlLibRendering.Enumerator;
 using SMWControlLibRendering.Enumerators.Graphics;
 using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace SMWControlLibRendering
 {
@@ -15,7 +18,7 @@ namespace SMWControlLibRendering
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="size">The size.</param>
-        public GPUColorPalette(ColorPaletteIndex index, int size) : base(index, size)
+        public GPUColorPalette(ColorPaletteIndex index, int size, BytesPerPixel bpp) : base(index, size, bpp)
         {
         }
         /// <summary>
@@ -29,7 +32,6 @@ namespace SMWControlLibRendering
         public override void Initialize(params object[] args)
         {
             if (Buffer != null) Buffer.Dispose();
-            BytesPerColor = 3;
             base.Initialize(args);
             Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>((int)args[1] * BytesPerColor);
         }
@@ -41,7 +43,7 @@ namespace SMWControlLibRendering
         public override byte[] GetColor(int index)
         {
             byte[] color = new byte[BytesPerColor];
-            Buffer.CopyTo(color, new Index(index * 3), 0, new Index(BytesPerColor));
+            Buffer.CopyTo(color, new Index(index * BytesPerColor), 0, new Index(BytesPerColor));
             return color;
         }
         /// <summary>
@@ -66,7 +68,7 @@ namespace SMWControlLibRendering
         public override void SetColor(int index, byte R, byte G, byte B)
         {
             byte[] color = { R, G, B };
-            Buffer.CopyFrom(color, 0, new Index(index * BytesPerColor), new Index(3));
+            Buffer.CopyFrom(color, 0, new Index(index * BytesPerColor), new Index(BytesPerColor));
         }
 
         /// <summary>
@@ -79,6 +81,20 @@ namespace SMWControlLibRendering
         public override void SetColors(byte[] newColors, int srcOffset, int dstOffset, int lenght)
         {
             Buffer.CopyFrom(newColors, srcOffset, dstOffset, lenght);
+        }
+
+        public override ConcurrentDictionary<Int32, int> ToColorDictionary()
+        {
+            ConcurrentDictionary<Int32, int> ret = new ConcurrentDictionary<int, int>();
+            int off = 4 - BytesPerColor;
+            for (int i = 0; i < Length; i++) 
+            {
+                int[] c = new int[1];
+                System.Buffer.BlockCopy(GetColor(i), 0, c, off, BytesPerColor);
+
+                ret.TryAdd(ReverseBytes(c[0]), i);
+            };
+            return ret;
         }
     }
 }

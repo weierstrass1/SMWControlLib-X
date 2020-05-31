@@ -1,5 +1,6 @@
 ﻿using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Interfaces.Graphics;
+using SMWControlLibRendering.Enumerator;
 using System.Collections.Generic;
 
 namespace SMWControlLibCommons.Graphics
@@ -20,7 +21,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="bgR">The bg r.</param>
         /// <param name="bgG">The bg g.</param>
         /// <param name="bgB">The bg b.</param>
-        public TilemapGrid(int width, int height, Zoom z, byte bgR, byte bgG, byte bgB) : base(width, height, z, bgR, bgG, bgB)
+        public TilemapGrid(int width, int height, Zoom z, BytesPerPixel bpp, params byte[] color) : base(width, height, z, bpp, color)
         {
             layers = new List<Layer>();
         }
@@ -45,8 +46,7 @@ namespace SMWControlLibCommons.Graphics
             int w = drr - drx;
             int h = drb - dry;
 
-            layer1.DrawRectangle(drx, dry, w, h,
-                BackgroundColorR, BackgroundColorG, BackgroundColorB);
+            layer1.DrawRectangle(drx, dry, w, h, BackgroundColor);
             layers[SelectedLayer].AddTiles(selection);
 
             ITileCollection col = layers[SelectedLayer].TilesOnArea(drx, dry, w, h);
