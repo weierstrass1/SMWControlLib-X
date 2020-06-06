@@ -4,7 +4,6 @@ using SMWControlLibCommons.Interfaces.Graphics;
 using SMWControlLibRendering;
 using SMWControlLibRendering.DirtyClasses;
 using SMWControlLibRendering.Enumerator;
-using SMWControlLibUtils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

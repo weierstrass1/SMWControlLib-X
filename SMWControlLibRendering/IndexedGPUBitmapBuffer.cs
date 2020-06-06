@@ -1,14 +1,12 @@
 ﻿using ILGPU;
 using ILGPU.Runtime;
 using SMWControlLibRendering.DirtyClasses;
-using SMWControlLibRendering.Disguise;
 using SMWControlLibRendering.Enumerators;
 using SMWControlLibRendering.Exceptions;
 using SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels;
 using SMWControlLibRendering.Keys;
 using System;
 using System.Collections.Concurrent;
-using System.Drawing;
 using System.Threading.Tasks;
 
 namespace SMWControlLibRendering

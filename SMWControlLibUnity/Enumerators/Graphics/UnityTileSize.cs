@@ -1,7 +1,4 @@
 ﻿using SMWControlLibCommons.Enumerators.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibUnity.Enumerators.Graphics
 {

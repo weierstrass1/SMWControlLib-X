@@ -2,9 +2,6 @@
 using SMWControlLibCommons.Factory;
 using SMWControlLibCommons.Graphics.DirtyClasses;
 using SMWControlLibUnity.Graphics.DirtyClasses;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibUnity.Factory.Graphics
 {

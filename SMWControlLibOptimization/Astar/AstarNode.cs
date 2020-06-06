@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibOptimization.Astar
 {
@@ -11,14 +10,19 @@ namespace SMWControlLibOptimization.Astar
         public AstarNode<T> Parent { get; protected set; }
         public List<AstarNode<T>> Children { get; protected set; }
         private int heuristic;
-        public int Heuristic { get => heuristic; 
-            private set{
+        public int Heuristic
+        {
+            get => heuristic;
+            private set
+            {
                 heuristic = value;
-                setValue(); 
+                setValue();
             }
         }
         private int cost;
-        public int Cost { get => cost;
+        public int Cost
+        {
+            get => cost;
             private set
             {
                 cost = value;

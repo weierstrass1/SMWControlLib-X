@@ -20,25 +20,43 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
         }
         private static void strategy(Index3 index, ArrayView2D<byte> indexedBitmapBuffer, ArrayView3D<byte> destBitmap, ArrayView<byte> colors, int zoom, int flip)
         {
-            int y = index.Z;
-            if ((flip & 0x2) != 0)
-                y = indexedBitmapBuffer.Height - y - 1;
-            int x = index.Y;
-            if ((flip & 0x1) != 0)
-                x = indexedBitmapBuffer.Width - x - 1;
+            int x;
+            if ((flip & 1) == 1)
+            {
+                x = indexedBitmapBuffer.Extent.X - index.Y - 1;
+            }
+            else
+            {
+                x = index.Y;
+            }
 
-            int colind = (indexedBitmapBuffer[new Index2(x, y)] * destBitmap.Extent.X) +
-                index.X;
+            int y;
+            if ((flip & 2) == 2)
+            {
+                y = indexedBitmapBuffer.Extent.Y - index.Z - 1;
+            }
+            else
+            {
+                y = index.Z;
+            }
+
+            int z = index.X;
+
+            int colind = (indexedBitmapBuffer[x, y] * destBitmap.Extent.X) + z;
+
+            if (colind == 0)
+                return;
+
             byte color = colors[colind];
 
-            Index2 ind;
-            Index2 newInd = new Index2(x * zoom, y * zoom);
+            x *= zoom;
+            y *= zoom;
+
             for (int j = 0; j < zoom; j++)
             {
                 for (int i = 0; i < zoom; i++)
                 {
-                    ind = newInd + new Index2(i, j);
-                    destBitmap[new Index3(index.X, ind)] = color; 
+                    destBitmap[z, x + i, y + j] = color;
                 }
             }
         }

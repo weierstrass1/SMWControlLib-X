@@ -1,11 +1,6 @@
-﻿using SMWControlLibRendering;
-using SMWControlLibRendering.Disguise;
+﻿using SMWControlLibRendering.Disguise;
 using SMWControlLibRendering.Enumerator;
 using SMWControlLibUnity.Enumerators.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 
 namespace SMWControlLibUnity.Graphics
 {

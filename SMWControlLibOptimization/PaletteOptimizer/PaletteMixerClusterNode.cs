@@ -3,7 +3,6 @@ using SMWControlLibOptimization.Keys;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SMWControlLibOptimization.PaletteOptimizer
@@ -89,7 +88,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
             });
 
             PaletteMixerClusterNode ret = new PaletteMixerClusterNode(MaxClusterSize);
-            ret.Content = 
+            ret.Content =
                 new KeyValuePair<ConcurrentDictionary<int, int>, ConcurrentDictionary<TileKey, int>>(paux, taux);
             return ret;
         }

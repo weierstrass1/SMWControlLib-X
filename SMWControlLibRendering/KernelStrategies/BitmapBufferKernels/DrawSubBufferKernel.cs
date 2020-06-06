@@ -1,8 +1,6 @@
 ﻿using ILGPU;
 using ILGPU.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 {
@@ -14,7 +12,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 
         public static void Execute(ArrayView3D<byte> Buffer, ArrayView3D<byte> subBuffer, Index2 offset)
         {
-            kernel(subBuffer.Extent ,Buffer, subBuffer, offset);
+            kernel(subBuffer.Extent, Buffer, subBuffer, offset);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
 

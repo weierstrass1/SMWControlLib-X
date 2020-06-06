@@ -1,8 +1,6 @@
 ﻿using SMWControlLibOptimization.Clustering;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibOptimization.PaletteOptimizer
 {
@@ -26,13 +24,13 @@ namespace SMWControlLibOptimization.PaletteOptimizer
         public override ClusterNode<ConcurrentDictionary<int, int>> Merge(ConcurrentDictionary<int, int> cont)
         {
             PalettesClusterNode ret = new PalettesClusterNode(MaxClusterSize);
-            foreach(var c in cont)
+            foreach (var c in cont)
             {
                 ret.Content.TryAdd(c.Key, c.Value);
             }
             foreach (var c in Content)
             {
-                if(ret.Content.ContainsKey(c.Key))
+                if (ret.Content.ContainsKey(c.Key))
                 {
                     ret.Content[c.Key] += c.Value;
                 }
@@ -61,7 +59,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
 
         public override float BreakDraw(ConcurrentDictionary<int, int> cont)
         {
-            return -(PaletteProcessor.CountDiffs(Content, cont) + Math.Abs(Content.Count - cont.Count));
+            return -Math.Abs(Content.Count - cont.Count);
         }
     }
 }

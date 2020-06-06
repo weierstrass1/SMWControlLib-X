@@ -2,16 +2,15 @@
 using ILGPU.Runtime;
 using SMWControlLibRendering.Exceptions;
 using System;
-using System.Security.Cryptography;
 
 namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 {
     public static class DrawRectangleBorderKernel
     {
-        private static readonly Action<Index, ArrayView3D<byte>, Index2, int, int, ArrayView<byte>> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index, ArrayView3D<byte>, Index2, int, int, ArrayView<byte>>
+        private static readonly Action<Index1, ArrayView3D<byte>, Index2, int, int, ArrayView<byte>> kernel =
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index1, ArrayView3D<byte>, Index2, int, int, ArrayView<byte>>
             (strategy);
-        public static void Execute(Index index, ArrayView3D<byte> destBuffer, 
+        public static void Execute(Index1 index, ArrayView3D<byte> destBuffer,
             Index2 offset, int rWidth, int rHeight, byte[] color)
         {
             if (color == null)
@@ -21,12 +20,12 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 
             using (MemoryBuffer<byte> c = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(color.Length))
             {
-                c.CopyFrom(color, 0, Index.Zero, color.Length);
+                c.CopyFrom(color, 0, Index1.Zero, color.Length);
                 kernel(index, destBuffer, offset, rWidth, rHeight, c);
                 HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             }
         }
-        private static void strategy(Index index, ArrayView3D<byte> destBuffer, Index2 offset, 
+        private static void strategy(Index1 index, ArrayView3D<byte> destBuffer, Index2 offset,
             int rWidth, int rHeight, ArrayView<byte> color)
         {
             if (index <= rWidth)

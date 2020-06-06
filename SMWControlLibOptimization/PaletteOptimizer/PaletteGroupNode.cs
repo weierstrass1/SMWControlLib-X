@@ -3,8 +3,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace SMWControlLibOptimization.PaletteOptimizer
 {
@@ -49,7 +47,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
 
             foreach (var p in allPals)
             {
-                if (p.Count > Content.Count || PaletteProcessor.CountDiffs(Content, p) != 0) 
+                if (p.Count > Content.Count || PaletteProcessor.CountDiffs(Content, p) != 0)
                 {
                     if (p.Count == MaxNumberOfColorsPerPalette)
                     {
@@ -80,7 +78,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
             Children = new List<AstarNode<ConcurrentDictionary<Int32, int>>>();
 
             PaletteGroupNode parent = (PaletteGroupNode)Parent;
-            if (Content.Count < MaxNumberOfColorsPerPalette)  
+            if (Content.Count < MaxNumberOfColorsPerPalette)
             {
                 List<ConcurrentDictionary<Int32, int>> aux = new List<ConcurrentDictionary<int, int>>();
                 foreach (var p in remainder)
@@ -166,7 +164,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                 n.updateHeuristic();
             }
 
-            if (remainder.Count > 0)    
+            if (remainder.Count > 0)
             {
                 newNode = new PaletteGroupNode();
                 newNode.MaxNumberOfColorsPerPalette = MaxNumberOfColorsPerPalette;

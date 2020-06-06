@@ -4,7 +4,6 @@ using SMWControlLibRendering.Enumerator;
 using SMWControlLibRendering.Enumerators.Graphics;
 using System;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace SMWControlLibRendering
 {
@@ -43,7 +42,7 @@ namespace SMWControlLibRendering
         public override byte[] GetColor(int index)
         {
             byte[] color = new byte[BytesPerColor];
-            Buffer.CopyTo(color, new Index(index * BytesPerColor), 0, new Index(BytesPerColor));
+            Buffer.CopyTo(color, index * BytesPerColor, 0, BytesPerColor.Value);
             return color;
         }
         /// <summary>
@@ -57,7 +56,7 @@ namespace SMWControlLibRendering
             int w = Math.Min(bin.Length - (offset * BytesPerColor), Buffer.Length);
             if (w <= 0) return;
 
-            Buffer.CopyFrom(bin, offset * BytesPerColor, new Index(0), Buffer.Extent);
+            Buffer.CopyFrom(bin, offset * BytesPerColor, 0, Buffer.Extent);
         }
 
         /// <summary>
@@ -68,7 +67,7 @@ namespace SMWControlLibRendering
         public override void SetColor(int index, byte R, byte G, byte B)
         {
             byte[] color = { R, G, B };
-            Buffer.CopyFrom(color, 0, new Index(index * BytesPerColor), new Index(BytesPerColor));
+            Buffer.CopyFrom(color, 0, index * BytesPerColor, BytesPerColor.Value);
         }
 
         /// <summary>
@@ -87,7 +86,7 @@ namespace SMWControlLibRendering
         {
             ConcurrentDictionary<Int32, int> ret = new ConcurrentDictionary<int, int>();
             int off = 4 - BytesPerColor;
-            for (int i = 0; i < Length; i++) 
+            for (int i = 0; i < Length; i++)
             {
                 int[] c = new int[1];
                 System.Buffer.BlockCopy(GetColor(i), 0, c, off, BytesPerColor);

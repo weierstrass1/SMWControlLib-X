@@ -117,7 +117,7 @@ namespace SMWControlLibSNES.Graphics
             {
                 int l = bin.Length - offset;
                 MemoryBuffer<byte> srcBuffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(l);
-                srcBuffer.CopyFrom(bin, offset, Index.Zero, l);
+                srcBuffer.CopyFrom(bin, offset, 0, l);
                 int blocks = l >> 5;
                 int bs = (RealObject.Width * RealObject.Height) >> 6;
                 if (blocks > bs) blocks = bs;

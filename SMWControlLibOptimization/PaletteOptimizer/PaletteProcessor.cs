@@ -1,19 +1,19 @@
-﻿using SMWControlLibOptimization.Astar;
+﻿using ILGPU.Runtime;
+using SMWControlLibCommons.Graphics;
 using SMWControlLibOptimization.Clustering;
+using SMWControlLibOptimization.Keys;
+using SMWControlLibOptimization.PaletteOptimizer.KernelStrategies;
+using SMWControlLibRendering.Disguise;
+using SMWControlLibRendering.Enumerators.Graphics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using SMWControlLibRendering.Disguise;
-using System.Runtime.InteropServices;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using SMWControlLibRendering.Enumerators.Graphics;
-using SMWControlLibUtils;
-using SMWControlLibOptimization.Keys;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace SMWControlLibOptimization.PaletteOptimizer
 {
@@ -61,49 +61,54 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                 });
             });
         }
-        public static T[] ExtractPalettesFromBitmap<T,K>(Int32[,] Bits, int tileWidth, int tileHeight, int maxPaletteSize)  where T: ColorPaletteDisguise, new()
+        public static T[] ExtractPalettesFromBitmap<T, K>(int[,] Bit, ConcurrentDictionary<TileKey, int> tiles, int tileWidth, int tileHeight, int maxPaletteSize) where T : ColorPaletteDisguise, new()
                                                                                                                         where K : ColorPaletteIndex, new()
         {
-            int width = Bits.GetLength(0);
-            int height = Bits.GetLength(1);
+            int width = Bit.GetLength(0);
+            int height = Bit.GetLength(1);
             int wb = width / tileWidth;
             int hb = height / tileHeight;
 
             ConcurrentDictionary<TileKey, ConcurrentDictionary<Int32, int>> pals =
                 new ConcurrentDictionary<TileKey, ConcurrentDictionary<int, int>>();
 
-            Int32 val;
-            TileKey k;
-
-            for (int i = 0; i < width; i++)
+            Parallel.ForEach(tiles, kvp =>
             {
-                for (int j = 0; j < height; j++)
+                int offx = kvp.Key.X * tileWidth;
+                int offy = kvp.Key.Y * tileHeight;
+                int x, y, c;
+                ConcurrentDictionary<Int32, int> pal = new ConcurrentDictionary<int, int>();
+                for (int i = 0; i < tileWidth; i++)
                 {
-                    int x = i / tileWidth;
-                    int y = j / tileHeight;
-                    val = Bits[i, j];
-                    k = new TileKey(x, y);
-
-                    if (val != 0)
+                    x = offx + i;
+                    for (int j = 0; j < tileHeight; j++)
                     {
-                        if (!pals.ContainsKey(k))
-                            pals.TryAdd(k, new ConcurrentDictionary<int, int>());
+                        y = offy + j;
+                        c = Bit[x, y];
 
-                        if (!pals[k].TryAdd(val, 1))
+                        if (c != 0)
                         {
-                            pals[k][val]++;
+                            if (!pal.TryAdd(c, 1))
+                                pal[c]++;
                         }
                     }
                 }
-            }
+                pals.TryAdd(kvp.Key, pal);
+            });
+            /*string s = "";
+            foreach(var kvp in pals)
+            {
+                if (kvp.Value.Count > maxPaletteSize)
+                    s += $"({kvp.Key.X * tileWidth},{kvp.Key.Y * tileHeight}),";
+            }*/
 
             List<ConcurrentDictionary<Int32, int>> allPals = OptimizePalettes(pals, maxPaletteSize);
 
             return ColorDictionaryToPalette<T, K>(allPals, maxPaletteSize);
         }
 
-        public static T[] 
-            ColorDictionaryToPalette<T,K>(List<ConcurrentDictionary<Int32, int>> pals, int palSize) where T : ColorPaletteDisguise, new()
+        public static T[]
+            ColorDictionaryToPalette<T, K>(List<ConcurrentDictionary<Int32, int>> pals, int palSize) where T : ColorPaletteDisguise, new()
                                                                                                      where K : ColorPaletteIndex, new()
         {
             T[] Palettes = new T[pals.Count];
@@ -137,8 +142,8 @@ namespace SMWControlLibOptimization.PaletteOptimizer
 
             return Palettes;
         }
-        public static List<ConcurrentDictionary<Int32, int>> 
-            OptimizePalettes(ConcurrentDictionary<TileKey, ConcurrentDictionary<Int32, int>> palMatrix, 
+        public static List<ConcurrentDictionary<Int32, int>>
+            OptimizePalettes(ConcurrentDictionary<TileKey, ConcurrentDictionary<Int32, int>> palMatrix,
             int maxPal)
         {
             ConcurrentDictionary<ConcurrentDictionary<Int32, int>, ConcurrentDictionary<TileKey, int>> tilesperPal =
@@ -154,8 +159,8 @@ namespace SMWControlLibOptimization.PaletteOptimizer
             ConcurrentDictionary<Int32, int> p;
 
             KeyValuePair<TileKey, ConcurrentDictionary<Int32, int>> kvp1;
-
-            while (clone.Count > 0) 
+            
+            while (clone.Count > 0)
             {
                 kvp1 = clone.First();
                 clone.TryRemove(kvp1.Key, out p);
@@ -173,7 +178,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                         }
                     }
                 });
-                if (!found) 
+                if (!found)
                 {
                     remlist.TryAdd(kvp1.Key, 0);
                     tilesperPal.TryAdd(kvp1.Value, remlist);
@@ -185,31 +190,46 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                 }
             }
 
-            List<ConcurrentDictionary<Int32, int>> res =
-                HierarchicalClusteringSolver<ConcurrentDictionary<Int32, int>, PalettesClusterNode>.Solve(tilesperPal.Keys.ToList(), maxPal);
+            int size = 0;
 
-            return res;
+            while (size != tilesperPal.Count)
+            {
+                size = tilesperPal.Count;
+                ReducePaletteColors.Execute(tilesperPal, palMatrix);
+
+                var ret = GPUHierarchicalClusteringSolver.Solve(tilesperPal.Keys.ToList(), maxPal);
+
+                tilesperPal = new ConcurrentDictionary<ConcurrentDictionary<int, int>, ConcurrentDictionary<TileKey, int>>();
+                ConcurrentDictionary<TileKey, int> tk;
+
+                foreach (var pal in ret)
+                {
+                    tk = new ConcurrentDictionary<TileKey, int>();
+                    Parallel.ForEach(palMatrix, kvp =>
+                    {
+                        bool notFound = false;
+                        foreach (var col in kvp.Value)
+                        {
+                            if (!pal.ContainsKey(col.Key))
+                            {
+                                notFound = true;
+                                break;
+                            }
+                        }
+                        if (!notFound)
+                            tk.TryAdd(kvp.Key, 0);
+                    });
+                    tilesperPal.TryAdd(pal, tk);
+                }
+            }
+
+            ReducePaletteColors.Execute(tilesperPal, palMatrix);
+            return tilesperPal.Keys.ToList();
         }
 
         public static int CountEquals(ConcurrentDictionary<Int32, int> p1, ConcurrentDictionary<Int32, int> p2)
         {
-            ConcurrentDictionary<Int32, int> res = p1;
-            ConcurrentDictionary<Int32, int> rev = p2;
-            if (p2.Count > p1.Count)
-            {
-                res = p2;
-                rev = p1;
-            }
-
-            int delta = 0;
-
-            Parallel.ForEach(rev, kvp =>
-            {
-                if (res.ContainsKey(kvp.Key))
-                    delta++;
-            });
-
-            return delta;
+            return Math.Min(p1.Count, p2.Count) - CountDiffs(p1, p2);
         }
 
         public static int CountDiffs(ConcurrentDictionary<Int32, int> p1, ConcurrentDictionary<Int32, int> p2)
@@ -222,15 +242,19 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                 rev = p1;
             }
 
-            int delta = 0;
+            ConcurrentDictionary<Int32, int> delta = new ConcurrentDictionary<Int32, int>();
+
+            Parallel.ForEach(res, kvp =>
+            {
+                delta.TryAdd(kvp.Key, kvp.Value);
+            });
 
             Parallel.ForEach(rev, kvp =>
             {
-                if (!res.ContainsKey(kvp.Key))
-                    delta++;
+                delta.TryAdd(kvp.Key, kvp.Value);
             });
 
-            return delta;
+            return delta.Count - res.Count;
         }
 
         public static ConcurrentDictionary<Int32, int> GetDiffs(ConcurrentDictionary<Int32, int> p1, ConcurrentDictionary<Int32, int> p2)

@@ -280,7 +280,7 @@ namespace SMWControlLibCommons.Graphics
         /// <param name="col">The col.</param>
         protected virtual void drawTileMaskCollection(ITileCollection col)
         {
-            if(col == null)
+            if (col == null)
             {
                 throw new ArgumentNullException(nameof(col));
             }

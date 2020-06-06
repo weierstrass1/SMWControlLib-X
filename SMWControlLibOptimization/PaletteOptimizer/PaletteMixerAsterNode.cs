@@ -3,8 +3,6 @@ using SMWControlLibOptimization.Keys;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SMWControlLibOptimization.PaletteOptimizer
@@ -60,7 +58,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
             {
                 Parallel.ForEach(Content, kvp =>
                 {
-                    if (PaletteProcessor.CountDiffs(p, kvp.Key) + 
+                    if (PaletteProcessor.CountDiffs(p, kvp.Key) +
                         Math.Max(p.Count, kvp.Key.Count) <= MaxPalette)
                     {
                         PaletteMixerAsterNode newNode = new PaletteMixerAsterNode();
@@ -129,13 +127,13 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                     if (remainingTiles.ContainsKey(til.Key))
                         countT++;
                 });
-                if (countT > maxh) 
+                if (countT > maxh)
                 {
                     gotBest = true;
                     maxh = countT;
                     best = kvp;
                 }
-                if (countT > 0 && countT == maxh && kvp.Key.Count < best.Key.Count) 
+                if (countT > 0 && countT == maxh && kvp.Key.Count < best.Key.Count)
                 {
                     best = kvp;
                 }
@@ -148,7 +146,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
 
         protected override int setCost()
         {
-            if (pcost < 0) 
+            if (pcost < 0)
                 return -1;
             if (Cost >= 0)
                 return Cost;
@@ -164,7 +162,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                     remainingTiles.TryAdd(til.Key, 0);
                 });
 
-                if (FinishedPalettes.Count > p.FinishedPalettes.Count) 
+                if (FinishedPalettes.Count > p.FinishedPalettes.Count)
                 {
                     Parallel.ForEach(best.Value, kvp =>
                     {
@@ -210,7 +208,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                     });
                     Parallel.ForEach(p.Content, kvp =>
                     {
-                        if (PaletteProcessor.CountDiffs(kvp.Key, best.Key) > 0) 
+                        if (PaletteProcessor.CountDiffs(kvp.Key, best.Key) > 0)
                             Content.TryAdd(kvp.Key, kvp.Value);
                     });
                     if (best.Key.Count == MaxPalette)
@@ -218,7 +216,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                     else
                     {
                         Content.TryAdd(best.Key, best.Value);
-                    } 
+                    }
                 }
             }
             gotBest = false;
@@ -258,7 +256,7 @@ namespace SMWControlLibOptimization.PaletteOptimizer
             Parent = null;
 
             if (Content.Count <= 0) return false;
-            if (nextRemoved == 0) 
+            if (nextRemoved == 0)
                 return false;
 
             ConcurrentDictionary<TileKey, int> tl2 = new ConcurrentDictionary<TileKey, int>();

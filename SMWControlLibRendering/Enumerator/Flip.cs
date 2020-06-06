@@ -31,5 +31,17 @@ namespace SMWControlLibRendering.Enumerators
             FlipY = fy;
             Value = value;
         }
+
+        public static Flip GetFlip(bool flipX, bool flipY)
+        {
+            if (!flipX && !flipY)
+                return NotFlipped;
+            else if (flipX && !flipY)
+                return HorizontalFlip;
+            else if (!flipX && flipY)
+                return VerticalFlip;
+            else
+                return HorizontalVerticalFlip;
+        }
     }
 }

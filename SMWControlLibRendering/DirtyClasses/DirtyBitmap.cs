@@ -6,12 +6,14 @@ namespace SMWControlLibRendering.DirtyClasses
 {
     public class DirtyBitmap : DirtyClass<BitmapBuffer>, IDisposable
     {
-        public BitmapBuffer Bitmap { get => Object; 
-            set 
+        public BitmapBuffer Bitmap
+        {
+            get => Object;
+            set
             {
                 Object.Dispose();
-                Object = value; 
-            } 
+                Object = value;
+            }
         }
         public DirtyBitmap() : base(null)
         {

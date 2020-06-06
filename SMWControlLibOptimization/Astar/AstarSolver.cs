@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using C5;
+﻿using C5;
 
 namespace SMWControlLibOptimization.Astar
 {
@@ -21,12 +17,12 @@ namespace SMWControlLibOptimization.Astar
                 curNode = ih.DeleteMin();
                 curNode.Expand(args);
 
-                if (curNode.Completed(args)) 
+                if (curNode.Completed(args))
                     return curNode;
 
                 if (curNode.Children.Count > 0)
                 {
-                    foreach(var node in curNode.Children)
+                    foreach (var node in curNode.Children)
                     {
                         if (node.CanAdd())
                         {

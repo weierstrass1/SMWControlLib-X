@@ -29,5 +29,16 @@ namespace SMWControlLibRendering.Keys
         public ZoomFlipColorPaletteKey(uint zoom, Flip flip, ColorPalette cp) : base(zoom, new FlipColorPaletteKey(flip, cp))
         {
         }
+
+        protected override int CalculateHashCode()
+        {
+            return (int)(Flip.Value ^ Zoom ^ Palette.Index.Value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            ZoomFlipColorPaletteKey k = (ZoomFlipColorPaletteKey)obj;
+            return Flip == k.Flip && Zoom == k.Zoom && Palette.Index == k.Palette.Index;
+        }
     }
 }

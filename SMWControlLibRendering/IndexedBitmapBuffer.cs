@@ -3,7 +3,6 @@ using SMWControlLibRendering.Enumerators;
 using SMWControlLibRendering.Keys;
 using System;
 using System.Collections.Concurrent;
-using System.Drawing;
 
 namespace SMWControlLibRendering
 {

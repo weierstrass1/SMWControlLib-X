@@ -22,5 +22,9 @@
     <ProjectReference Include="..\..\SMWControlLibSNES\SMWControlLibSNES.csproj" />
     <ProjectReference Include="..\..\SMWControlLibUnity\SMWControlLibUnity.csproj" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <Folder Include="Graphics\SNES\" />
+  </ItemGroup>
   
 </Project>

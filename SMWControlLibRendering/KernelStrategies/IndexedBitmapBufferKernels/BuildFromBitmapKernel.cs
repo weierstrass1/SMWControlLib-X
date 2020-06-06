@@ -1,19 +1,17 @@
 ﻿using ILGPU;
 using ILGPU.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
 {
     public static class BuildFromBitmapKernel
     {
-        private static readonly Action<Index2, ArrayView2D<byte>, 
+        private static readonly Action<Index2, ArrayView2D<byte>,
             ArrayView2D<int>, ArrayView<int>> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<byte>, 
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<byte>,
                 ArrayView2D<int>, ArrayView<int>>
             (strategy);
-        public static void Execute(Index2 extent, ArrayView2D<byte> indexedBitmapBuffer, 
+        public static void Execute(Index2 extent, ArrayView2D<byte> indexedBitmapBuffer,
             ArrayView2D<int> bitmapTile, ArrayView<int> colors)
         {
             if (extent.X > indexedBitmapBuffer.Extent.X ||
@@ -23,7 +21,7 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
             kernel(extent, indexedBitmapBuffer, bitmapTile, colors);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
-        private static void strategy(Index2 index, ArrayView2D<byte> indexedBitmapBuffer, 
+        private static void strategy(Index2 index, ArrayView2D<byte> indexedBitmapBuffer,
             ArrayView2D<int> bitmapTile, ArrayView<int> colors)
         {
             int c = bitmapTile[index];

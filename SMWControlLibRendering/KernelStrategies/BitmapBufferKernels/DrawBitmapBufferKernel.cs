@@ -1,8 +1,6 @@
 ﻿using ILGPU;
 using ILGPU.Runtime;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 {
@@ -10,7 +8,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
     {
         private static readonly Action<Index2, ArrayView3D<byte>,
                 ArrayView3D<byte>, Index2, Index2, int, ArrayView<byte>, int, ArrayView<byte>> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView3D<byte>, 
+            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView3D<byte>,
                 ArrayView3D<byte>, Index2, Index2, int, ArrayView<byte>, int, ArrayView<byte>>
             (strategy);
         private static readonly Action<Index2, ArrayView3D<byte>,
@@ -33,7 +31,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 
             using (MemoryBuffer<byte> b = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(bitClearer.Length))
             {
-                b.CopyFrom(bitClearer, 0, Index.Zero, bitClearer.Length);
+                b.CopyFrom(bitClearer, 0, Index1.Zero, bitClearer.Length);
                 if (BackgroundColor == null)
                 {
                     kernelNoBG(extent, destBuffer, srcBuffer, dstOffset, srcOffset, destBuffer.Extent.X, b, Zoom);
@@ -43,6 +41,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
                 {
                     using (MemoryBuffer<byte> bgc = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(BackgroundColor.Length))
                     {
+                        bgc.CopyFrom(BackgroundColor, 0, 0, bgc.Extent);
                         kernel(extent, destBuffer, srcBuffer, dstOffset, srcOffset, destBuffer.Extent.X, b, Zoom, bgc);
                         HardwareAcceleratorManager.GPUAccelerator.Synchronize();
                     }
@@ -56,9 +55,9 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
             bool change = true;
             byte b;
             Index2 srcOff = index + srcOffset;
-            if (ColorSize == 4 && srcBuffer[new Index3(0, srcOff)] == 0) 
+            if (ColorSize == 4 && srcBuffer[new Index3(0, srcOff)] == 0)
                 change = false;
-            for (int i = 0; change &&  i < ColorSize ; i++)
+            for (int i = 0; change && i < ColorSize; i++)
             {
                 b = BitChecker[i];
                 if (change && b != 0 &&
@@ -87,7 +86,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
             }
         }
         private static void strategy(Index2 index, ArrayView3D<byte> destBuffer, ArrayView3D<byte> srcBuffer,
-            Index2 dstOffset, Index2 srcOffset, int ColorSize, ArrayView<byte> BitChecker, 
+            Index2 dstOffset, Index2 srcOffset, int ColorSize, ArrayView<byte> BitChecker,
             int Zoom, ArrayView<byte> BackgroundColor)
         {
             bool change = true;
@@ -96,7 +95,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
             {
                 b = BitChecker[i];
                 if (change && BitChecker[i] != 0 &&
-                    (srcBuffer[new Index3(i, index + srcOffset)] & b) != 0) 
+                    (srcBuffer[new Index3(i, index + srcOffset)] & b) != 0)
                 {
                     change = false;
                 }

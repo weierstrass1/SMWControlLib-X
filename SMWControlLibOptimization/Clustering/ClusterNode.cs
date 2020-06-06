@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SMWControlLibOptimization.Clustering
+﻿namespace SMWControlLibOptimization.Clustering
 {
     public abstract class ClusterNode<T>
     {

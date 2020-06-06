@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SMWControlLibOptimization.Clustering
 {
-    public class HierarchicalClusteringSolver<T,K> where K : ClusterNode<T>, new()
+    public class HierarchicalClusteringSolver<T, K> where K : ClusterNode<T>, new()
     {
         public static List<T> Solve(List<T> input, int ClusterMaxSize, params object[] args)
         {
@@ -27,7 +25,7 @@ namespace SMWControlLibOptimization.Clustering
             int dist, curdist;
             float breakDraw, curbd;
 
-            while(change)
+            while (change)
             {
                 change = false;
                 dist = int.MaxValue;
@@ -53,7 +51,7 @@ namespace SMWControlLibOptimization.Clustering
                             {
                                 replace = curdist < dist;
 
-                                if(replace)
+                                if (replace)
                                 {
                                     breakDraw = float.MaxValue;
                                 }
@@ -61,11 +59,11 @@ namespace SMWControlLibOptimization.Clustering
                                 {
                                     if (breakDraw == float.MaxValue)
                                         breakDraw = c1.BreakDraw(c2);
-                                    
+
                                     curbd = cux.BreakDraw(c);
 
                                     replace = curbd < breakDraw;
-                                    if(replace)
+                                    if (replace)
                                     {
                                         breakDraw = curbd;
                                     }
@@ -153,12 +151,12 @@ namespace SMWControlLibOptimization.Clustering
 
                             int minSize = int.MaxValue;
                             iter = 0;
-                            foreach (var c in addlist) 
+                            foreach (var c in addlist)
                             {
                                 if (uniques[iter] != dist)
                                 {
                                     remlist.Add(c);
-                                    if (uniques[iter] == maxUn && minSize > c.Size) 
+                                    if (uniques[iter] == maxUn && minSize > c.Size)
                                     {
                                         c1 = c;
                                         minSize = c.Size;
@@ -167,7 +165,7 @@ namespace SMWControlLibOptimization.Clustering
                                 iter++;
                             }
 
-                            if (remlist.Count == addlist.Count && minSize != int.MaxValue) 
+                            if (remlist.Count == addlist.Count && minSize != int.MaxValue)
                             {
                                 remlist.Remove(c1);
                             }

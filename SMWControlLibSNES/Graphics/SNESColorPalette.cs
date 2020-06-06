@@ -1,5 +1,4 @@
-﻿using SMWControlLibRendering;
-using SMWControlLibRendering.Disguise;
+﻿using SMWControlLibRendering.Disguise;
 using SMWControlLibRendering.Enumerator;
 using SMWControlLibRendering.Enumerators.Graphics;
 

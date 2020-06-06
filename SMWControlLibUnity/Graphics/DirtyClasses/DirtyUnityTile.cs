@@ -1,8 +1,5 @@
 ﻿using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Graphics.DirtyClasses;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SMWControlLibUnity.Graphics.DirtyClasses
 {

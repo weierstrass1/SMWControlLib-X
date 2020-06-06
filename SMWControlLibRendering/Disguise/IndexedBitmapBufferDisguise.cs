@@ -1,13 +1,12 @@
 ﻿using SMWControlLibRendering.Factory;
 using SMWControlLibUtils;
-using System.Drawing;
 
 namespace SMWControlLibRendering.Disguise
 {
     /// <summary>
     /// The indexed bitmap buffer disguise.
     /// </summary>
-    public class IndexedBitmapBufferDisguise : DisguiseWithObjsParams<IndexedBitmapBufferFactory, IndexedBitmapBuffer>, IMustInitialize<int,int>
+    public class IndexedBitmapBufferDisguise : DisguiseWithObjsParams<IndexedBitmapBufferFactory, IndexedBitmapBuffer>, IMustInitialize<int, int>
     {
         public IndexedBitmapBufferDisguise() : base(1, 1)
         {

@@ -1,6 +1,5 @@
 using Eto.Drawing;
 using Eto.Forms;
-using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Graphics;
 using SMWControlLibFrontend.Graphics;
 using SMWControlLibRendering;
@@ -8,7 +7,6 @@ using SMWControlLibRendering.Enumerator;
 using SMWControlLibSNES.Graphics;
 using SMWControlLibUnity.Enumerators.Graphics;
 using SMWControlLibUnity.Graphics;
-using System;
 using System.ComponentModel;
 
 namespace SMWControlLibFrontend

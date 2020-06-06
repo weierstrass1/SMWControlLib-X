@@ -1,7 +1,5 @@
 ﻿using SMWControlLibRendering.Enumerator;
-using SMWControlLibRendering.Exceptions;
 using System;
-using System.Threading.Tasks;
 
 namespace SMWControlLibRendering
 {

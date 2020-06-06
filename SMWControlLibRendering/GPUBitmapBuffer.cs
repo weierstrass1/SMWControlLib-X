@@ -34,7 +34,7 @@ namespace SMWControlLibRendering
             GPUBitmapBuffer source = (GPUBitmapBuffer)src;
 
             DrawBitmapBufferKernel.Execute(new Index2(src.Width, src.Height),
-                Buffer, source.Buffer, new Index2(dstXOffset, dstYOffset), new Index2(srcXOffset, srcYOffset), 
+                Buffer, source.Buffer, new Index2(dstXOffset, dstYOffset), new Index2(srcXOffset, srcYOffset),
                 BytesPerColor.BitClearer, zoom, backgroundColor);
             requireCopyTo = true;
 
@@ -54,7 +54,7 @@ namespace SMWControlLibRendering
         public override void DrawRectangleBorder(int x, int y, int width, int height, byte[] color)
         {
             int offset = (y * Width) + x;
-            DrawRectangleBorderKernel.Execute(new Index(Math.Max(width, height)), Buffer,
+            DrawRectangleBorderKernel.Execute(Math.Max(width, height), Buffer,
                 new Index2(x, y), width, height, color);
             requireCopyTo = true;
         }
@@ -95,7 +95,7 @@ namespace SMWControlLibRendering
                 pixels = new byte[l];
                 requireCopyTo = true;
             }
-            else if (subBuffer.Buffer.Width != BytesPerColor || subBuffer.Buffer.Height != w || subBuffer.Buffer.Depth != h) 
+            else if (subBuffer.Buffer.Width != BytesPerColor || subBuffer.Buffer.Height != w || subBuffer.Buffer.Depth != h)
             {
                 subBuffer.Initialize(w, h, BytesPerColor);
                 pixels = new byte[l];

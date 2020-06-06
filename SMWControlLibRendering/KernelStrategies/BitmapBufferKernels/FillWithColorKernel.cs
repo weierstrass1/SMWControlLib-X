@@ -16,7 +16,7 @@ namespace SMWControlLibRendering.KernelStrategies.BitmapBufferKernels
 
             using (MemoryBuffer<byte> c = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>(color.Length))
             {
-                c.CopyFrom(color, 0, Index.Zero, color.Length);
+                c.CopyFrom(color, 0, 0, color.Length);
                 kernel(index, destBuffer, c);
                 HardwareAcceleratorManager.GPUAccelerator.Synchronize();
             }
