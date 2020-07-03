@@ -14,7 +14,6 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
         {
             if (colors.Length % extent.X != 0)
                 throw new ArrayLengthNotValid(nameof(colors), $"Must be divisible by {extent.X}.");
-
             kernel(extent, indexedBitmapBuffer, destBitmap, colors, zoom, flip);
             HardwareAcceleratorManager.GPUAccelerator.Synchronize();
         }
@@ -44,13 +43,10 @@ namespace SMWControlLibRendering.KernelStrategies.IndexedBitmapBufferKernels
 
             int colind = (indexedBitmapBuffer[x, y] * destBitmap.Extent.X) + z;
 
-            if (colind == 0)
-                return;
-
             byte color = colors[colind];
 
-            x *= zoom;
-            y *= zoom;
+            x = index.Y * zoom;
+            y = index.Z * zoom;
 
             for (int j = 0; j < zoom; j++)
             {

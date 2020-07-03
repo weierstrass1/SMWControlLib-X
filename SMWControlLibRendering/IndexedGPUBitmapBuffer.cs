@@ -41,6 +41,7 @@ namespace SMWControlLibRendering
             if (Buffer != null) Buffer.Dispose();
             base.Initialize(args);
             Buffer = HardwareAcceleratorManager.GPUAccelerator.Allocate<byte>((int)args[0], (int)args[1]);
+            Buffer.MemSetToZero();
             RequireCopyTo = true;
         }
         /// <summary>

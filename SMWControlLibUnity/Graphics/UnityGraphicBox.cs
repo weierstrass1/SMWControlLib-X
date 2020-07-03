@@ -1,5 +1,6 @@
 ﻿using SMWControlLibCommons.Enumerators.Graphics;
 using SMWControlLibCommons.Graphics;
+using SMWControlLibOptimization.ColorReduction;
 using SMWControlLibOptimization.PaletteOptimizer;
 using SMWControlLibOptimization.TileOptimizer;
 using SMWControlLibRendering;
@@ -30,9 +31,11 @@ namespace SMWControlLibUnity.Graphics
         {
             Bitmap bp = new Bitmap(path);
             Int32[,] Bits = PaletteProcessor.BitmapToIntArray(bp);
+
             PaletteProcessor.RoundColor5BitsPerChannel(Bits);
+            ColorReductor.ReduceColorsFromBitmap<UnityColorPalette, UnityColorPaletteIndex>(15, Bits);
             var ts = TileProcessor.GetUniqueTilesPositions(Bits, tileSize.Width, tileSize.Height);
-            UnityColorPalette[] pals = PaletteProcessor.ExtractPalettesFromBitmap<UnityColorPalette, UnityColorPaletteIndex>(Bits, ts.Item1, tileSize.Width, tileSize.Height, 7);
+            UnityColorPalette[] pals = PaletteProcessor.ExtractPalettesFromBitmap<UnityColorPalette, UnityColorPaletteIndex>(Bits, ts.Item1, tileSize.Width, tileSize.Height, 15);
             var tiles = TileProcessor.GetTiles<UnityColorPalette, IndexedBitmapBufferDisguise>(pals, ts.Item1, ts.Item2, Bits, tileSize.Width, tileSize.Height);
 
             int w = bp.Width;

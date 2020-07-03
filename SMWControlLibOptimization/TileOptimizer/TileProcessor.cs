@@ -76,7 +76,7 @@ namespace SMWControlLibOptimization.TileOptimizer
                     colDic = palettes[x].RealObject.ToColorDictionary();
                     curtileQ = new ConcurrentDictionary<TileKey, K>();
                     results = new ConcurrentQueue<Tuple<TileKey, bool, bool, K>>();
-                    Parallel.ForEach(cloneTiles, kvp =>
+                    foreach(var kvp in cloneTiles)
                     {
                         int curpX = 0;
                         int curpY = 0;
@@ -106,12 +106,12 @@ namespace SMWControlLibOptimization.TileOptimizer
                             curTile.RealObject.BuildFromBitmap(bp, colDic, offX, offY);
                             curtileQ.TryAdd(kvp.Key, curTile);
                         }
-                    });
+                    }
 
-                    Parallel.ForEach(curtileQ, t =>
+                    foreach(var t in curtileQ)
                     {
                         cloneTiles.TryRemove(t.Key, out rm);
-                    });
+                    }
 
                     foreach(var kvp in alltiles)
                     {

@@ -2,18 +2,16 @@
 using ILGPU.Runtime;
 using SMWControlLibRendering;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SMWControlLibOptimization.Clustering
 {
-    public class GetNearestClusterKernel
+    public static class OptimizeSet
     {
         private static Action<Index2, ArrayView2D<int>, ArrayView3D<int>> kernel =
-            HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<int>, ArrayView3D<int>>
-            (strategy);
+           HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index2, ArrayView2D<int>, ArrayView3D<int>>
+           (strategy);
         private static Action<Index1, ArrayView3D<int>, ArrayView2D<int>> kernelBests =
             HardwareAcceleratorManager.GPUAccelerator.LoadAutoGroupedStreamKernel<Index1, ArrayView3D<int>, ArrayView2D<int>>
             (strategyBest);
@@ -34,8 +32,8 @@ namespace SMWControlLibOptimization.Clustering
             using (MemoryBuffer2D<int> clusterBuff = HardwareAcceleratorManager.GPUAccelerator.Allocate<int>(clusters.GetLength(0), clusters.GetLength(1)))
             {
                 clusterBuff.CopyFrom(clusters, Index2.Zero, Index2.Zero, clusterBuff.Extent);
-                using (MemoryBuffer3D<int> diffs = HardwareAcceleratorManager.GPUAccelerator.Allocate<int>(clusterBuff.Extent.X, clusterBuff.Extent.X, 5))
-                using (MemoryBuffer2D<int> bests = HardwareAcceleratorManager.GPUAccelerator.Allocate<int>(clusterBuff.Extent.X, 3 + clusterBuff.Extent.X)) 
+                using (MemoryBuffer3D<int> diffs = HardwareAcceleratorManager.GPUAccelerator.Allocate<int>(clusterBuff.Extent.X, clusterBuff.Extent.X, 3))
+                using (MemoryBuffer2D<int> bests = HardwareAcceleratorManager.GPUAccelerator.Allocate<int>(clusterBuff.Extent.X, 3 + clusterBuff.Extent.X))
                 {
                     bool change = true;
                     while (change)
@@ -102,13 +100,13 @@ namespace SMWControlLibOptimization.Clustering
                             int[] bob3 = new int[bob1.Length];
                             bool repeated;
 
-                            for (int i = 0, k = 0; i < bob1.Length; i++) 
+                            for (int i = 0, k = 0; i < bob1.Length; i++)
                             {
                                 bob3[i] = bob1[i];
                                 repeated = false;
                                 for (int j = 0; j < i; j++)
                                 {
-                                    if(bob3[i] == bob3[j])
+                                    if (bob3[i] == bob3[j])
                                     {
                                         repeated = true;
                                     }
@@ -126,7 +124,7 @@ namespace SMWControlLibOptimization.Clustering
                                                 break;
                                             }
                                         }
-                                        if(!repeated)
+                                        if (!repeated)
                                         {
                                             bob3[i] = bob2[j];
                                             k = j;
@@ -167,79 +165,97 @@ namespace SMWControlLibOptimization.Clustering
         {
             int i1 = index.X;
             int i2 = index.Y;
-
-            if (i1 == i2) 
+            if (i1 >= i2 || clusbuff[i1, 0] == 0 || clusbuff[i2, 0] == 0)
             {
-                diffs[i1, i2, 0] = -1;
+                diffs[i1, i2,0] = -1;
                 diffs[i1, i2, 1] = -1;
                 diffs[i1, i2, 2] = -1;
-                diffs[i1, i2, 3] = -1;
-                diffs[i1, i2, 4] = -1;
-                return;
-            }
-            if (clusbuff[i1, 0] == 0 || clusbuff[i2, 0] == 0)
-            {
-                diffs[i1, i2, 0] = -1;
-                diffs[i1, i2, 1] = -1;
-                diffs[i1, i2, 2] = -1;
-                diffs[i1, i2, 3] = -1;
-                diffs[i1, i2, 4] = -1;
                 return;
             }
 
+            int maxlen = 0;
             int l1 = 0;
             int l2 = 0;
 
             for (int i = 0; i < clusbuff.Extent.Y; i++)
             {
+                if (clusbuff[i1, i] != 0 || clusbuff[i2, i] != 0) maxlen = i + 1;
                 if (clusbuff[i1, i] != 0) l1 = i + 1;
                 if (clusbuff[i2, i] != 0) l2 = i + 1;
             }
 
-            int eqs = 0;
+            if (l2 > l1) 
+            {
+                int aux = i1;
+                i1 = i2;
+                i2 = aux;
+            }
 
-            for (int i = 0; i < l1; i++)
+            int notFound = 0;
+            byte found, add;
+            for (int i = 0; i < clusbuff.Extent.Y; i++)
             {
                 if (clusbuff[i1, i] != 0)
                 {
-                    for (int j = 0; j < l2; j++)
+                    found = 0;
+                    for (int j = 0; j < clusbuff.Extent.Y; j++)
                     {
-                        if (clusbuff[i1, i] == clusbuff[i2, j])
+                        if (clusbuff[i1, i] == clusbuff[i2, i])
                         {
-                            eqs++;
+                            found = 1;
                             break;
                         }
                     }
+                    if(found == 0)
+                    {
+                        notFound++;
+                    }
                 }
             }
-
-            int max = l1;
-            int min = l2;
-            if (l2 > l1)
+            if (maxlen + notFound > clusbuff.Extent.Y)
             {
-                max = l2;
-                min = l1;
-            }
+                i1 = index.X;
+                i2 = index.Y;
 
-            int diffl = max - min;
-            int totalSize = max + (min - eqs);
-
-            if (totalSize <= clusbuff.Extent.Y)
-            {
-                diffs[i1, i2, 0] = eqs;
-                diffs[i1, i2, 1] = diffl;
-                diffs[i1, i2, 2] = totalSize;
-                diffs[i1, i2, 3] = l1;
-                diffs[i1, i2, 4] = l2;
-            }
-            else
-            {
                 diffs[i1, i2, 0] = -1;
                 diffs[i1, i2, 1] = -1;
                 diffs[i1, i2, 2] = -1;
-                diffs[i1, i2, 3] = -1;
-                diffs[i1, i2, 4] = -1;
+                return;
             }
+
+            int curScore = 1;
+            for (int i = 0; i < clusbuff.Extent.X; i++)
+            {
+                if (i != i1 && i != i2)
+                {
+                    add = 1;
+                    for (int j = 0; j < clusbuff.Extent.Y; j++)
+                    {
+                        if (clusbuff[i, j] != 0)
+                        {
+                            found = 0;
+                            for (int k = 0; k < clusbuff.Extent.Y; k++)
+                            {
+                                if (clusbuff[i, j] == clusbuff[i1, k] || clusbuff[i, j] == clusbuff[i2, k])
+                                {
+                                    found = 1;
+                                    break;
+                                }
+                            }
+                            if (found == 0)
+                            {
+                                add = 0;
+                                break;
+                            }
+                        }
+                    }
+                    if (add == 1)
+                        curScore++;
+                }
+            }
+            diffs[i1, i2, 0] = curScore;
+            diffs[i1, i2, 1] = -1;
+            diffs[i1, i2, 2] = -1;
         }
         private static void strategyBest(Index1 index, ArrayView3D<int> diffs, ArrayView2D<int> bests)
         {
@@ -247,7 +263,7 @@ namespace SMWControlLibOptimization.Clustering
             int dl = -2;
             int ts = -2;
             int curID = 0;
-            for (int i = index + 1; i < diffs.Extent.Y; i++) 
+            for (int i = index + 1; i < diffs.Extent.Y; i++)
             {
                 if (diffs[index, i, 0] > b)
                 {
@@ -334,7 +350,7 @@ namespace SMWControlLibOptimization.Clustering
                     break;
                 }
             }
-            if(found == 0)
+            if (found == 0)
             {
                 clusbuff[i1, 0] = 0;
             }
@@ -390,9 +406,51 @@ namespace SMWControlLibOptimization.Clustering
                 }
             }
 
-            if (eqs == l2) 
+            if (eqs == l2)
             {
                 clusbuff[i2, 0] = 0;
+            }
+        }
+
+        private static void strategyGetInfo(Index2 index, ArrayView2D<int> set, ArrayView2D<int> score)
+        {
+            int i1 = index.X;
+            int i2 = index.Y;
+            if (i1 >= i2)
+            {
+                score[i1, i2] = -1;
+                return;
+            }
+            int curScore = 0;
+            byte found, add;
+            for (int i = 0; i < set.Extent.X; i++)
+            {
+                if (i != i1 && i != i2) 
+                {
+                    add = 1;
+                    for (int j = 0; j < set.Extent.Y; j++)
+                    {
+                        if (set[i, j] != 0)
+                        {
+                            found = 0;
+                            for (int k = 0; k < set.Extent.Y; k++)
+                            {
+                                if (set[i, j] == set[i1, k] || set[i, j] == set[i2, k]) 
+                                {
+                                    found = 1;
+                                    break;
+                                }
+                            }
+                            if (found == 0)
+                            {
+                                add = 0;
+                                break;
+                            }
+                        }
+                    }
+                    if (add == 1)
+                        curScore++;
+                }
             }
         }
     }

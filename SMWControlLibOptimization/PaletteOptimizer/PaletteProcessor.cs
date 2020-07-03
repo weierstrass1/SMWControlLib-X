@@ -223,7 +223,6 @@ namespace SMWControlLibOptimization.PaletteOptimizer
                 }
             }
 
-            ReducePaletteColors.Execute(tilesperPal, palMatrix);
             return tilesperPal.Keys.ToList();
         }
 
