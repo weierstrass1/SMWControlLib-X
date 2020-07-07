@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Graphics\" />
+    <Folder Include="Physics\Movement\" />
+    <Folder Include="Sound\" />
+    <Folder Include="Objects\" />
+  </ItemGroup>
+
+</Project>
